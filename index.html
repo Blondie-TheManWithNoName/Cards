@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="deck">
+    <button id="byDefault">Default</button>
+    <button id="bySuite">Suite</button>
+    <button id="byRank">Rank</button>
+    <button id="flip">Flip</button>
+    <button id="shuffle">Shuffle</button>
+    <button id="deal">Deal</button>
+    <input type="number" id="numCards" name="numCards">
+    <button id="myCards">My Cards</button>
+    <button id="orderMyHand">Order My Hand</button>
+</body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="app.js"></script> -->
+<script type="module" src="util.js"></script>
+<script type="module" src="card.js"></script>
+<script type="module" src="deck.js"></script>
+<script type="module" src="player.js"></script>
+<script type="module" src="client.js"></script>
+

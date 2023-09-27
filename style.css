@@ -1,0 +1,139 @@
+@font-face {
+    font-family: ChampagneAndLimousine;
+    src: url(rsc/Champagne\ &\ Limousines.ttf);
+  }
+
+
+:root{
+    --card-width:105px;
+    --card-height:147px;
+    --card-horizontal-space:100px;
+}
+p{
+    font-size: 100px;
+    font-weight: bolder;
+    color: #FFBB5C;
+    text-shadow: 1px 2px 0px #9f0034;
+}
+body{
+    height: 100vh;
+    font-family: ChampagneAndLimousine;
+}
+
+main{
+    height: 55%;
+    display: flex;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+
+
+.card{
+    position: absolute;
+    height:var(--card-height);
+    width: var(--card-width);
+    perspective: 1000px;
+    cursor: pointer;
+    border-radius: 0px;
+    /* transition: all 0.5s ease-in-out; */
+      
+}
+.card-inner{
+    left: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    /* transition: all 0.1s linear; */
+    /* transition: transform 0.1s linear;    */
+    transform-style: preserve-3d;
+    /* transform-origin: left 40px; */
+}
+
+.card-inner.flipped-front {
+    transform: rotateY(0deg);
+}
+
+.card-inner.flipped-back {
+    transform: rotateY(-180deg);
+}
+
+
+.card-front, .card-back{
+    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.25);
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    /* box-shadow: 0 3px 3px rgba(63, 63, 63, 0.15); */
+
+    position: absolute; 
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    user-select: none;
+}
+.card-img{
+    height:100%;
+}
+.card-back{
+    transform: rotateY(180deg);
+    z-index: 1;
+    /* transform: translateX(50px); */
+
+}
+
+/* .card:hover .card-inner{
+    rotate: 1 0 0 10deg;
+    /* !important; 
+} */
+
+/* .card:active .card-inner{
+    pointer-events: none;
+
+} */
+
+
+
+.deck{
+    /* background-color: #009F6B; */
+    background-color: #069969;
+}  
+
+/* .move
+{
+    animation: cardMove 5s;
+}
+
+@keyframes cardMove {
+    0%{
+        left: 8px;
+    }
+
+    50% {
+        left: 50px;
+    }
+    
+    100% {
+        left: 8px;
+    }
+    
+  } */
+
+  /* .bot:hover ~ .card-inner{
+      transform-origin: 50% 25%!important;
+      transform: rotateX(10deg)!important;
+      transform: scale(2)!important;
+
+  }    
+
+
+  .top:hover ~ .card-inner {
+    transform-origin: 50% 75%!important;
+    transform: rotateX(-10deg)!important;
+     rotateZ(-2deg);
+     transform: scale(2)!important;
+
+  } */
+
+  /* Define the animation */

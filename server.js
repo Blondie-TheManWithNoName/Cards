@@ -39,7 +39,7 @@ io.on('connection', (sock) => {
   sock.on('moveCard', ({ cardId, newPosition }) => {
     // Handle card movement from the client
     // console.log(`Card ${cardId} moved to position ${newPosition.x}, ${newPosition.y}`);
-    io.emit('cardMoved', cardId, newPosition);
+    socket.broadcast.emit('cardMoved', cardId, newPosition);
     // moveCardOnServer(cardId, newPosition);
   });
 

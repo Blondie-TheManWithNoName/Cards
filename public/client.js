@@ -5,7 +5,7 @@ import {Card} from './card.js';
 
 
 
-const socket = io();
+const socket = io.connect();
 
 // Function to notify the server about position changes
 function notifyPositionChange(cardId, newPosition) {

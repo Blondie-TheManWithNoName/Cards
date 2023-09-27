@@ -6,12 +6,12 @@ const socketio = require('socket.io');
 const app = express();
 
 
-app.use(express.static(`${__dirname}/`));
+app.use(express.static(`${__dirname}/public`));
 
 const server = http.createServer(app);
 const io = socketio(server);
 
-
+const PORT = process.env.PORT || 8080;
 
 // const player = new Player();
 // const deck = new Deck();
@@ -50,7 +50,7 @@ server.on('error', (err) => {
     console.error(err)
 });
 
-server.listen(8080, () =>   {
+server.listen(PORT, () =>   {
     console.log("SERVER READY")
 });
 

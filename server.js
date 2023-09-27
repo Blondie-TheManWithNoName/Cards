@@ -1,48 +1,47 @@
 
-const http = require('http');
-const express = require('express');
-const socketio = require('socket.io');
+// const http = require('http');
+// const express = require('express');
+// const socketio = require('socket.io');
+
+import http from 'http'; // Use import for http
+import express from 'express'; // Use import for express
+import { Server } from 'socket.io';
 
 const app = express();
 
+import {Deck} from './deck.js';
 
-app.use(express.static(`${__dirname}/`));
+
+const deck = new Deck();
+
+app.use(express.static('public'));
 
 const server = http.createServer(app);
-const io = socketio(server);
+const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
 
-// const player = new Player();
-// const deck = new Deck();
 
 
-
-function moveCardOnServer(cardId, newPosition) {
-    // Update the card's position in the server's game state
-    const card = cards[cardId];
-    if (card) {
-      card.changePosition(newPosition);
-    }
-  
-    // Broadcast the updated card position to all connected clients
-    io.emit('updateCardPosition', { cardId, newPosition });
-  }
 
 
 io.on('connection', (sock) => {
     // console.log("CONNECTION")
   sock.emit('message', 'You are connected')
+  sock.emit('deck', deck)
   console.log('A user connected');
-    
+
+  
   // Handle card movement from the client
   sock.on('moveCard', ({ cardId, newPosition }) => {
     // Handle card movement from the client
     // console.log(`Card ${cardId} moved to position ${newPosition.x}, ${newPosition.y}`);
-    socket.broadcast.emit('cardMoved', cardId, newPosition);
+    deck.getCardFromId(cardId).changePosition(newPosition); 
+    console.log("card", deck.getCardFromId(cardId), "moved to", newPosition)
+    sock.broadcast.emit('cardMoved', cardId, newPosition);
     // moveCardOnServer(cardId, newPosition);
   });
-
+  
 });
 
 

@@ -1,6 +1,6 @@
 
 
-import {cardValueEnum, cardSuitEnum, addListener, removeListener} from './util.js';
+import {cardValueEnum, cardSuitEnum, createElement, addChildElement, addListener, removeListener} from './util.js';
 
 
 
@@ -50,38 +50,38 @@ export class Card {
             
             this.createElements();
             
-            // if (!(zIndex === undefined)) this.cardElem.style.zIndex = zIndex;
-            // this.cardElem.style.transform = 'translate(' + this.pos.x + 'px,' +  this.pos.y + 'px)'; 
-            // if (!this.front) this.cardInnerElem.style.transform = 'rotateY(180deg)';
-            // this.cardElem.id = this.id;
+            if (!(zIndex === undefined)) this.cardElem.style.zIndex = zIndex;
+            this.cardElem.style.transform = 'translate(' + this.pos.x + 'px,' +  this.pos.y + 'px)'; 
+            if (!this.front) this.cardInnerElem.style.transform = 'rotateY(180deg)';
+            this.cardElem.id = this.id;
             
 
         }
 
         createElements()
         {
-          // // Creating div elements
-          // this.cardElem = createElement('div', 'card');
-          // this.cardInnerElem = createElement('div', 'card-inner');
-          // const cardFrontElem = createElement('div', 'card-front');
-          // const cardBackElem = createElement('div', 'card-back');
+          // Creating div elements
+          this.cardElem = createElement('div', 'card');
+          this.cardInnerElem = createElement('div', 'card-inner');
+          const cardFrontElem = createElement('div', 'card-front');
+          const cardBackElem = createElement('div', 'card-back');
 
-          // this.cardFrontImg = createElement('img', 'card-img', this.imgSrc + this.value.name + this.suit + this.imgExt);
-          // const cardBackImg = createElement('img', 'card-img', this.imgSrc + this.imgBackCard + this.imgExt);
-
-
-          // // Creating structure of card
-          // addChildElement(cardFrontElem, this.cardFrontImg);
-          // addChildElement(cardBackElem, cardBackImg);
-          // addChildElement(this.cardInnerElem, cardFrontElem);
-          // addChildElement(this.cardInnerElem, cardBackElem);
-          // addChildElement(this.cardElem, this.cardInnerElem);
-          // addChildElement(document.body, this.cardElem);
+          this.cardFrontImg = createElement('img', 'card-img', this.imgSrc + this.value.name + this.suit + this.imgExt);
+          const cardBackImg = createElement('img', 'card-img', this.imgSrc + this.imgBackCard + this.imgExt);
 
 
-          // // Listeners     
-          // addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
-          // addListener(this.cardElem, 'mouseout', this.onMouseOut.bind(this))
+          // Creating structure of card
+          addChildElement(cardFrontElem, this.cardFrontImg);
+          addChildElement(cardBackElem, cardBackImg);
+          addChildElement(this.cardInnerElem, cardFrontElem);
+          addChildElement(this.cardInnerElem, cardBackElem);
+          addChildElement(this.cardElem, this.cardInnerElem);
+          addChildElement(document.body, this.cardElem);
+
+
+          // Listeners     
+          addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
+          addListener(this.cardElem, 'mouseout', this.onMouseOut.bind(this))
           
         }
         
@@ -182,8 +182,17 @@ export class Card {
 
         changePosition(pos, zIndex, rot)
         {
+          if (rot === undefined) rot = {z: 0, y: 0}
+          this.cardElem.style.transition = "all 0.5s ease-in-out";
+          this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 
+            'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
           this.pos = pos;
-         
+          this.cardElem.style.zIndex = zIndex;
+          if (this.zIndex <= Card.maxZ) this.cardElem.style.zIndex = ++Card.maxZ    
+          setTimeout(() => {
+            this.cardElem.style.transition = "all 0s";
+          }, 500);
+          
         }
         
         changePositionServer(pos, zIndex, rot)

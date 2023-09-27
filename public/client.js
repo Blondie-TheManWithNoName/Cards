@@ -19,6 +19,22 @@ socket.on('message', (text) => {
   console.log('Message received:', text);
 });
 
+socket.on('deck', (deck_) => {
+  console.log("DECKKK");
+  console.log(deck_)
+  console.log("cards",deck_.cards[51].pos)
+  for (let i =0; i < 52; ++i)
+  {
+    const card =  deck.getCard(i)
+    
+    card.changePositionServer(deck_.cards[i].pos);
+    // card.flipCard(deck_.cards[i].front)
+    // card.changePositionServer(card.getPosition())
+  }
+
+
+});
+
 
 socket.on('cardMoved', ( cardId, newPosition) => {
   // Update the card position on the client to match the server's position
@@ -87,3 +103,10 @@ bySuiteBtn.addEventListener('click', () => {
     // Call the shuffle function inside the Deck class
     deck.bySuit(player.getHand());
   });
+
+  window.onload = (event) => {
+    
+
+    console.log("page is fully loaded");
+
+  };

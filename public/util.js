@@ -26,13 +26,13 @@ export const cardSuitEnum = Object.freeze({
     Joker: 'J'
 })
 
-// export function createElement(elemType, elemClass, elemImg) {
-//     // let elem = document.createElement(elemType);
-//     elem.classList.add(elemClass);
-//     if (!(elemImg === undefined)) elem.src = elemImg;
+export function createElement(elemType, elemClass, elemImg) {
+    let elem = document.createElement(elemType);
+    elem.classList.add(elemClass);
+    if (!(elemImg === undefined)) elem.src = elemImg;
 
-//     return elem;
-// }
+    return elem;
+}
 
 
 export function addChildElement(parentElem, childElem) {

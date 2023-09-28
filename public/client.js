@@ -75,6 +75,7 @@ socket.on('cardFlipped', ( cardId, front, player_) => {
 socket.on('cursorUpped', (cardId) => {
   // Update the card position on the client to match the server's position
   const card = deck.getCardFromId(cardId);
+  card.toggleDragging()
   card.resetBorder()
 });
 

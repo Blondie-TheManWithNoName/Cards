@@ -244,6 +244,11 @@ export class Card {
             this.isDragging = !this.isDragging
           }
 
+          getDragging()
+          {
+            return this.isDragging;
+          }
+
     }
 
 

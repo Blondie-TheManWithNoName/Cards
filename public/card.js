@@ -1,7 +1,7 @@
 
 
 import {cardValueEnum, cardSuitEnum, createElement, addChildElement, addListener, removeListener} from './util.js';
-import {notifyCardMove, notifyCardFlip, notifyCursorUp}  from './client.js'; 
+import {notifyCardMove, notifyCardFlip, notifyCursorUp, notifyCursorDown}  from './client.js'; 
 
 
 // Creation of class Card
@@ -139,6 +139,7 @@ export class Card {
             // this.cardUp = true;
             this.cardElem.style.zIndex = ++Card.maxZ    
           }
+          notifyCursorDown(this.id)
         }
         
         onMousemove (e)
@@ -236,6 +237,11 @@ export class Card {
           {
             this.cardFrontElem.style.border = this.cardBackElem.style.border = "0";
             this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "0";
+          }
+
+          toggleDragging()
+          {
+            this.isDragging = !this.isDragging
           }
 
     }

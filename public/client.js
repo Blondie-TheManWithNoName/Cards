@@ -6,7 +6,7 @@ import {Player} from './player.js';
 
     
       
-const player = new Player("#6499E9");
+const player = new Player();
 const deck = new Deck();
 
 
@@ -31,6 +31,11 @@ export function notifyCursorUp(cardId) {
   socket.emit('cursorUp', { cardId, player});
 }
 
+export function notifyCursorDown(cardId) {
+  socket.emit('cursorDown', { cardId, player});
+}
+
+
 
 socket.on('message', (text) => {
   console.log('Message received:', text);
@@ -50,15 +55,15 @@ socket.on('deck', (deck_) => {
   }
 });
 
-socket.on('playerColor', (color) => {
+socket.on('playerColor', (color, id) => {
   player.color = color;
+  player.id = id;
 });
 
-socket.on('cardMoved', ( cardId, newPosition, player_) => {
+socket.on('cardMoved', ( cardId, newPosition) => {
   // Update the card position on the client to match the server's position
   const card = deck.getCardFromId(cardId);
   card.changePositionServer(newPosition)
-  card.setBorder(player_.color)
 });
 
 socket.on('cardFlipped', ( cardId, front, player_) => {
@@ -71,6 +76,14 @@ socket.on('cursorUpped', (cardId) => {
   // Update the card position on the client to match the server's position
   const card = deck.getCardFromId(cardId);
   card.resetBorder()
+});
+
+socket.on('cursorDowned', (cardId, player_) => {
+  // Update the card position on the client to match the server's position
+  console.log("cursorDowned")
+  const card = deck.getCardFromId(cardId);
+  card.toggleDragging()
+  card.setBorder(player_.color)
 });
 
 

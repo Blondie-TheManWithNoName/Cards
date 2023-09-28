@@ -4,13 +4,13 @@ import {Card} from './card.js';
 export class Player {
 
 
-    constructor(color)
+    constructor()
     {
         this.Pos = {x:0, y:0};
         this.score = 0;
         this.hand = []
-        this.color = color
-        this.id = this.generateUniqueId();
+        this.color;
+        this.id;
 
         // (turn === undefined) ? this.turn = true : this.turn = turn;
         this.movingCard = undefined;

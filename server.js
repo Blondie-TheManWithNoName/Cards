@@ -21,51 +21,71 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
 
-const colors = ["#20639B", "#3CAEA3", "F6D55C", "#ED553B"];
+const colors = ["#20639B", "#3CAEA3", "#F6D55C", "#ED553B"];
+//, "#B2533E", "#186F65"
 
 
-
-
-io.on('connection', (sock) => {
+io.on('connection', (socket) => {
     // console.log("CONNECTION")
 
-    sock.on('initialInfo', (player) => {
-     console.log(`Received ID: ${player.id}`);
-     console.log(`Received color: ${player.color}`);
-     const randomColorIndex = (Math.floor(Math.random() * colors.length))
-     player.color = colors[randomColorIndex]
-     sock.emit('playerColor', player.color)
+    if (!colors.length > 0) socket.emit('message', 'We are full!')
+
+
+    console.log("socket", socket.id)
+
+    socket.on('initialInfo', (player) => {
+      player.id = socket.id;
+      const randomColorIndex = (Math.floor(Math.random() * colors.length))
+      console.log("randomColorIndex", randomColorIndex)
+      player.color = colors[randomColorIndex]
+      socket.emit('playerColor', player.color, player.id)
+      console.log(`Color: ${player.color}`);
+      console.log(`ID: ${player.id}`);
      colors.splice(randomColorIndex, 1);
     players.push(player)
 
       // Handle the received data here
     });
 
-  sock.emit('message', 'You are connected')
-  sock.emit('deck', deck)
+  socket.emit('message', 'You are connected')
+  socket.emit('deck', deck)
   console.log('A user connected');
 
   
   // Handle card movement from the client
-  sock.on('moveCard', ({ cardId, newPosition, player}) => {
+  socket.on('moveCard', ({ cardId, newPosition, player}) => {
     // Handle card movement from the client
     deck.getCardFromId(cardId).changePosition(newPosition); 
-    sock.broadcast.emit('cardMoved', cardId, newPosition, player);
+    socket.broadcast.emit('cardMoved', cardId, newPosition);
   });
 
-  sock.on('flipCard', ({ cardId, front, player}) => {
+  socket.on('flipCard', ({ cardId, front, player}) => {
     // Handle card flip from the client
     deck.getCardFromId(cardId).flipCard(front)
-    sock.broadcast.emit('cardFlipped', cardId, front, player);
+    socket.broadcast.emit('cardFlipped', cardId, front, player);
     // moveCardOnServer(cardId, newPosition);
   });
 
-  sock.on('cursorUp', ({ cardId, player}) => {
+  socket.on('cursorUp', ({ cardId, player}) => {
     // Handle card flip from the client
-    console.log("CURSOR UP ", cardId)
-    sock.broadcast.emit('cursorUpped', cardId);
+    socket.broadcast.emit('cursorUpped', cardId);
     // moveCardOnServer(cardId, newPosition);
   });
+
+  socket.on('cursorDown', ({ cardId, player}) => {
+    // Handle card flip from the client
+    socket.broadcast.emit('cursorDowned', cardId, player);
+    // moveCardOnServer(cardId, newPosition);
+  });
+
+  socket.on('disconnect', function() {
+    console.log('Got disconnect!');
+
+    var i = players.findIndex(player => player.id === socket.id);
+    console.log(i)
+    colors.push(players[i].color)
+    players.splice(i, 1);
+ });
   
 
 

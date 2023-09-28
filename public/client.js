@@ -7,7 +7,7 @@ import {Player} from './player.js';
     
       
 const player = new Player();
-const deck = new Deck();
+var deck = new Deck();
 
 
 const socket = io();
@@ -31,8 +31,8 @@ export function notifyCursorUp(cardId) {
   socket.emit('cursorUp', { cardId, player});
 }
 
-export function notifyCursorDown(cardId) {
-  socket.emit('cursorDown', { cardId, player});
+export function notifyCursorDown(cardId, zIndex) {
+  socket.emit('cursorDown', { cardId, player, zIndex});
 }
 
 
@@ -41,18 +41,9 @@ socket.on('message', (text) => {
   console.log('Message received:', text);
 });
 
-socket.on('deck', (deck_) => {
-  console.log("DECKKK");
-  console.log(deck_)
-  console.log("cards",deck_.cards[51].pos)
-  for (let i =0; i < 52; ++i)
-  {
-    const card =  deck.getCard(i)
-    
-    card.changePositionServer(deck_.cards[i].pos);
-    // card.flipCard(deck_.cards[i].front)
-    // card.changePositionServer(card.getPosition())
-  }
+socket.on('deck', (deck_, maxZ) => {
+  console.log("DECK_")
+  deck.assign(deck_, maxZ);
 });
 
 socket.on('playerColor', (color, id) => {
@@ -63,7 +54,7 @@ socket.on('playerColor', (color, id) => {
 socket.on('cardMoved', ( cardId, newPosition) => {
   // Update the card position on the client to match the server's position
   const card = deck.getCardFromId(cardId);
-  card.changePositionServer(newPosition)
+  card.changePositionServer(newPosition )
 });
 
 socket.on('cardFlipped', ( cardId, front, player_) => {
@@ -79,14 +70,26 @@ socket.on('cursorUpped', (cardId) => {
   card.resetBorder()
 });
 
-socket.on('cursorDowned', (cardId, player_) => {
-  // Update the card position on the client to match the server's position
+socket.on('cursorDowned', (cardId, player_, zIndex) => {
+  // Update the card position on the clie,nt to match the server's position
   console.log("cursorDowned")
   const card = deck.getCardFromId(cardId);
   card.toggleDragging()
+  card.setzIndex(zIndex);
   card.setBorder(player_.color)
 });
 
+socket.on('setDefault', () => {
+  // Update the card position on the client to match the server's position
+  deck.byDefault();
+  console.log("deck updated by " + player.id)
+});
+
+socket.on('setSuit', () => {
+  // Update the card position on the client to match the server's position
+  deck.bySuit();
+  console.log("deck suited by " + player.id)
+});
 
 
 const bySuiteBtn = document.getElementById('bySuite');
@@ -100,19 +103,22 @@ const orderMyHandBtn = document.getElementById('orderMyHand');
 
 const numCards = document.getElementById('numCards');
 
+  byDefaultBtn.addEventListener('click', () => {
+    // Call the shuffle function inside the Deck class
+    deck.byDefault([player.getHand()]);
+    socket.emit('byDefault', { deck, player});
+
+  });
+
 bySuiteBtn.addEventListener('click', () => {
     // Call the shuffle function inside the Deck class
+    socket.emit('bySuit');
     deck.bySuit();
   });
 
   byRankBtn.addEventListener('click', () => {
     // Call the shuffle function inside the Deck class
     deck.byRank();
-  });
-
-  byDefaultBtn.addEventListener('click', () => {
-    // Call the shuffle function inside the Deck class
-    deck.byDefault([player.getHand()]);
   });
 
   flipBtn.addEventListener('click', () => {

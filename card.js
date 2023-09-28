@@ -12,7 +12,7 @@ export class Card {
         imgSrc = 'img/';
         imgExt = '.svg';
         imgBackCard = '1B';
-        static maxZ = 1;
+        static maxZ = 2;
 
         mouseDown = false;
 
@@ -22,7 +22,7 @@ export class Card {
         onMouseUp = this.onMouseUp.bind(this)
         
         
-        constructor(notifyPositionChange, suit, value, pos, zIndex, front)
+        constructor(suit, value, pos, zIndex, front)
         {
             this.cardUp = false;
             this.flippingcardElem
@@ -45,10 +45,8 @@ export class Card {
             this.isOut = false;
             this.isFlippable = false;
 
-            this.notifyPositionChange = notifyPositionChange;
             (pos === undefined) ? this.pos = {x: 0, y: 0} : this.pos = {x: pos.x, y: pos.y};
-            
-            this.createElements();
+       
             
             // if (!(zIndex === undefined)) this.cardElem.style.zIndex = zIndex;
             // this.cardElem.style.transform = 'translate(' + this.pos.x + 'px,' +  this.pos.y + 'px)'; 
@@ -57,40 +55,11 @@ export class Card {
             
 
         }
-
-        createElements()
-        {
-          // // Creating div elements
-          // this.cardElem = createElement('div', 'card');
-          // this.cardInnerElem = createElement('div', 'card-inner');
-          // const cardFrontElem = createElement('div', 'card-front');
-          // const cardBackElem = createElement('div', 'card-back');
-
-          // this.cardFrontImg = createElement('img', 'card-img', this.imgSrc + this.value.name + this.suit + this.imgExt);
-          // const cardBackImg = createElement('img', 'card-img', this.imgSrc + this.imgBackCard + this.imgExt);
-
-
-          // // Creating structure of card
-          // addChildElement(cardFrontElem, this.cardFrontImg);
-          // addChildElement(cardBackElem, cardBackImg);
-          // addChildElement(this.cardInnerElem, cardFrontElem);
-          // addChildElement(this.cardInnerElem, cardBackElem);
-          // addChildElement(this.cardElem, this.cardInnerElem);
-          // addChildElement(document.body, this.cardElem);
-
-
-          // // Listeners     
-          // addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
-          // addListener(this.cardElem, 'mouseout', this.onMouseOut.bind(this))
-          
-        }
         
         changeCard(suit, value)
         {
           this.suit = suit;
           this.value =  value;
-          console.log(this.imgSrc + this.value.name + this.suit + this.imgExt)
-          this.cardFrontImg.src =  this.imgSrc + this.value.name + this.suit + this.imgExt;
         }
 
         onMouseHover(e) {
@@ -135,9 +104,8 @@ export class Card {
           
           this.offset.x = e.clientX - this.pos.x;
           this.offset.y = e.clientY - this.pos.y;
-          if (this.zIndex <= Card.maxZ)
+          if (this.zIndex < Card.maxZ)
           {
-            // this.cardUp = true;
             this.cardElem.style.zIndex = ++Card.maxZ    
           }
         }
@@ -147,8 +115,7 @@ export class Card {
             // console.log("mouseMove", e.clientX, this.offset.x)
             this.cardElem.style.transform = 'translate3d(' + Math.round(e.clientX - this.offset.x) + 
             'px, ' + Math.round(e.clientY - this.offset.y) + 'px, 0)'
-            this.notifyPositionChange(this.id, {x:e.clientX - this.offset.x, y:e.clientY - this.offset.y});
-          
+
           }    
           
         onMouseUp (e) {
@@ -179,10 +146,9 @@ export class Card {
           this.front = !  front;
         }
 
-        changePosition(pos, zIndex, rot)
+        changePosition(pos)
         {
-          this.pos = pos;
-         
+          this.pos = pos;         
         }
         
         changePositionServer(pos, zIndex, rot)
@@ -192,7 +158,6 @@ export class Card {
             'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
           this.pos = pos;
           this.cardElem.style.zIndex = zIndex;
-          if (this.zIndex <= Card.maxZ) this.cardElem.style.zIndex = ++Card.maxZ    
 
           
         }
@@ -207,7 +172,29 @@ export class Card {
             return this.pos;
           }
 
+          assign(card)
+          {
+            this.suit = card.suit;
+            this.value =  card.value;
+            this.id = card.id;
+            this.front = card.front;
+            this.zIndex = card.zIndex;
+            this.pos = card.pos;
+          }
 
+          setzIndex()
+          {
+            if (this.zIndex < Card.maxZ)
+                this.zIndex = ++Card.maxZ; 
+            console.log("this.zIndex", this.zIndex)
+            console.log("card.zIndex", Card.maxZ)
+          }
+
+          
+        getMaxZ()
+        {
+            return Card.maxZ;
+        }
     }
 
 

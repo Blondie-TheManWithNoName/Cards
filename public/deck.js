@@ -82,7 +82,6 @@ export class Deck {
                 else
                 {
                     this.x = 100;
-                    this.y += 160;
                     i = 0;
                     ++j;
                 }  
@@ -120,7 +119,8 @@ export class Deck {
         console.log(this.cards.length)
         for (const card of this.cards)
         {
-                card.changePosition({x: this.x, y: this.y})
+            console.log("HELLO?")
+                card.changePosition({x: this.x, y: this.y}, this.z)
                 ++this.z;
                 this.x += 1;
                 this.y += 1;
@@ -195,18 +195,32 @@ export class Deck {
         this.x = 100;
         this.y = 100;
         let i=0;
-        for (let i = 0; i < this.value.length - 1; ++i)
+        let j=0;
+        for (const card of this.cards)
         {
             this.z = 1;
-            for (let j = 0; j < this.suit.length - 1; ++j)
+            card.changePosition({x: this.x, y: this.y}, this.z)
+            ++this.z;
+            if (i < 12)
             {
-                this.cards[i][j].changePosition({x: this.x, y: this.y}, this.z)
-                ++this.z;
-                this.x += 50;
+                this.y += 160;
+                ++i;
             }
-            this.x = 100;
-            this.y += 160;
+            else
+            {
+                this.y = 100;
+                this.x = 100 + (j)*15;
+                i = 0;
+            }
+            if (i%4 == 0 && i != 0)
+            {
+                this.y = 100;
+                this.x += 350;
+                ++j;
+
+            }
         }
+
         // this.cards[this.value.length-1][0].changePosition({x: 100*5, y: 100}, this.z)
         // this.cards[this.value.length-1][1].changePosition({x: 100*6, y: 100}, this.z)
 
@@ -230,8 +244,6 @@ export class Deck {
             }
 
         }, 100);
-
-        
         
     }
     
@@ -249,6 +261,17 @@ export class Deck {
     getDeck()
     {
         return this.cards;
+    }
+
+    assign(deck, maxZ)
+    {
+        Card.maxZ = maxZ;
+
+        for (let i =0; i < this.cards.length; ++i)
+        {
+            console.log("Card:", deck.cards[i].id, "zIndex", deck.cards[i].zIndex)
+            this.cards[i].assign(deck.cards[i]);
+        }
     }
 }
 

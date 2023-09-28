@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
     });
 
   socket.emit('message', 'You are connected')
-  socket.emit('deck', deck)
+  socket.emit('deck', deck, deck.getMaxz())
   console.log('A user connected');
 
   
@@ -72,10 +72,25 @@ io.on('connection', (socket) => {
     // moveCardOnServer(cardId, newPosition);
   });
 
-  socket.on('cursorDown', ({ cardId, player}) => {
+  socket.on('cursorDown', ({ cardId, player, zIndex}) => {
     // Handle card flip from the client
-    socket.broadcast.emit('cursorDowned', cardId, player);
+    deck.getCardFromId(cardId).setzIndex(zIndex)
+    console.log("zIndex", zIndex)
+    socket.broadcast.emit('cursorDowned', cardId, player, zIndex);
     // moveCardOnServer(cardId, newPosition);
+  });
+
+  socket.on('byDefault', () => {
+    // Handle card flip from the client
+    deck.byDefault();
+    socket.broadcast.emit('setDefault');
+  });
+
+  socket.on('bySuit', () => {
+    // Handle card flip from the client
+    console.log("SUIT")
+    deck.bySuit();
+    socket.broadcast.emit('setSuit');
   });
 
   socket.on('disconnect', function() {

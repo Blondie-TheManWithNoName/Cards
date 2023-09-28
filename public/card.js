@@ -24,15 +24,12 @@ export class Card {
         
         constructor(suit, value, pos, zIndex, front)
         {
-            this.cardUp = false;
-            this.flippingcardElem
             this.cardInnerElem
             this.cardFrontImg
             this.suit = suit;
             this.value =  value;
             this.id = this.value.name + this.suit;
             this.startTime;
-            this.player = undefined;
             (front === undefined) ? this.front = true : this.front = front;
             (zIndex === undefined) ? this.zIndex = 1 : this.zIndex = zIndex;
             if (Card.maxZ < zIndex) Card.maxZ = zIndex;
@@ -85,6 +82,7 @@ export class Card {
         
         changeCard(suit, value)
         {
+     
           this.suit = suit;
           this.value =  value;
           // console.log(this.imgSrc + this.value.name + this.suit + this.imgExt)
@@ -134,12 +132,14 @@ export class Card {
 
           this.offset.x = e.clientX - this.pos.x;
           this.offset.y = e.clientY - this.pos.y;
-          if (this.zIndex <= Card.maxZ)
+          console.log("this.zIndex", this.zIndex, Card.maxZ)
+          if (this.zIndex < Card.maxZ)
           {
-            // this.cardUp = true;
             this.cardElem.style.zIndex = ++Card.maxZ    
+            this.zIndex = Card.maxZ;
           }
-          notifyCursorDown(this.id)
+          this.cardElem.style.zIndex = this.zIndex;
+          notifyCursorDown(this.id, this.zIndex)
         }
         
         onMousemove (e)
@@ -191,27 +191,27 @@ export class Card {
 
         changePosition(pos, zIndex, rot)
         {
+          this.deactivateDragging();
           if (rot === undefined) rot = {z: 0, y: 0}
           this.cardElem.style.transition = "all 0.5s ease-in-out";
           this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 
             'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
           this.pos = pos;
           this.cardElem.style.zIndex = zIndex;
-          if (this.zIndex <= Card.maxZ) this.cardElem.style.zIndex = ++Card.maxZ    
+          this.zIndex = zIndex;
+          if (this.zIndex < Card.maxZ) this.cardElem.style.zIndex = ++Card.maxZ    
           setTimeout(() => {
             this.cardElem.style.transition = "all 0s";
           }, 500);
           
         }
         
-        changePositionServer(pos, zIndex, rot)
+        changePositionServer(pos, rot)
         {
           if (rot === undefined) rot = {z: 0, y: 0}
           this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 
             'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
           this.pos = pos;
-          this.cardElem.style.zIndex = zIndex;
-          if (this.zIndex <= Card.maxZ) this.cardElem.style.zIndex = ++Card.maxZ    
 
           
         }
@@ -219,6 +219,14 @@ export class Card {
         displayCardInfo() {
             console.log(`Card: ${this.value.rank} of ${this.suit}`);
             // console.log(`X: ${this.pos.x} Y: ${this.pos.y}`);
+          }
+
+          setzIndex()
+          {
+            console.log("SET INDEX", Card.maxZ)
+            if (this.zIndex < Card.maxZ)
+                this.zIndex = ++Card.maxZ; 
+            this.cardElem.style.zIndex = this.zIndex;
           }
 
           getPosition()
@@ -244,11 +252,33 @@ export class Card {
             this.isDragging = !this.isDragging
           }
 
-          getDragging()
+          assign(card)
           {
-            return this.isDragging;
+            console.log("card index", card.zIndex)
+            this.suit = card.suit;
+            this.value =  card.value;
+            this.id = card.id;
+            this.front = card.front;
+            this.zIndex = card.zIndex;
+            this.cardElem.style.zIndex = card.zIndex;
+            this.pos = card.pos;
+            this.cardElem.style.transform = 'translate3d(' + Math.round(card.pos.x) + 
+            'px, ' + Math.round(card.pos.y) + 'px, 0)'
           }
 
+          deactivateDragging()
+          {
+            this.toggleDragging();
+            setTimeout(() => {
+              this.toggleDragging();
+            }, 500);
+          }
+
+          
+    setMaxZ(maxZ)
+    {
+        Card.maxZ = maxZ;
+    }
     }
 
 

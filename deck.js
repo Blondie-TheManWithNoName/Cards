@@ -17,9 +17,8 @@ export class Deck {
         this.cards = []
         this.notifyPositionChange = notifyPositionChange
         this.initializeDeck();
-        setTimeout(() => {
-            this.byDefault();
-          }, 100);
+        this.byDefault();
+
     }
 
     flipDeck()
@@ -62,7 +61,7 @@ export class Deck {
                 console.log(this.suit[i])
                 for (let j = 0; j < this.value.length - 1; ++j) {
                     // console.log(this)
-                    this.cards.push(new Card(this.notifyPositionChange, this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
+                    this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
                 }
             }
         }
@@ -83,7 +82,6 @@ export class Deck {
                 else
                 {
                     this.x = 100;
-                    this.y += 160;
                     i = 0;
                     ++j;
                 }  
@@ -122,7 +120,7 @@ export class Deck {
         for (const card of this.cards)
         {
                 card.changePosition({x: this.x, y: this.y})
-                ++this.z;
+                card.setzIndex()
                 this.x += 1;
                 this.y += 1;
 
@@ -251,6 +249,19 @@ export class Deck {
     {
         return this.cards;
     }
+
+    assign(deck, maxZ)
+    {
+        // Card.maxZ = maxZ;
+        for (let i =0; i < this.cards.length; ++i)
+            this.cards[i].assign(deck[i]);
+    }
+
+    getMaxz()
+    {
+        return Card.maxZ;
+    }
+
 }
 
 

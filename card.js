@@ -176,7 +176,6 @@ export class Card {
 
         flipCard(front)
         {
-          (front) ? this.cardInnerElem.style.transform = 'rotateY(180deg)' : this.cardInnerElem.style.transform = 'rotateY(0deg)';
           this.front = !  front;
         }
 

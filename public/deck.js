@@ -6,7 +6,7 @@ import {Player} from './player.js';
 export class Deck {
 
     
-    constructor(notifyPositionChange, order)
+    constructor(order)
     {
         this.suit = Object.values(cardSuitEnum);
         this.value = Object.values(cardValueEnum);
@@ -15,11 +15,10 @@ export class Deck {
         this.y = 100;
         this.z = 1;
         this.cards = []
-        this.notifyPositionChange = notifyPositionChange
         this.initializeDeck();
-        setTimeout(() => {
-            this.byDefault();
-          }, 100);
+        // setTimeout(() => {
+        //     this.byDefault();
+        //   }, 100);
     }
 
     flipDeck()
@@ -62,7 +61,7 @@ export class Deck {
                 console.log(this.suit[i])
                 for (let j = 0; j < this.value.length - 1; ++j) {
                     // console.log(this)
-                    this.cards.push(new Card(this.notifyPositionChange, this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
+                    this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
                 }
             }
         }

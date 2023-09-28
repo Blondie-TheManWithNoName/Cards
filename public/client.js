@@ -1,17 +1,34 @@
 import {Deck} from './deck.js';
 import {Player} from './player.js';
-import {Card} from './card.js';
 
 
 
 
-const socket = io.connect();
+    
+      
+const player = new Player("#6499E9");
+const deck = new Deck();
+
+
+const socket = io();
+
+socket.on('connect', () => {
+  const initialData = 'Hello, server!'; // Replace with your data
+  socket.emit('initialInfo', player);
+});
+
 
 // Function to notify the server about position changes
-function notifyPositionChange(cardId, newPosition) {
-    console.log("SEND I WANNA MOVE", cardId, "to", newPosition.x, " ", newPosition.y)
+export function notifyCardMove(cardId, newPosition) {
+  socket.emit('moveCard', { cardId, newPosition, player});
+}
 
-  socket.emit('moveCard', { cardId, newPosition });
+export function notifyCardFlip(cardId, front) {
+  socket.emit('flipCard', { cardId, front, player});
+}
+
+export function notifyCursorUp(cardId) {
+  socket.emit('cursorUp', { cardId, player});
 }
 
 
@@ -31,25 +48,32 @@ socket.on('deck', (deck_) => {
     // card.flipCard(deck_.cards[i].front)
     // card.changePositionServer(card.getPosition())
   }
-
-
 });
 
+socket.on('playerColor', (color) => {
+  player.color = color;
+});
 
-socket.on('cardMoved', ( cardId, newPosition) => {
+socket.on('cardMoved', ( cardId, newPosition, player_) => {
   // Update the card position on the client to match the server's position
-    // const cardElement = document.getElementById(`${cardId}`);
-  // cardId.changePosition(newPosition);
-  deck.getCardFromId(cardId).changePositionServer(newPosition)
-  // console.log(card)
-    // console.log("I WANNA MOVE", card, "to", newPosition.x, " ", newPosition.y)
+  const card = deck.getCardFromId(cardId);
+  card.changePositionServer(newPosition)
+  card.setBorder(player_.color)
+});
 
-//   sock.emit('moveCard', { newPosition });
+socket.on('cardFlipped', ( cardId, front, player_) => {
+  // Update the card position on the client to match the server's position
+  const card = deck.getCardFromId(cardId);
+  card.flipCardServer(front)
+});
+
+socket.on('cursorUpped', (cardId) => {
+  // Update the card position on the client to match the server's position
+  const card = deck.getCardFromId(cardId);
+  card.resetBorder()
 });
 
 
-const player = new Player();
-const deck = new Deck(notifyPositionChange);
 
 const bySuiteBtn = document.getElementById('bySuite');
 const byRankBtn = document.getElementById('byRank');
@@ -105,8 +129,10 @@ bySuiteBtn.addEventListener('click', () => {
   });
 
   window.onload = (event) => {
-    
 
     console.log("page is fully loaded");
 
   };
+
+  
+

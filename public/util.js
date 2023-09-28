@@ -26,6 +26,8 @@ export const cardSuitEnum = Object.freeze({
     Joker: 'J'
 })
 
+const colors = ["#20639B", "#3CAEA3", "F6D55C", "#ED553B"];
+
 export function createElement(elemType, elemClass, elemImg) {
     let elem = document.createElement(elemType);
     elem.classList.add(elemClass);
@@ -50,6 +52,11 @@ export function removeListener (target, name, listener, callback) {
       }
   }
 
+
+export function randomColor()
+{
+    return colors[(Math.floor(Math.random() * colors.length))];
+}
 
 
 

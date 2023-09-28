@@ -1,7 +1,7 @@
 
 
 import {cardValueEnum, cardSuitEnum, createElement, addChildElement, addListener, removeListener} from './util.js';
-
+import {notifyCardMove, notifyCardFlip, notifyCursorUp}  from './client.js'; 
 
 
 // Creation of class Card
@@ -22,7 +22,7 @@ export class Card {
         onMouseUp = this.onMouseUp.bind(this)
         
         
-        constructor(notifyPositionChange, suit, value, pos, zIndex, front)
+        constructor(suit, value, pos, zIndex, front)
         {
             this.cardUp = false;
             this.flippingcardElem
@@ -44,8 +44,6 @@ export class Card {
             this.isDraggable = false;
             this.isOut = false;
             this.isFlippable = false;
-
-            this.notifyPositionChange = notifyPositionChange;
             (pos === undefined) ? this.pos = {x: 0, y: 0} : this.pos = {x: pos.x, y: pos.y};
             
             this.createElements();
@@ -63,18 +61,18 @@ export class Card {
           // Creating div elements
           this.cardElem = createElement('div', 'card');
           this.cardInnerElem = createElement('div', 'card-inner');
-          const cardFrontElem = createElement('div', 'card-front');
-          const cardBackElem = createElement('div', 'card-back');
+          this.cardFrontElem = createElement('div', 'card-front');
+          this.cardBackElem = createElement('div', 'card-back');
 
           this.cardFrontImg = createElement('img', 'card-img', this.imgSrc + this.value.name + this.suit + this.imgExt);
           const cardBackImg = createElement('img', 'card-img', this.imgSrc + this.imgBackCard + this.imgExt);
 
 
           // Creating structure of card
-          addChildElement(cardFrontElem, this.cardFrontImg);
-          addChildElement(cardBackElem, cardBackImg);
-          addChildElement(this.cardInnerElem, cardFrontElem);
-          addChildElement(this.cardInnerElem, cardBackElem);
+          addChildElement(this.cardFrontElem, this.cardFrontImg);
+          addChildElement(this.cardBackElem, cardBackImg);
+          addChildElement(this.cardInnerElem, this.cardFrontElem);
+          addChildElement(this.cardInnerElem, this.cardBackElem);
           addChildElement(this.cardElem, this.cardInnerElem);
           addChildElement(document.body, this.cardElem);
 
@@ -89,14 +87,14 @@ export class Card {
         {
           this.suit = suit;
           this.value =  value;
-          console.log(this.imgSrc + this.value.name + this.suit + this.imgExt)
+          // console.log(this.imgSrc + this.value.name + this.suit + this.imgExt)
           this.cardFrontImg.src =  this.imgSrc + this.value.name + this.suit + this.imgExt;
         }
 
         onMouseHover(e) {
           if (!this.isDragging)
           {
-            console.log("onMouseHover")
+            // console.log("onMouseHover")
             addListener(window, 'mousedown', this.onMouseDown)
           }
         }
@@ -105,7 +103,7 @@ export class Card {
         onMouseOut(e) {
           if (!this.isDragging)
           {
-            console.log("onMouseOut") 
+            // console.log("onMouseOut") 
             removeListener(window, 'mouseup', this.onMouseUp)
             removeListener(window, 'mousedown', this.onMouseDown)
             this.isOut = false
@@ -124,7 +122,7 @@ export class Card {
         onMouseDown (e)
         {
           
-          console.log("mouseDown")
+          // console.log("mouseDown")
 
           // getMovingCard(this)
           this.isDragging = true;
@@ -132,7 +130,8 @@ export class Card {
           addListener(window, 'mousemove', this.onMousemove);
           e.preventDefault();
           this.startTime = Date.now()
-          
+
+
           this.offset.x = e.clientX - this.pos.x;
           this.offset.y = e.clientY - this.pos.y;
           if (this.zIndex <= Card.maxZ)
@@ -147,28 +146,30 @@ export class Card {
             // console.log("mouseMove", e.clientX, this.offset.x)
             this.cardElem.style.transform = 'translate3d(' + Math.round(e.clientX - this.offset.x) + 
             'px, ' + Math.round(e.clientY - this.offset.y) + 'px, 0)'
-            this.notifyPositionChange(this.id, {x:e.clientX - this.offset.x, y:e.clientY - this.offset.y});
+            notifyCardMove(this.id, {x:e.clientX - this.offset.x, y:e.clientY - this.offset.y});
           
           }    
           
         onMouseUp (e) {
 
           this.isDragging = false;
-          console.log("mouseUp")
+          // console.log("mouseUp")
+          // this.cardFrontElem.style.border =  this.cardBackElem.style.border =   "0";
+          // this.cardFrontElem.style.margin = this.cardBackElem.style.margin =    "0";
+
           removeListener(window, 'mousemove', this.onMousemove)
           
           // flip sides
           if (Date.now() - this.startTime < 300  && (this.pos.x == e.clientX - this.offset.x || this.pos.y == e.clientY - this.offset.y))
           {
-            (this.front) ? this.cardInnerElem.style.transform = 'rotateY(180deg)' : this.cardInnerElem.style.transform = 'rotateY(0deg)';
-            this.front = !this.front;
+            this.flipCard(this.front);
           }
             // Update position of the card
             this.pos.x = e.clientX - this.offset.x
             this.pos.y = e.clientY - this.offset.y 
             
             // Notify client
-
+            notifyCursorUp(this.id)
             
           if (this.isOut) this.onMouseOut();
 
@@ -176,8 +177,15 @@ export class Card {
 
         flipCard(front)
         {
-          (front) ? this.cardInnerElem.style.transform = 'rotateY(180deg)' : this.cardInnerElem.style.transform = 'rotateY(0deg)';
-          this.front = !  front;
+          (this.front) ? this.cardInnerElem.style.transform = 'rotateY(180deg)' : this.cardInnerElem.style.transform = 'rotateY(0deg)';
+          notifyCardFlip(this.id, this.front)
+          this.front = !front;
+        }
+
+        flipCardServer(front)
+        {
+          (this.front) ? this.cardInnerElem.style.transform = 'rotateY(180deg)' : this.cardInnerElem.style.transform = 'rotateY(0deg)';
+          this.front = !front;
         }
 
         changePosition(pos, zIndex, rot)
@@ -217,6 +225,18 @@ export class Card {
             return this.pos;
           }
 
+          
+          setBorder(color)
+          {
+            this.cardFrontElem.style.border = this.cardBackElem.style.border = "solid 6px" + color;
+            this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "-6px";
+          }
+
+          resetBorder()
+          {
+            this.cardFrontElem.style.border = this.cardBackElem.style.border = "0";
+            this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "0";
+          }
 
     }
 

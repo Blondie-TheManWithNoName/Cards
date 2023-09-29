@@ -223,7 +223,6 @@ export class Card {
 
           setzIndex()
           {
-            console.log("SET INDEX", Card.maxZ)
             if (this.zIndex < Card.maxZ)
                 this.zIndex = ++Card.maxZ; 
             this.cardElem.style.zIndex = this.zIndex;
@@ -238,7 +237,7 @@ export class Card {
           setBorder(color)
           {
             this.cardFrontElem.style.border = this.cardBackElem.style.border = "solid 6px" + color;
-            this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "-6px";
+            this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "-6px"  + color;
           }
 
           resetBorder()

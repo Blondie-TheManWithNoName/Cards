@@ -9,11 +9,29 @@
     --card-height:147px;
     --card-horizontal-space:100px;
 }
+.colorAndName
+{
+    display: inline;
+    height: 20px;
+    width: 20px;
+    display: inline;
+    
+}
+#color{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    /* display: ; */
+    border-radius: 100%;
+}
+
 p{
-    font-size: 100px;
+    font-size: 30px;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
+    position: relative;
+    display: inline-block;
 }
 body{
     height: 100vh;

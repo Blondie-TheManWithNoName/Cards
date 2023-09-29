@@ -1,96 +1,137 @@
 import {Deck} from './deck.js';
 import {Player} from './player.js';
 
-
-
-
-    
-      
+// Creation of a player and deck      
 const player = new Player();
 var deck = new Deck();
 
-
 const socket = io();
 
-socket.on('connect', () => {
-  const initialData = 'Hello, server!'; // Replace with your data
-  socket.emit('initialInfo', player);
+
+// CONNECTION
+socket.on('connect', () =>
+{
+  // Send info about player
+  socket.emit('initialInfo');
 });
 
 
-// Function to notify the server about position changes
-export function notifyCardMove(cardId, newPosition) {
+
+
+  /////////////////////
+ /// S E N D E R S ///
+/////////////////////
+
+// Function to notify the server about a card position change
+export function notifyCardMove(cardId, newPosition)
+{
   socket.emit('moveCard', { cardId, newPosition, player});
 }
 
-export function notifyCardFlip(cardId, front) {
+// Function to notify the server about card flip
+export function notifyCardFlip(cardId, front)
+{
   socket.emit('flipCard', { cardId, front, player});
 }
 
-export function notifyCursorUp(cardId) {
-  socket.emit('cursorUp', { cardId, player});
-}
-
-export function notifyCursorDown(cardId, zIndex) {
+// Function to notify the server when cursor is down
+export function notifyCursorDown(cardId, zIndex)
+{
   socket.emit('cursorDown', { cardId, player, zIndex});
 }
 
+// Function to notify the server when cur
+export function notifyCursorUp(cardId)
+{
+  socket.emit('cursorUp', { cardId, player});
+}  
 
 
-socket.on('message', (text) => {
+
+
+  /////////////////////////
+ /// R E C E I V E R S ///
+/////////////////////////
+
+// Handle connection
+
+// Receive message from the Server
+socket.on('message', (text) =>
+{
   console.log('Message received:', text);
 });
 
-socket.on('deck', (deck_, maxZ) => {
-  console.log("DECK_")
+// Receive current deck hold by the Server
+socket.on('deck', (deck_, maxZ) =>
+{
   deck.assign(deck_, maxZ);
 });
 
-socket.on('playerColor', (color, id) => {
-  player.color = color;
-  player.id = id;
+// Receive player with ID and Color given by the Server
+socket.on('player', (player_) =>
+{
+  player.color = player_.color;
+  player.id = player_.id;
+  player.name = player_.name;
+  document.getElementById("name").textContent = player_.name;
+  document.getElementById("color").style.backgroundColor = player_.color;
 });
 
-socket.on('cardMoved', ( cardId, newPosition) => {
-  // Update the card position on the client to match the server's position
+// Receive moved card and change its position
+socket.on('cardMoved', ( cardId, newPosition) =>
+{
+  deck.getCardFromId(cardId).changePositionServer(newPosition)
+});
+
+// Receive flipped card and flip it
+socket.on('cardFlipped', ( cardId, front, player_) =>
+{
+  deck.getCardFromId(cardId).flipCardServer(front)
+});
+
+// Receive when a cursor went DOWN on a card
+socket.on('cursorDowned', (cardId, player_) =>
+{
   const card = deck.getCardFromId(cardId);
-  card.changePositionServer(newPosition )
+  card.toggleDragging();
+  card.setzIndex();
+  card.setBorder(player_.color);
 });
 
-socket.on('cardFlipped', ( cardId, front, player_) => {
-  // Update the card position on the client to match the server's position
-  const card = deck.getCardFromId(cardId);
-  card.flipCardServer(front)
-});
-
-socket.on('cursorUpped', (cardId) => {
-  // Update the card position on the client to match the server's position
+// Receive when a cursor went UP on a card
+socket.on('cursorUpped', (cardId) =>
+{
   const card = deck.getCardFromId(cardId);
   card.toggleDragging()
   card.resetBorder()
 });
 
-socket.on('cursorDowned', (cardId, player_, zIndex) => {
-  // Update the card position on the clie,nt to match the server's position
-  console.log("cursorDowned")
-  const card = deck.getCardFromId(cardId);
-  card.toggleDragging()
-  card.setzIndex(zIndex);
-  card.setBorder(player_.color)
-});
 
-socket.on('setDefault', () => {
-  // Update the card position on the client to match the server's position
+// Receive byDefault from the Server
+socket.on('setDefault', () =>
+{
   deck.byDefault();
-  console.log("deck updated by " + player.id)
 });
 
-socket.on('setSuit', () => {
-  // Update the card position on the client to match the server's position
+// Receive bySuit from the Server
+socket.on('setSuit', () =>
+{
   deck.bySuit();
-  console.log("deck suited by " + player.id)
 });
 
+// Receive byRank from the Server
+socket.on('setRank', () =>
+{
+  deck.byRank();
+});
+
+
+
+
+
+  ////////////////////
+ /// WEB HANDLERS ///
+////////////////////
 
 const bySuiteBtn = document.getElementById('bySuite');
 const byRankBtn = document.getElementById('byRank');
@@ -100,57 +141,65 @@ const shuffleBtn = document.getElementById('shuffle');
 const dealBtn = document.getElementById('deal');
 const myCardsBtn = document.getElementById('myCards');
 const orderMyHandBtn = document.getElementById('orderMyHand');
-
 const numCards = document.getElementById('numCards');
 
-  byDefaultBtn.addEventListener('click', () => {
+  byDefaultBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
     deck.byDefault([player.getHand()]);
     socket.emit('byDefault', { deck, player});
 
   });
 
-bySuiteBtn.addEventListener('click', () => {
+bySuiteBtn.addEventListener('click', () =>
+{
     // Call the shuffle function inside the Deck class
     socket.emit('bySuit');
     deck.bySuit();
   });
 
-  byRankBtn.addEventListener('click', () => {
+  byRankBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
+    socket.emit('byRank');
     deck.byRank();
   });
 
-  flipBtn.addEventListener('click', () => {
+  flipBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
     deck.flipDeck();
   });
 
 
-  shuffleBtn.addEventListener('click', () => {
+  shuffleBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
     deck.shuffle();
   });
 
- dealBtn.addEventListener('click', () => {
+ dealBtn.addEventListener('click', () =>
+ {
     // Call the shuffle function inside the Deck class
 
     deck.deal(player, numCards.value);
   });
 
-  myCardsBtn.addEventListener('click', () => {
+  myCardsBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
     player.myCards();
   });
 
-  orderMyHandBtn.addEventListener('click', () => {
+  orderMyHandBtn.addEventListener('click', () =>
+  {
     // Call the shuffle function inside the Deck class
     deck.bySuit(player.getHand());
   });
 
   window.onload = (event) => {
 
-    console.log("page is fully loaded");
+    console.log("Page is fully loaded");
 
   };
 

@@ -1,19 +1,13 @@
 
-// const http = require('http');
-// const express = require('express');
-// const socketio = require('socket.io');
+import http from 'http';
+import express from 'express';
+import { Server } from 'socket.io'; 
 
-import http from 'http'; // Use import for http
-import express from 'express'; // Use import for express
-import { Server } from 'socket.io';
+import {Deck} from './deck_s.js';
+import {Player} from './player_s.js';
+
 
 const app = express();
-
-import {Deck} from './deck.js';
-
-
-const deck = new Deck();
-const players = []
 app.use(express.static('public'));
 
 const server = http.createServer(app);
@@ -21,97 +15,146 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
 
+
 const colors = ["#20639B", "#3CAEA3", "#F6D55C", "#ED553B"];
-//, "#B2533E", "#186F65"
+const names = ["Alligator", "Lion", "Eagle", "Dolphin"];
+const deck = new Deck();
+const players = []
 
 
-io.on('connection', (socket) => {
-    // console.log("CONNECTION")
+function onConnection(id)
+{
+  let randomColorIndex = (Math.floor(Math.random() * colors.length));
+  let randomNameIndex = (Math.floor(Math.random() * names.length));
+  let color = colors[randomColorIndex];
+  let name = names[randomNameIndex];
+  colors.splice(randomColorIndex, 1);
+  names.splice(randomNameIndex, 1);
 
-    if (!colors.length > 0) socket.emit('message', 'We are full!')
+  return new Player(id, color, name);
+}
 
 
-    console.log("socket", socket.id)
+io.on('connection', (socket) =>
+{
 
-    socket.on('initialInfo', (player) => {
-      player.id = socket.id;
-      const randomColorIndex = (Math.floor(Math.random() * colors.length))
-      console.log("randomColorIndex", randomColorIndex)
-      player.color = colors[randomColorIndex]
-      socket.emit('playerColor', player.color, player.id)
-      console.log(`Color: ${player.color}`);
-      console.log(`ID: ${player.id}`);
-     colors.splice(randomColorIndex, 1);
-    players.push(player)
 
-      // Handle the received data here
+  if (!colors.length > 0)
+  {
+    socket.emit('message', 'We are full!')
+    console.log('NEW USER WITHOUT ID');
+    console.log("TOTAL USERS: " + players.length);
+
+    socket.on('disconnect', () =>
+    {
+      console.log('USER WITHOUT ID DISCONNECTED');
+      console.log("TOTAL USERS: " + players.length)
+    });
+  }
+  else
+  {
+    socket.on('initialInfo', () =>
+    {
+      if (!colors.length > 0)
+      {
+        socket.emit('message', 'Server Full');
+      }
+      else
+      {
+        // Set player ID and Color and send it
+        const player = onConnection(socket.id);
+        socket.emit('player', player);
+        
+        // Manage Server Colors and Players
+        players.push(player);
+        
+        // Server Logs
+        console.log('NEW USER ID: ' + player.id + " NAME: " + player.name + " and COLOR: " + player.color);
+        console.log("TOTAL USERS: " + players.length);
+      }
+    });
+  
+    socket.emit('deck', deck, deck.getMaxz());
+  
+  
+    // Handle card movement from a client
+    socket.on('moveCard', ({ cardId, newPosition}) =>
+    {
+      deck.getCardFromId(cardId).changePosition(newPosition); 
+      socket.broadcast.emit('cardMoved', cardId, newPosition);
+    });
+  
+  
+    // Handle card flip from a client
+    socket.on('flipCard', ({ cardId, front, player}) =>
+    {
+      deck.getCardFromId(cardId).flipCard(front)
+      socket.broadcast.emit('cardFlipped', cardId, front, player);
+    });
+  
+  
+    // Handle cursor up from a client
+    socket.on('cursorUp', ({ cardId}) =>
+    {
+      socket.broadcast.emit('cursorUpped', cardId);
+    });
+  
+  
+    // Handle cursor down from a client
+    socket.on('cursorDown', ({ cardId, player, zIndex}) =>
+    {
+      deck.getCardFromId(cardId).setzIndex(zIndex)
+      socket.broadcast.emit('cursorDowned', cardId, player, zIndex);
+    });
+  
+  
+    // Handle by Default from a client
+    socket.on('byDefault', () =>
+    {
+      deck.byDefault();
+      socket.broadcast.emit('setDefault');
+    });
+  
+  
+    // Handle by Suit from the client
+    socket.on('bySuit', () =>
+    {
+      deck.bySuit();
+      socket.broadcast.emit('setSuit');
     });
 
-  socket.emit('message', 'You are connected')
-  socket.emit('deck', deck, deck.getMaxz())
-  console.log('A user connected');
-
+      // Handle by Rank from the client
+      socket.on('byRank', () =>
+      {
+        deck.byRank();
+        socket.broadcast.emit('setRank');
+      });
   
-  // Handle card movement from the client
-  socket.on('moveCard', ({ cardId, newPosition, player}) => {
-    // Handle card movement from the client
-    deck.getCardFromId(cardId).changePosition(newPosition); 
-    socket.broadcast.emit('cardMoved', cardId, newPosition);
-  });
-
-  socket.on('flipCard', ({ cardId, front, player}) => {
-    // Handle card flip from the client
-    deck.getCardFromId(cardId).flipCard(front)
-    socket.broadcast.emit('cardFlipped', cardId, front, player);
-    // moveCardOnServer(cardId, newPosition);
-  });
-
-  socket.on('cursorUp', ({ cardId, player}) => {
-    // Handle card flip from the client
-    socket.broadcast.emit('cursorUpped', cardId);
-    // moveCardOnServer(cardId, newPosition);
-  });
-
-  socket.on('cursorDown', ({ cardId, player, zIndex}) => {
-    // Handle card flip from the client
-    deck.getCardFromId(cardId).setzIndex(zIndex)
-    console.log("zIndex", zIndex)
-    socket.broadcast.emit('cursorDowned', cardId, player, zIndex);
-    // moveCardOnServer(cardId, newPosition);
-  });
-
-  socket.on('byDefault', () => {
-    // Handle card flip from the client
-    deck.byDefault();
-    socket.broadcast.emit('setDefault');
-  });
-
-  socket.on('bySuit', () => {
-    // Handle card flip from the client
-    console.log("SUIT")
-    deck.bySuit();
-    socket.broadcast.emit('setSuit');
-  });
-
-  socket.on('disconnect', function() {
-    console.log('Got disconnect!');
-
-    var i = players.findIndex(player => player.id === socket.id);
-    console.log(i)
-    colors.push(players[i].color)
-    players.splice(i, 1);
- });
   
+    // Handle User Disconnection
+    socket.on('disconnect', () =>
+    {
+      var i = players.findIndex(player => player.id === socket.id);
+      console.log('USER ' + players[i].id + ' DISCONNECTED');
+      colors.push(players[i].color)
+      names.push(players[i].name)
+      players.splice(i, 1);
+      console.log("TOTAL USERS: " + players.length)
+    });
+    
+  }
+  });
 
 
-});
 
 
-server.on('error', (err) => {
+server.on('error', (err) =>
+{
     console.error(err)
 });
 
-server.listen(PORT, () =>   {
+server.listen(PORT, () =>
+{
     console.log("SERVER READY")
 });
 

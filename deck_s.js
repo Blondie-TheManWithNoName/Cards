@@ -1,6 +1,6 @@
-import {cardValueEnum, cardSuitEnum, addListener} from './util.js';
-import {Card} from './card.js';
-import {Player} from './player.js';
+import {cardValueEnum, cardSuitEnum} from './util.js';
+import {Card} from './card_s.js';
+import {Player} from './player_s.js';
 
 
 export class Deck {
@@ -25,6 +25,7 @@ export class Deck {
     {
         for (const card of this.cards)
                 card.flipCard(this.front);
+
         // this.cards[this.value.length-1][0].flipCard(this.front);
         // this.cards[this.value.length-1][1].flipCard(this.front);
         this.front = !this.front;
@@ -86,11 +87,6 @@ export class Deck {
                     ++j;
                 }  
             }
-
-            // for (let i = 0; i < this.value.length +  this.suit.length - 1 - 1; ++i) {
-            //         console.log(this.suit[j] + " " + this.value[i].name)
-                 
-            // }
         }
         // this.cards[this.value.length - 1] = []
         // this.cards[this.value.length - 1][0] = (new Card(cardSuitEnum.Joker, cardValueEnum.Joker, {x:this.x, y:this.y}, this.z));
@@ -155,37 +151,6 @@ export class Deck {
             }   
         }
 
-        // for (let i = 0; i < this.suit.length - 1; ++i)
-        // {
-        //     this.z = 1;
-        //     for (let j = 0; j < this.value.length - 1; ++j)
-        //     {
-        //         hand[j][i].changePosition({x: this.x, y: this.y}, this.z)
-        //         ++this.z;
-        //         this.x += 50;
-        //     }
-        //     this.x = 100;
-        //     this.y += 160;
-        // }
-        // this.cards[this.value.length-1][0].changePosition({x: 100, y: 160*4 + 100}, this.z)
-        // this.cards[this.value.length-1][1].changePosition({x: 150, y: 160*4 + 100}, this.z)
-
-        // this.x = 100;
-        // this.y = 100;
-
-        // for (let i = 0; i < this.suit.length - 1; ++i)
-        // {
-        //     this.z = 1;
-        //     for (let j = 0; j < this.value.length - 1; ++j)
-        //     {
-        //         hand[j][i].changePosition({x: this.x, y: this.y}, this.z)
-        //         ++this.z;
-        //         this.x += 50;
-        //     }
-        //     this.x = 100;
-        //     this.y += 160;
-        // }
-
     }
 
     byRank()
@@ -194,17 +159,30 @@ export class Deck {
         this.x = 100;
         this.y = 100;
         let i=0;
-        for (let i = 0; i < this.value.length - 1; ++i)
+        let j=0;
+        for (const card of this.cards)
         {
             this.z = 1;
-            for (let j = 0; j < this.suit.length - 1; ++j)
+            card.changePosition({x: this.x, y: this.y}, this.z)
+            ++this.z;
+            if (i < 12)
             {
-                this.cards[i][j].changePosition({x: this.x, y: this.y}, this.z)
-                ++this.z;
-                this.x += 50;
+                this.y += 160;
+                ++i;
             }
-            this.x = 100;
-            this.y += 160;
+            else
+            {
+                this.y = 100;
+                this.x = 100 + (j)*15;
+                i = 0;
+            }
+            if (i%4 == 0 && i != 0)
+            {
+                this.y = 100;
+                this.x += 350;
+                ++j;
+
+            }
         }
         // this.cards[this.value.length-1][0].changePosition({x: 100*5, y: 100}, this.z)
         // this.cards[this.value.length-1][1].changePosition({x: 100*6, y: 100}, this.z)
@@ -263,10 +241,3 @@ export class Deck {
     }
 
 }
-
-
-// if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-//     module.exports = Deck; // Export for Node.js
-//   } else {
-//     window.Deck = Deck; // Export for the browser
-//   }

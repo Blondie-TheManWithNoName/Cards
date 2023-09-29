@@ -1,23 +1,18 @@
-import { addListener, removeListener} from './util.js';
-import {Card} from './card.js';
-
 export class Player {
 
 
-    constructor()
+    constructor(id, color, name)
     {
         this.Pos = {x:0, y:0};
         this.score = 0;
         this.hand = []
-        this.color;
-        this.id;
-
+        this.color = color;
+        this.name = name;
+        this.id = id;
         // (turn === undefined) ? this.turn = true : this.turn = turn;
         this.movingCard = undefined;
         //Hand  
-        
-        addListener(document.body, 'mouseenter', this.onMouseEnter.bind(this))
-
+      
     }
 
     getMovingCard(card)
@@ -50,9 +45,4 @@ export class Player {
         return this.hand;
       }
 
-      generateUniqueId() {
-        // Implement your unique ID generation logic here
-        // For simplicity, we're using a simple counter here
-        return Math.random().toString(36).substr(2, 9);
-      }
 }

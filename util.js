@@ -26,30 +26,5 @@ export const cardSuitEnum = Object.freeze({
     Joker: 'J'
 })
 
-// export function createElement(elemType, elemClass, elemImg) {
-//     // let elem = document.createElement(elemType);
-//     elem.classList.add(elemClass);
-//     if (!(elemImg === undefined)) elem.src = elemImg;
-
-//     return elem;
-// }
-
-
-export function addChildElement(parentElem, childElem) {
-    parentElem.appendChild(childElem);
-}
-
-export function addListener (target, name, listener) {
-    target.addEventListener(name, listener, true);
-  }
-
-export function removeListener (target, name, listener, callback) {
-    target.removeEventListener(name, listener, true)
-    if (typeof callback === "function") {
-        callback();
-      }
-  }
-
-
 
 

@@ -7,12 +7,18 @@ var deck = new Deck();
 
 const socket = io();
 
+const handLine = window.innerHeight - (window.innerHeight*0.4);
+const cardSize = {x: 80, y: 112}
+
+
+
+
 
 // CONNECTION
 socket.on('connect', () =>
 {
   // Send info about player
-  socket.emit('initialInfo');
+  socket.emit('initialInfo', player.id);
 });
 
 
@@ -23,15 +29,16 @@ socket.on('connect', () =>
 /////////////////////
 
 // Function to notify the server about a card position change
-export function notifyCardMove(cardId, newPosition)
+export function notifyCardMove(card, newPosition)
 {
+  let cardId = card.id
   socket.emit('moveCard', { cardId, newPosition, player});
 }
 
 // Function to notify the server about card flip
-export function notifyCardFlip(cardId, front)
+export function notifyCardFlip(cardId)
 {
-  socket.emit('flipCard', { cardId, front, player});
+  socket.emit('flipCard', { cardId, player});
 }
 
 // Function to notify the server when cursor is down
@@ -41,9 +48,48 @@ export function notifyCursorDown(cardId, zIndex)
 }
 
 // Function to notify the server when cur
-export function notifyCursorUp(cardId)
+export function notifyCursorUp(card, pos)
 {
-  socket.emit('cursorUp', { cardId, player});
+
+
+  if (card.isPartOfHand)
+  {
+    
+    player.addCardToHand(card);
+    deck.deleteCardServer(card.id);
+    player.showHand(window.innerWidth/2); 
+    // document.getElementById("hand").appendChild(card.cardElem);
+    // card.cardElem.style.transformOrigin = pos.x + "px " + pos.y + "px";
+    // biggerCard(card, pos);
+    socket.emit('updatePlayerHand', player.id, card, true);
+    card.wasPartOfHand = true;
+  }
+  else
+  {
+
+    if (card.wasPartOfHand)
+    {
+      socket.emit('updatePlayerHand', player.id, card, false);
+      player.deleteCardFromHand(card);
+      deck.addCardServer(card);
+      player.showHand(window.innerWidth/2);
+    }
+
+    // if (card.pos.y < handLine)
+    // {
+    //   card.changePosition({x: card.pos.x, y: handLine + 10}, card.zIndex, 0.2);
+    //   notifyCardMove(card, {x:card.pos.x, y:handLine + 10});
+    // }
+    // if (card.pos.y < handLine && card.pos.y + cardSize.y >= handLine)
+    // {
+    //   card.changePosition({x: card.pos.x, y: handLine - cardSize.y - 10}, card.zIndex, 0.2);  
+    //   notifyCardMove(card, {x:card.pos.x, y:handLine - cardSize.y - 10});
+    // }
+    const cardId = card.id
+    socket.emit('cursorUp', { cardId, player});
+    card.wasPartOfHand = false;
+
+  }
 }  
 
 
@@ -70,9 +116,8 @@ socket.on('deck', (deck_, maxZ) =>
 // Receive player with ID and Color given by the Server
 socket.on('player', (player_) =>
 {
-  player.color = player_.color;
-  player.id = player_.id;
-  player.name = player_.name;
+  localStorage.setItem("id", player_.id);
+  player.assign(player_);
   document.getElementById("name").textContent = player_.name;
   document.getElementById("color").style.backgroundColor = player_.color;
 });
@@ -84,16 +129,17 @@ socket.on('cardMoved', ( cardId, newPosition) =>
 });
 
 // Receive flipped card and flip it
-socket.on('cardFlipped', ( cardId, front, player_) =>
+socket.on('cardFlipped', ( cardId, front) =>
 {
-  deck.getCardFromId(cardId).flipCardServer(front)
+  deck.getCardFromId(cardId).flipCardServer()
 });
 
 // Receive when a cursor went DOWN on a card
 socket.on('cursorDowned', (cardId, player_) =>
 {
+  console.log("cursordowned")
   const card = deck.getCardFromId(cardId);
-  card.toggleDragging();
+  card.setDraggingTrue();
   card.setzIndex();
   card.setBorder(player_.color);
 });
@@ -101,8 +147,9 @@ socket.on('cursorDowned', (cardId, player_) =>
 // Receive when a cursor went UP on a card
 socket.on('cursorUpped', (cardId) =>
 {
+  console.log("cursorupped")
   const card = deck.getCardFromId(cardId);
-  card.toggleDragging()
+  card.setDraggingFalse()
   card.resetBorder()
 });
 
@@ -123,6 +170,31 @@ socket.on('setSuit', () =>
 socket.on('setRank', () =>
 {
   deck.byRank();
+});
+
+// Receive flippedDeck from the Server
+socket.on('flippedDeck', () =>
+{
+  deck.flipDeck();
+});
+
+
+socket.on('dealing', (hand) =>
+{
+  console.log("DEALING", hand);
+  player.hand = hand;
+  deck.deal(player, hand);
+});
+
+
+socket.on('cardAddedToHand', (cardId) =>
+{
+  deck.deleteCard(cardId);
+});
+
+socket.on('cardDeletedFromHand', (card) =>
+{
+  deck.addCard(card);
 });
 
 
@@ -164,10 +236,11 @@ bySuiteBtn.addEventListener('click', () =>
     socket.emit('byRank');
     deck.byRank();
   });
-
+  
   flipBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
+    socket.emit('flipDeck');
     deck.flipDeck();
   });
 
@@ -182,7 +255,12 @@ bySuiteBtn.addEventListener('click', () =>
  {
     // Call the shuffle function inside the Deck class
 
-    deck.deal(player, numCards.value);
+    // deck.byDefault();
+    if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
+    // setTimeout( () => {
+    //   deck.deal(player, numCards.value);
+    // }, 500)
+    socket.emit('deal', numCards.value);
   });
 
   myCardsBtn.addEventListener('click', () =>

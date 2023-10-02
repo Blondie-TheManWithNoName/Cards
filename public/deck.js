@@ -23,11 +23,13 @@ export class Deck {
 
     flipDeck()
     {
-        for (const card of this.cards)
-                card.flipCard(this.front);
-        // this.cards[this.value.length-1][0].flipCard(this.front);
-        // this.cards[this.value.length-1][1].flipCard(this.front);
         this.front = !this.front;
+        console.log("this.front", this.front)
+        for (const card of this.cards)
+                card.setFront(this.front);
+        
+                // this.cards[this.value.length-1][0].flipCard(this.front);
+        // this.cards[this.value.length-1][1].flipCard(this.front);
 
     }
 
@@ -104,26 +106,25 @@ export class Deck {
         this.x = 100;
         this.y = 100;
         console.log(this.cards.length)
-        if (hands !== undefined)
-        {
-            console.log(hands)
-            for (const hand of hands)
-            {
-                this.cards = this.cards.concat(hand)
-                // for (let i = hand.length; i >= 0; --i)
-                //     this.cards.push(hand[i])
+        // if (hands !== undefined)
+        // {
+        //     console.log(hands)
+        //     for (const hand of hands)
+        //     {
+        //         this.cards = this.cards.concat(hand)
+        //         // for (let i = hand.length; i >= 0; --i)
+        //         //     this.cards.push(hand[i])
 
-                hand.length = 0
-            }
-        }
+        //         hand.length = 0
+        //     }
+        // }
         console.log(this.cards.length)
         for (const card of this.cards)
         {
-            console.log("HELLO?")
                 card.changePosition({x: this.x, y: this.y}, this.z)
                 ++this.z;
-                this.x += 1;
-                this.y += 1;
+                this.x += 0.5;
+                this.y += 0.5;
 
         }        
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)
@@ -226,24 +227,21 @@ export class Deck {
 
     }
 
-    deal(player, numCards)
+    deal(player, hand)
     {
         // if (this.front) this.flipDeck()
         // this.shuffle();
-        if (numCards == undefined) numCards = 8;
-        setTimeout(() => {
+        this.x = 400;
+        this.y = 600;
+        for (const card of hand)
+        {
+            this.getCardFromId(card.id).changePosition({x: this.x, y: this.y}, this.z, {z: 0, y: 0})
+            this.x += 75;
+        }   
+        // setTimeout(() => {
             
-            this.x = 400;
-            this.y = 600;
-            for (let j = 0; j < numCards; ++j)
-            {
-                player.getCards(this.cards[this.cards.length - 1])
-                this.cards[this.cards.length - 1].changePosition({x: this.x, y: this.y}, this.z, {z: 0, y: 0})
-                this.cards.pop()
-                this.x += 75;
-            }
 
-        }, 100);
+        // }, 100);
         
     }
     
@@ -266,12 +264,45 @@ export class Deck {
     assign(deck, maxZ)
     {
         Card.maxZ = maxZ;
-
+        this.front = deck.front;
         for (let i =0; i < this.cards.length; ++i)
         {
-            console.log("Card:", deck.cards[i].id, "zIndex", deck.cards[i].zIndex)
             this.cards[i].assign(deck.cards[i]);
         }
+    }
+
+    deleteCard(cardId)
+    {
+        for (let i=0; i < this.cards.length; ++i)
+            if (this.cards[i].id === cardId) {
+                this.cards[i].deleteCard();
+                this.cards.splice(i, 1);
+            }
+    }
+
+    addCard(card)
+    {
+        // for (let i=0; i < this.cards.length; ++i)
+        //     if (this.cards[i].id === cardId) {
+        //         return
+        //     }
+        this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex));
+    }
+
+    deleteCardServer(cardId)
+    {
+        for (let i=0; i < this.cards.length; ++i)
+        if (this.cards[i].id === cardId) {
+                console.log("DELETE", cardId)
+                this.cards.splice(i, 1);
+                break;
+            }
+    }
+
+    addCardServer(card)
+    {
+ 
+        this.cards.push(card);
     }
 }
 

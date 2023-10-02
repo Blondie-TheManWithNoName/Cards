@@ -60,3 +60,22 @@ export function randomColor()
 
 
 
+
+
+export function biggerCard(card, inside)
+{
+    // console.log("BIGGERCARD")
+    if (inside)
+    {
+        // card.cardElem.style.transition = "all 0.25s ease-in-out";
+        // // card.cardElem.style.transform = "scale(3)"
+        // setTimeout(() => {
+        //   card.cardElem.style.transition = "all 0s";
+        // }, 250);
+    }
+    else
+    {
+        // card.cardElem.style.width = "80px";
+        // card.cardElem.style.height = "112px";
+    }
+}

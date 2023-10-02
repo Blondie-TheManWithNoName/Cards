@@ -51,9 +51,14 @@ export class Card {
           return this.value;
         }
 
-        flipCard(front)
+        flipCard()
         {
-          this.front = !  front;
+          this.front = !this.front;
+        }
+
+        setFront(front)
+        {
+          this.front = front;
         }
 
         changePosition(pos)

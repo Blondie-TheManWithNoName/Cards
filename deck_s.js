@@ -23,12 +23,12 @@ export class Deck {
 
     flipDeck()
     {
+        this.front = !this.front;
+        console.log("this.front", this.front)
         for (const card of this.cards)
-                card.flipCard(this.front);
-
+                card.setFront(this.front);
         // this.cards[this.value.length-1][0].flipCard(this.front);
         // this.cards[this.value.length-1][1].flipCard(this.front);
-        this.front = !this.front;
 
     }
 
@@ -117,8 +117,8 @@ export class Deck {
         {
                 card.changePosition({x: this.x, y: this.y})
                 card.setzIndex()
-                this.x += 1;
-                this.y += 1;
+                this.x += 0.5;
+                this.y += 0.5;
 
         }        
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)
@@ -189,27 +189,9 @@ export class Deck {
 
     }
 
-    deal(player, numCards)
+    deal(numCards)
     {
-        // if (this.front) this.flipDeck()
-        // this.shuffle();
-        if (numCards == undefined) numCards = 8;
-        setTimeout(() => {
-            
-            this.x = 400;
-            this.y = 600;
-            for (let j = 0; j < numCards; ++j)
-            {
-                player.getCards(this.cards[this.cards.length - 1])
-                this.cards[this.cards.length - 1].changePosition({x: this.x, y: this.y}, this.z, {z: 0, y: 0})
-                this.cards.pop()
-                this.x += 75;
-            }
-
-        }, 100);
-
-        
-        
+        return this.cards.splice(-numCards, numCards); 
     }
     
     getCard(index)
@@ -221,6 +203,7 @@ export class Deck {
     {
         for (const card of this.cards)
             if (card.id == id) return card;
+        return false
     }
 
     getDeck()
@@ -238,6 +221,23 @@ export class Deck {
     getMaxz()
     {
         return Card.maxZ;
+    }
+
+    deleteCard(cardId)
+    {
+        for (let i=0; i < this.cards.length; ++i)
+            if (this.cards[i].id === cardId) {
+                this.cards.splice(i, 1);
+            }
+    }
+
+    addCard(card)
+    {
+        // for (let i=0; i < this.cards.length; ++i)
+        //     if (this.cards[i].id === cardId) {
+        //         return
+        //     }
+        this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex));
     }
 
 }

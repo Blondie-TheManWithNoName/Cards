@@ -45,4 +45,30 @@ export class Player {
         return this.hand;
       }
 
+      checkCard(id)
+      {
+        for (const card of this.hand)
+          if (id === card.id) return true;
+        return false;
+      }
+
+      addCardToHand(card)
+      {
+        if (!this.checkCard(card.id))
+          this.hand.push(card);
+      }
+
+      deleteCardFromHand(card)
+      {
+        for (let i=0; i < this.hand.length; ++i)
+          if (this.hand[i].id === card.id) this.hand.splice(i, 1);
+      }
+
+      assignHand(newHand)
+      {
+        this.hand = []
+        for (const card of newHand)
+          this.hand.push(card);
+      }
+
 }

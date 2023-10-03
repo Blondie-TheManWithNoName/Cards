@@ -55,6 +55,14 @@ export class Player {
         this.color = player.color;
         this.id = player.id;
         this.name = player.name;
+        // this.assignHand(player.hand);
+      }
+
+
+      assignHand(hand)
+      {
+        for (const card of hand)
+          this.hand.push(card);
       }
 
       checkCard(id)
@@ -64,16 +72,27 @@ export class Player {
         return false;
       }
 
+      createCard(card)
+      {
+        let newCard = new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex);
+        newCard.assign(card);
+        this.addCardToHand(newCard);
+      }
+
       addCardToHand(card)
       {
         if (!this.checkCard(card.id))
           this.hand.push(card);
+        card.isPartOfHand = true;
+        card.wasPartOfHand = true;
       }
 
       deleteCardFromHand(card)
       {
         for (let i=0; i < this.hand.length; ++i)
           if (this.hand[i].id === card.id) this.hand.splice(i, 1);
+        
+          card.isPartOfHand = false;
       }
 
       showHand(center)
@@ -84,8 +103,9 @@ export class Player {
         let z = 1;
         for (const card of this.hand)
         {
+          console.log(card);
           card.changePositionHand({x: x, y: y}, z, 0.25);
-          card.setFront(true);
+          // card.setFront(true);
           ++z;
           x += 40*2;
         }

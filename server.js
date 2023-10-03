@@ -16,66 +16,72 @@ const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 
 
-const colors = ["#20639B", "#3CAEA3", "#F6D55C", "#ED553B"];
-const names = ["Alligator", "Lion", "Eagle", "Dolphin"];
+const colors = ["#ED553B", "#F6D55C", "#65451F", "#20639B"];
+const names = ["Fox", "Lion", "Eagle", "Dolphin"];
 const deck = new Deck();
 const players = []
 
+var numPlayers = 0;
 
-function onConnection(id)
+
+function colorLeft()
 {
-  let randomColorIndex = (Math.floor(Math.random() * colors.length));
-  let randomNameIndex = (Math.floor(Math.random() * names.length));
-  let color = colors[randomColorIndex];
-  let name = names[randomNameIndex];
-  colors.splice(randomColorIndex, 1);
-  names.splice(randomNameIndex, 1);
-
-  return new Player(id, color, name);
+  let colorLeft = [];
+  for (const player of players)
+  {
+    if (player.id === 0) colorLeft.push(player.color);
+  }
+  return colorLeft;
 }
+
+function onConnection(id, color)
+{
+  let i=0;
+  for (; i < players.length; ++i)
+    if (players[i].color === color) break;
+
+  players[i].id = id;
+  return i;
+}
+
+for (let i=0; i < colors.length; ++i  )
+  players.push(new Player(0, colors[i], names[i]))
 
 
 
 io.on('connection', (socket) =>
 {
 
-
-    if (!colors.length > 0)
+    ++numPlayers;
+    if (numPlayers > 4)
     {
-      socket.emit('message', 'We are full!')
-      console.log('NEW USER WITHOUT ID');
-      console.log("TOTAL USERS: " + players.length);
+      socket.emit('chooseColor', [], "Server full! ");
 
       socket.on('disconnect', () =>
       {
-        console.log('USER WITHOUT ID DISCONNECTED');
         console.log("TOTAL USERS: " + players.length)
+        --numPlayers
       });
     }
     else
     {
-      socket.on('initialInfo', () =>
+      // for (const card of deck.cards)
+      //   console.log(card.id)
+      socket.emit('deck', deck, deck.getMaxz());
+    
+      socket.emit('chooseColor', colorLeft(), "Choose a color: ");
+
+      socket.on('initialInfo', (color) =>
       {
-        if (!colors.length > 0)
-        {
-          socket.emit('message', 'Server Full');
-        }
-        else
-        {
-          // Set player ID and Color and send it
-          const player = onConnection(socket.id);
-          socket.emit('player', player);
-          
-          // Manage Server Colors and Players
-          players.push(player);
-          
-          // Server Logs
-          console.log('NEW USER ID: ' + player.id + " NAME: " + player.name + " and COLOR: " + player.color);
-          console.log("TOTAL USERS: " + players.length);
-        }
+        // Set player ID and Color and send it
+        let index = onConnection(socket.id, color);
+        socket.emit('player', players[index]);
+        
+        // Server Logs
+        console.log('NEW USER ID: ' + players[index].id + " NAME: " + players[index].name + " and COLOR: " + players[index].color);
+        console.log("TOTAL USERS: " + numPlayers);
       });
     
-      socket.emit('deck', deck, deck.getMaxz());
     
     
       // Handle card movement from a client
@@ -144,6 +150,15 @@ io.on('connection', (socket) =>
         deck.flipDeck();
         socket.broadcast.emit('flippedDeck');
       });
+      
+      socket.on('shuffle', (change) => {
+        
+        socket.broadcast.emit('shuffled', change);
+        deck.assignFromShuffle(change);
+        deck.byDefault();
+      
+
+      });
 
       // Handle card flip from a client
       socket.on('deal', (numCards) =>
@@ -182,11 +197,17 @@ io.on('connection', (socket) =>
       socket.on('disconnect', () =>
       {
         var i = players.findIndex(player => player.id === socket.id);
-        console.log('USER ' + players[i].id + ' DISCONNECTED');
-        colors.push(players[i].color)
-        names.push(players[i].name)
-        players.splice(i, 1);
-        console.log("TOTAL USERS: " + players.length)
+        if (i != -1)
+        {
+          // console.log('USER ' + players[i].id + ' DISCONNECTED');
+          console.log("color:", players[i].color)
+          colors.push(players[i].color)
+          names.push(players[i].name)
+          players[i].id = 0;
+          // players.splice(i, 1);
+          console.log("TOTAL USERS: " + numPlayers)
+        }
+        --numPlayers;
       });
       
       socket.on('reconnect', () => {

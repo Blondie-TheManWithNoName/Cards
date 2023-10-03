@@ -170,35 +170,21 @@ export class Card {
           
         onMouseUp (e) {
 
-
           this.isDragging = false;
           removeListener(window, 'mousemove', this.onMousemove)
-          // if (this.isPartOfHand)
-          // {
-
-          //   this.pos.x = e.clientX - this.offset.x
-          //   this.pos.y = e.clientY - this.offset.y 
-
-          // }
-          // else
-          // {
-            // console.log("mouseUp")
-            // this.cardFrontElem.style.border =  this.cardBackElem.style.border =   "0";
-            // this.cardFrontElem.style.margin = this.cardBackElem.style.margin =    "0";
-  
-            
-            // flip sides
+          
+          // flip sides
             if (Date.now() - this.startTime < 300  && (this.pos.x == e.clientX - this.offset.x || this.pos.y == e.clientY - this.offset.y))
             {
               this.flipCard();
             }
-              // Update position of the card
-              this.pos.x = e.clientX - this.offset.x
-              this.pos.y = e.clientY - this.offset.y 
-              
-              // Notify client
-              notifyCursorUp(this, this.pos)
-              
+            // Update position of the card
+            this.pos.x = e.clientX - this.offset.x
+            this.pos.y = e.clientY - this.offset.y 
+            
+            // Notify client
+            notifyCursorUp(this, this.pos)
+            
             if (this.isOut) this.onMouseOut();
           // }
 
@@ -206,10 +192,10 @@ export class Card {
 
         flipCard()
         {
-          console.log("FLIPPPPP")
           this.front = !this.front;
           (this.front) ? this.cardInnerElem.style.transform = 'rotateY(0deg)' : this.cardInnerElem.style.transform = 'rotateY(180deg)';
-          notifyCardFlip(this.id)
+          if (!this.isPartOfHand)
+            notifyCardFlip(this.id)
         }
 
         flipCardServer()
@@ -323,16 +309,16 @@ export class Card {
             this.zIndex = card.zIndex;
             this.cardElem.style.zIndex = card.zIndex;
             this.pos = card.pos;
-            this.cardElem.style.transform = 'translate3d(' + Math.round(card.pos.x) + 
-            'px, ' + Math.round(card.pos.y) + 'px, 0)'
+            console.log(card.id + " " + card.posx + " " + card.pos.y)
+            this.isPartOfHand = card.isPartOfHand;
+            this.wasPartOfHand = card.wasPartOfHand;
+            this.cardElem.style.transform = 'translate3d(' + Math.round(card.pos.x) + 'px, ' + Math.round(card.pos.y) + 'px, 0)'
           }
 
           deactivateDragging(sec)
           {
-            console.log("1")
             this.isDragging = true;
             setTimeout(() => {
-              console.log("2")
               this.isDragging = false;
             }, sec*1000);
           }

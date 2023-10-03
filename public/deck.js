@@ -1,12 +1,12 @@
 import {cardValueEnum, cardSuitEnum, addListener} from './util.js';
 import {Card} from './card.js';
 import {Player} from './player.js';
-
+import {notifyShuffle}  from './client.js'; 
 
 export class Deck {
 
     
-    constructor(order)
+    constructor(deck, maxZ)
     {
         this.suit = Object.values(cardSuitEnum);
         this.value = Object.values(cardValueEnum);
@@ -15,7 +15,14 @@ export class Deck {
         this.y = 100;
         this.z = 1;
         this.cards = []
-        this.initializeDeck();
+        if (deck === undefined)
+            this.initializeDeck();
+        else
+        {
+            this.front = deck.front;
+            Card.maxZ = maxZ;
+            this.initializeDeck(deck);
+        }
         // setTimeout(() => {
         //     this.byDefault();
         //   }, 100);
@@ -37,35 +44,48 @@ export class Deck {
     {
         let currentIndex = this.cards.length;
         let temporaryValue, randomIndex;
-
+        let change = []
         while (currentIndex !== 0) {
             // Pick a remaining element...
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
       
             // And swap it with the current element.
+            change.push([currentIndex, randomIndex])
             temporaryValue = this.cards[currentIndex]
-            this.cards[currentIndex]= this.cards[randomIndex];
+            this.cards[currentIndex] = this.cards[randomIndex];
             this.cards[randomIndex] = temporaryValue;
           }
-
+          
+          notifyShuffle(change)
           this.byDefault();
+
+
     }
 
-    initializeDeck() {
-
+    initializeDeck(deck) {
 
         if (this.cards == 0)
         {
-            
-            for (let i = 0; i < this.suit.length - 1; ++i) {
-                // cards[i] = []
-                console.log(this.suit[i])
-                for (let j = 0; j < this.value.length - 1; ++j) {
-                    // console.log(this)
-                    this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
+            if (deck === undefined)
+            {
+                for (let i = 0; i < this.suit.length - 1; ++i) {
+                    // cards[i] = []
+                    console.log(this.suit[i])
+                    for (let j = 0; j < this.value.length - 1; ++j) {
+                        // console.log(this)
+                        this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
+                    }
                 }
             }
+            else
+            {
+                for (const card of deck.cards) {
+ 
+                        this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex, card.front));
+                    }
+            }
+            
         }
         else
         {
@@ -265,7 +285,7 @@ export class Deck {
     {
         Card.maxZ = maxZ;
         this.front = deck.front;
-        for (let i =0; i < this.cards.length; ++i)
+        for (let i =0; i < deck.cards.length; ++i)
         {
             this.cards[i].assign(deck.cards[i]);
         }
@@ -293,7 +313,6 @@ export class Deck {
     {
         for (let i=0; i < this.cards.length; ++i)
         if (this.cards[i].id === cardId) {
-                console.log("DELETE", cardId)
                 this.cards.splice(i, 1);
                 break;
             }
@@ -303,6 +322,20 @@ export class Deck {
     {
  
         this.cards.push(card);
+    }
+
+
+    assignFromShuffle(change)
+    {
+        let temporaryValue;
+        for (let i = 0; i < change.length; ++i)
+        {
+            
+            temporaryValue = this.cards[change[i][0]]
+            this.cards[change[i][0]]= this.cards[change[i][1]];
+            this.cards[change[i][1]] = temporaryValue;
+            
+        }
     }
 }
 

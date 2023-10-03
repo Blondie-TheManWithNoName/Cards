@@ -8,6 +8,34 @@
 
   }
 
+.color{
+    display: inline-flex;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    align-items: center;
+    cursor: pointer;
+    margin: 15px;
+    margin-top: 175px;
+}
+
+#colorChoose
+{
+    width: 40vw;
+    height: 30vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    margin: auto;
+    top: 50%;
+    left: 50%;  
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    /* opacity: 50%; */
+    justify-content: center;
+    display: flex;
+}
+
+
 #hand
 {
     height: 40vh;
@@ -46,13 +74,23 @@
     border-radius: 100%;
 }
 
+.disabled
+{
+    pointer-events: none;
+}
+
+#name
+{
+    position: relative;
+    display: inline-block;
+}
+
 p{
-    font-size: 30px;
+    font-size: 40px;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
-    position: relative;
-    display: inline-block;
+    position: absolute;
 }
 body{
     font-family: ChampagneAndLimousine;

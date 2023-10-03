@@ -214,8 +214,11 @@ export class Deck {
     assign(deck, maxZ)
     {
         // Card.maxZ = maxZ;
-        for (let i =0; i < this.cards.length; ++i)
-            this.cards[i].assign(deck[i]);
+        for (let i =0; i < deck.cards.length; ++i)
+        {
+            console.log(deck.cards[i]);
+            this.cards[i].assign(deck.cards[i]);
+        }
     }
 
     getMaxz()
@@ -238,6 +241,17 @@ export class Deck {
         //         return
         //     }
         this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex));
+    }
+
+    assignFromShuffle(change)
+    {
+        let temporaryValue;
+        for (let i = 0; i < change.length; ++i)
+        {
+            temporaryValue = this.cards[change[i][0]]
+            this.cards[change[i][0]]= this.cards[change[i][1]];
+            this.cards[change[i][1]] = temporaryValue;
+        }
     }
 
 }

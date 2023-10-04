@@ -61,7 +61,7 @@ export function notifyCursorUp(card, pos)
     else
     {
       player.addCardToHand(card);
-      deck.deleteCardServer(card.id);
+      deck.deleteCardFromId(card.id);
       player.showHand(window.innerWidth/2); 
       socket.emit('updatePlayerHand', player.id, card, true);
     }
@@ -101,10 +101,7 @@ export function notifyCursorUp(card, pos)
 
 export function notifyShuffle(change)
 {
-  // let cardId = card.id
-  // socket.emit('moveCard', { cardId, newPosition, player});
     socket.emit('shuffle', change);
-
 }
 
 
@@ -155,7 +152,6 @@ socket.on('message', (text) =>
 socket.on('deck', (deck_, maxZ) =>
 {
   deck = new Deck(deck_, maxZ);
-  // deck.assign(deck_, maxZ);
 });
 
 // Receive player with ID and Color given by the Server
@@ -177,13 +173,13 @@ socket.on('player', (player_) =>
 // Receive moved card and change its position
 socket.on('cardMoved', ( cardId, newPosition) =>
 {
-  deck.getCardFromId(cardId).changePositionServer(newPosition)
+  deck.getCardFromId(cardId).changePosition(newPosition)
 });
 
 // Receive flipped card and flip it
-socket.on('cardFlipped', ( cardId, front) =>
+socket.on('cardFlipped', ( cardId) =>
 {
-  deck.getCardFromId(cardId).flipCardServer()
+  deck.getCardFromId(cardId).flipCard(false)
 });
 
 // Receive when a cursor went DOWN on a card
@@ -233,21 +229,21 @@ socket.on('flippedDeck', () =>
 socket.on('shuffled', (change) =>
 {
   deck.assignFromShuffle(change)
-
-  // deck.assign(deck_);
   deck.byDefault();
 });
 
 socket.on('dealing', (hand) =>
 {
-  player.hand = hand;
-  deck.deal(player, hand);
+  for(const card of hand)
+    player.createCard(card)
+
+    player.showHand(window.innerWidth/2);
 });
 
 
 socket.on('cardAddedToHand', (cardId) =>
 {
-  deck.deleteCard(cardId);
+  deck.deleteCardFromId(cardId, true);
 });
 
 socket.on('cardDeletedFromHand', (card) =>
@@ -255,6 +251,11 @@ socket.on('cardDeletedFromHand', (card) =>
   deck.addCard(card);
 });
 
+
+socket.on('assignDeck', (deck_, zMax) =>
+{
+  deck.assign(deck_, zMax);
+});
 
 
 
@@ -307,20 +308,14 @@ bySuiteBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
     deck.shuffle();
-    // for (const change of deck.change)
-      // console.log(change)
-    // socket.emit('shuffle', deck);
   });
 
  dealBtn.addEventListener('click', () =>
- {
-    // Call the shuffle function inside the Deck class
-
+ {    
     // deck.byDefault();
     if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
-    // setTimeout( () => {
-    //   deck.deal(player, numCards.value);
-    // }, 500)
+    // deck.deal(player, numCards.value);
+    // player.showHand(window.innerWidth/2);
     socket.emit('deal', numCards.value);
   });
 

@@ -14,7 +14,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
-
+const LOG = true
 
 const colors = ["#ED553B", "#F6D55C", "#65451F", "#20639B"];
 const names = ["Fox", "Lion", "Eagle", "Dolphin"];
@@ -23,6 +23,8 @@ const players = []
 
 var numPlayers = 0;
 
+for (let i=0; i < colors.length; ++i  )
+  players.push(new Player(0, colors[i], names[i]))
 
 function colorLeft()
 {
@@ -44,10 +46,6 @@ function onConnection(id, color)
   return i;
 }
 
-for (let i=0; i < colors.length; ++i  )
-  players.push(new Player(0, colors[i], names[i]))
-
-
 
 io.on('connection', (socket) =>
 {
@@ -65,10 +63,7 @@ io.on('connection', (socket) =>
     }
     else
     {
-      // for (const card of deck.cards)
-      //   console.log(card.id)
       socket.emit('deck', deck, deck.getMaxz());
-    
       socket.emit('chooseColor', colorLeft(), "Choose a color: ");
 
       socket.on('initialInfo', (color) =>
@@ -87,6 +82,8 @@ io.on('connection', (socket) =>
       // Handle card movement from a client
       socket.on('moveCard', ({ cardId, newPosition, time}) =>
       {
+        log("moveCard " + cardId + " to " + newPosition.x + " " + newPosition.y);
+
         const card = deck.getCardFromId(cardId); // PATCH
         if (card)
         {
@@ -99,6 +96,8 @@ io.on('connection', (socket) =>
       // Handle card flip from a client
       socket.on('flipCard', ({ cardId, player}) =>
       {
+        log("flipCard " + cardId + " by " + player.name);
+
         deck.getCardFromId(cardId).flipCard()
         socket.broadcast.emit('cardFlipped', cardId, player);
       });
@@ -107,6 +106,8 @@ io.on('connection', (socket) =>
       // Handle cursor up from a client
       socket.on('cursorUp', ({ cardId}) =>
       {
+        log("cursorUp " + cardId);
+
         socket.broadcast.emit('cursorUpped', cardId);
       });
     
@@ -114,6 +115,8 @@ io.on('connection', (socket) =>
       // Handle cursor down from a client
       socket.on('cursorDown', ({ cardId, player, zIndex}) =>
       {
+        log("cursorDown " + cardId + " by " + player.name);
+
         const card = deck.getCardFromId(cardId);
         if (card)
         {
@@ -126,6 +129,8 @@ io.on('connection', (socket) =>
       // Handle by Default from a client
       socket.on('byDefault', () =>
       {
+        log("byDefault");
+
         deck.byDefault();
         socket.broadcast.emit('setDefault');
       });
@@ -134,6 +139,8 @@ io.on('connection', (socket) =>
       // Handle by Suit from the client
       socket.on('bySuit', () =>
       {
+        log("bySuit");
+
         deck.bySuit();
         socket.broadcast.emit('setSuit');
       });
@@ -141,18 +148,24 @@ io.on('connection', (socket) =>
       // Handle by Rank from the client
       socket.on('byRank', () =>
       {
+        log("byRank");
+
         deck.byRank();
         socket.broadcast.emit('setRank');
       });
 
       socket.on('flipDeck', () =>
       {
+        log("flipDeck");
+        
         deck.flipDeck();
         socket.broadcast.emit('flippedDeck');
       });
       
-      socket.on('shuffle', (change) => {
-        
+      socket.on('shuffle', (change) =>
+      {
+        log("shuffle");
+
         socket.broadcast.emit('shuffled', change);
         deck.assignFromShuffle(change);
         deck.byDefault();
@@ -163,29 +176,34 @@ io.on('connection', (socket) =>
       // Handle card flip from a client
       socket.on('deal', (numCards) =>
       {
-        // deck.splice(numCards);
+
         for (const player of players)
         {
-            console.log("DEALING PLAYER: ", player.id);
-            io.to(player.id).emit('dealing', deck.deal(numCards));
+          if (player.id !== 0)
+          {
+            deck.deal(player, numCards);
+            io.to(player.id).emit('dealing', player.hand);
+          }
         }
-        // socket.io.emit('', )
-        // io.sockets.emit('deck', deck, deck.getMaxz());
+        io.emit('assignDeck', deck, deck.getMaxz());
 
       });
 
 
       socket.on('updatePlayerHand', (playerId, card, add) =>
       {
+        
         var i = players.findIndex(player => player.id === playerId);
         if (add)
         {
+          log("added card " + card.id + " to Hand of " + playerId);
           players[i].addCardToHand(card);
           deck.deleteCard(card.id);
           socket.broadcast.emit('cardAddedToHand', card.id);
         }
         else
         {
+          log("added card " + card.id + " from Hand of " + playerId);
           players[i].deleteCardFromHand(card);
           deck.addCard(card);
           socket.broadcast.emit('cardDeletedFromHand', card);
@@ -199,27 +217,16 @@ io.on('connection', (socket) =>
         var i = players.findIndex(player => player.id === socket.id);
         if (i != -1)
         {
-          // console.log('USER ' + players[i].id + ' DISCONNECTED');
-          console.log("color:", players[i].color)
           colors.push(players[i].color)
           names.push(players[i].name)
           players[i].id = 0;
-          // players.splice(i, 1);
           console.log("TOTAL USERS: " + numPlayers)
         }
         --numPlayers;
       });
-      
-      socket.on('reconnect', () => {
-        console.log('Successfully reconnected to the server after a disconnection.');
-        // You can perform actions or synchronize data with the server upon reconnection.
-      });
-
 
   }
   });
-
-
 
 
 
@@ -232,5 +239,13 @@ server.listen(PORT, () =>
 {
     console.log("SERVER READY")
 });
+
+function log(msg)
+{
+  if (LOG)
+    console.log(msg);
+
+
+}
 
 

@@ -24,7 +24,6 @@ export class Deck {
     flipDeck()
     {
         this.front = !this.front;
-        console.log("this.front", this.front)
         for (const card of this.cards)
                 card.setFront(this.front);
         // this.cards[this.value.length-1][0].flipCard(this.front);
@@ -59,9 +58,7 @@ export class Deck {
             
             for (let i = 0; i < this.suit.length - 1; ++i) {
                 // cards[i] = []
-                console.log(this.suit[i])
                 for (let j = 0; j < this.value.length - 1; ++j) {
-                    // console.log(this)
                     this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
                 }
             }
@@ -99,10 +96,8 @@ export class Deck {
 
         this.x = 100;
         this.y = 100;
-        console.log(this.cards.length)
         if (hands !== undefined)
         {
-            console.log(hands)
             for (const hand of hands)
             {
                 this.cards = this.cards.concat(hand)
@@ -112,7 +107,6 @@ export class Deck {
                 hand.length = 0
             }
         }
-        console.log(this.cards.length)
         for (const card of this.cards)
         {
                 card.changePosition({x: this.x, y: this.y})
@@ -134,7 +128,6 @@ export class Deck {
         this.initializeDeck();
         for (const card of this.cards)
         {
-            // console.log(card.getKey())
             this.z = 1;
             card.changePosition({x: this.x, y: this.y}, this.z)
             
@@ -189,9 +182,13 @@ export class Deck {
 
     }
 
-    deal(numCards)
-    {
-        return this.cards.splice(-numCards, numCards); 
+    deal(player, numCards) {
+        let index;
+        for (let i=0; i < numCards; ++i) {
+            index = this.cards.length - 1;
+            player.addCardToHand(this.cards[index]);
+            this.cards.pop();
+        }
     }
     
     getCard(index)
@@ -216,7 +213,6 @@ export class Deck {
         // Card.maxZ = maxZ;
         for (let i =0; i < deck.cards.length; ++i)
         {
-            console.log(deck.cards[i]);
             this.cards[i].assign(deck.cards[i]);
         }
     }

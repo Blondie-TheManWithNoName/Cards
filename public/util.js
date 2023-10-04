@@ -79,3 +79,6 @@ export function biggerCard(card, inside)
         // card.cardElem.style.height = "112px";
     }
 }
+
+      // for (const card of deck.cards)
+      //   console.log(card.id)

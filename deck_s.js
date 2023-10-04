@@ -182,13 +182,12 @@ export class Deck {
 
     }
 
-    deal(player, numCards) {
-        let index;
-        for (let i=0; i < numCards; ++i) {
-            index = this.cards.length - 1;
-            player.addCardToHand(this.cards[index]);
-            this.cards.pop();
-        }
+    deal(player) {
+        let x = 900;
+        let y = 600;
+        this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex, true, true);
+        player.addCardToHand(this.cards[this.cards.length - 1])
+        
     }
     
     getCard(index)
@@ -222,12 +221,16 @@ export class Deck {
         return Card.maxZ;
     }
 
-    deleteCard(cardId)
-    {
-        for (let i=0; i < this.cards.length; ++i)
+    deleteCardFromId(cardId) {
+        for (let i = 0; i < this.cards.length; ++i)
             if (this.cards[i].id === cardId) {
                 this.cards.splice(i, 1);
+                break;
             }
+    }
+
+    deleteCard(index) {
+        this.cards.splice(index, 1);
     }
 
     addCard(card)

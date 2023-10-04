@@ -72,7 +72,6 @@ export function notifyCursorUp(card, pos)
 
     if (card.wasPartOfHand)
     {
-      console.log("CARD:", card)
       socket.emit('updatePlayerHand', player.id, card, false);
       player.deleteCardFromHand(card);
       deck.addCardServer(card);
@@ -160,7 +159,6 @@ socket.on('player', (player_) =>
   player.assign(player_);
   document.getElementById("name").textContent = player_.name;
   document.getElementById("color").style.backgroundColor = player_.color;
-  console.log(player_.hand)
   for(const card of player_.hand)
   {
     player.createCard(card)
@@ -232,17 +230,16 @@ socket.on('shuffled', (change) =>
   deck.byDefault();
 });
 
-socket.on('dealing', (hand) =>
+socket.on('dealing', (card) =>
 {
-  for(const card of hand)
-    player.createCard(card)
-
-    player.showHand(window.innerWidth/2);
+  deck.deal(player);
+  player.showHand(window.innerWidth/2);
 });
 
 
 socket.on('cardAddedToHand', (cardId) =>
 {
+  console.log("ADDED", cardId)
   deck.deleteCardFromId(cardId, true);
 });
 
@@ -309,14 +306,16 @@ bySuiteBtn.addEventListener('click', () =>
     // Call the shuffle function inside the Deck class
     deck.shuffle();
   });
-
- dealBtn.addEventListener('click', () =>
- {    
+  
+  dealBtn.addEventListener('click', () =>
+  {    
     // deck.byDefault();
     if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
+    socket.emit('deal', numCards.value);
     // deck.deal(player, numCards.value);
     // player.showHand(window.innerWidth/2);
-    socket.emit('deal', numCards.value);
+
+    // player.showHand(window.innerWidth/2)
   });
 
   myCardsBtn.addEventListener('click', () =>

@@ -23,6 +23,16 @@ const players = []
 
 var numPlayers = 0;
 
+function sleep(ms) {
+  console.log("sleep function called");
+  const start = Date.now();
+  let now = start;
+  while (now - start < ms) {
+    now = Date.now();
+  }
+}
+
+
 for (let i=0; i < colors.length; ++i  )
   players.push(new Player(0, colors[i], names[i]))
 
@@ -174,20 +184,41 @@ io.on('connection', (socket) =>
       });
 
       // Handle card flip from a client
-      socket.on('deal', (numCards) =>
+      socket.on('deal', async (numCards) =>
       {
-
-        for (const player of players)
-        {
-          if (player.id !== 0)
+        for (let i = 0; i < numCards; ++i) {
+          for (const player of players)
           {
-            deck.deal(player, numCards);
-            io.to(player.id).emit('dealing', player.hand);
+            if (player.id !== 0)
+            {
+              const id = player.id;
+              deck.deal(player);
+              io.to(id).emit('dealing', deck.getCard(deck.cards.length - 1));
+              
+              for (const player2 of players)
+              {
+                if (id !== player2.id && player2.id !== 0)
+                {
+                  console.log("GGG", deck.getCard(deck.cards.length - 1).id)
+                  console.log("player2.id", player2.name)
+                  io.to(player2.id).emit('cardAddedToHand', deck.getCard(deck.cards.length - 1).id);
+                }
+              }
+              deck.deleteCard(deck.cards.length - 1);
+              await delay(250);
+
+            }
           }
         }
-        io.emit('assignDeck', deck, deck.getMaxz());
+
+
+        // io.emit('assignDeck', deck, deck.getMaxz());
 
       });
+
+      async function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
 
 
       socket.on('updatePlayerHand', (playerId, card, add) =>
@@ -198,7 +229,7 @@ io.on('connection', (socket) =>
         {
           log("added card " + card.id + " to Hand of " + playerId);
           players[i].addCardToHand(card);
-          deck.deleteCard(card.id);
+          deck.deleteCardFromId(card.id);
           socket.broadcast.emit('cardAddedToHand', card.id);
         }
         else

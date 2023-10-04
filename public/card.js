@@ -171,6 +171,7 @@ export class Card {
     changePosition(pos, zIndex, onHand=false, animation=false, sec=0.5, rot={ z: 0, y: 0 }) {
         
         if (animation) {
+            console.log("SEC", sec)
             this.isDragging = false;
             this.cardElem.style.transition = "all " + sec + "s ease-in-out";
             setTimeout(() => {

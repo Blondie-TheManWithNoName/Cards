@@ -33,6 +33,7 @@ export function notifyCardMove(card, newPosition)
 {
   let cardId = card.id
   if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
+  if (!card.isPartOfHand && card.wasPartOfHand) card.setzIndex();
   socket.emit('moveCard', { cardId, newPosition, player});
 }
 
@@ -287,7 +288,7 @@ bySuiteBtn.addEventListener('click', () =>
     deck.bySuit();
   });
 
-  byRankBtn.addEventListener('cl  ick', () =>
+  byRankBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
     socket.emit('byRank');
@@ -313,12 +314,6 @@ bySuiteBtn.addEventListener('click', () =>
     deck.byDefault();
     if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
     socket.emit('deal', numCards.value);
-  });
-
-  myCardsBtn.addEventListener('click', () =>
-  {
-    // Call the shuffle function inside the Deck class
-    player.myCards();
   });
 
   orderMyHandBtn.addEventListener('click', () =>

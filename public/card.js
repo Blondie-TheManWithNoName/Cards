@@ -16,7 +16,7 @@ export class Card {
     static mouseDown = false;
     static mouseClicked = false;
     static maxZ = 1;
-    static handLine = window.innerHeight - (window.innerHeight * 0.4);
+    static handLine = window.innerHeight - (window.innerHeight * 0.3);
 
     onMouseDown = this.onMouseDown.bind(this)
     onMousemove = this.onMousemove.bind(this)
@@ -89,7 +89,7 @@ export class Card {
         if (!this.isDragging)
         {
             if (this.isPartOfHand && !Card.mouseDown)
-                this.changePosition({x: this.pos.x, y: 580}, this.zIndex, true, true, 0.1);
+                this.changePosition({x: this.pos.x, y: 670}, this.zIndex, true, true, 0.1);
             // else
             //     this.changePosition({x: this.pos.x, y: this.pos.y - 20}, this.zIndex, false, true, 0.1);
 
@@ -101,7 +101,7 @@ export class Card {
     onMouseOut(e) {
         if (!this.isDragging) {
             if (this.isPartOfHand && !Card.mouseDown)
-                this.changePosition({x: this.pos.x, y: 600}, this.zIndex, true, true, 0.1);
+                this.changePosition({x: this.pos.x, y: 690}, this.zIndex, true, true, 0.1);
             // else
             //     this.changePosition({x: this.pos.x, y: this.pos.y + 20}, this.zIndex, false, true, 0.1);
 

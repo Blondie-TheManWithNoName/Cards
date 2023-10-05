@@ -93,7 +93,7 @@ export class Player {
         var centerX = rect.left + rect.width / 2 - 40;
         // var centerY = rect.top + rect.height / 2;
 
-        this.hand[i].changePosition({ x: centerX, y: 600 }, z, true, true, 0.25);
+        this.hand[i].changePosition({ x: centerX, y: 690 }, z, true, true, 0.25, {z: 0, y: 0});
             // card.setFront(true);
             ++z;
             x += 40 * 2;
@@ -121,7 +121,7 @@ export class Player {
 
         if (newPosition.x + 40 < rect.left && index !== 0)
         {
-            this.hand[index - 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 600 }, this.hand[index].zIndex, true, true, 0.25);
+            this.hand[index - 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 690 }, this.hand[index].zIndex, true, true, 0.25);
             let temp = this.hand[index]
             this.hand[index] = this.hand[index - 1];
             this.hand[index - 1] = temp;
@@ -129,7 +129,7 @@ export class Player {
         }
         else if (newPosition.x + 40 > rect.right && index !== this.hand.length - 1)
         {
-            this.hand[index + 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 600 }, this.hand[index].zIndex, true, true, 0.25);
+            this.hand[index + 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 690 }, this.hand[index].zIndex, true, true, 0.25);
             let temp = this.hand[index]
             this.hand[index] = this.hand[index + 1];
             this.hand[index + 1] = temp;

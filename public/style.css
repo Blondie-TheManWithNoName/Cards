@@ -1,7 +1,12 @@
 @font-face {
     font-family: ChampagneAndLimousine;
     src: url(rsc/Champagne\ &\ Limousines.ttf);
-  }
+}
+
+@font-face {
+    font-family: CARDC;
+    src: url(rsc/CARDC.ttf);
+}
 
   html{
     overflow: hidden;
@@ -46,17 +51,21 @@
 
 #hand
 {
-    height: 40vh;
+    height: 30vh;
     background-color: #116E41;
     display: flex;
     align-items: center;
     justify-content: center;
+    bottom: 0;
 }
 
 #mat
 {
-    height: 60vh;
+    height: 70vh;
     background-color: #069969;
+    /* background-color: #0e9a61; */
+    /* background-image: url(rsc/grid-me.png); */
+    /* background-repeat:repeat; */
     /* rotate: 90deg; */
     /* transform: rotateZ('90deg')!important; */
 }
@@ -66,20 +75,45 @@
     --card-height:112px; /* 147 */
     --card-horizontal-space:100px;
 }
+
+
+#menu
+{
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    z-index: 1000 !important;
+    background-color: #116E41;
+    width: 100vw;
+    height: 100px;
+    justify-content: space-between;
+}
+
 .colorAndName
 {
+    /* position: relative; */
     display: inline;
-    height: 20px;
-    width: 20px;
-    display: inline;
+    width: 100px;
+    justify-content: center;
+    /* display: inline; */
+    /* top: 100; */
     
 }
+
 #color{
+    display: inline-block;
     width: 20px;
     height: 20px;
-    display: inline-block;
-    /* display: ; */
     border-radius: 100%;
+}
+
+#name
+{
+    display: inline-block;
+    font-size: 40px;
+    font-weight: bolder;
+    color: #FFBB5C;
+    text-shadow: 1px 2px 0px #9f0034;
 }
 
 .disabled
@@ -87,11 +121,6 @@
     pointer-events: none;
 }
 
-#name
-{
-    position: relative;
-    display: inline-block;
-}
 
 p{
     font-size: 40px;
@@ -155,7 +184,7 @@ main{
 
 .card-front, .card-back{
     border-radius: 6px;
-    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
     background-color: #f5f5f5;
 
     /* box-shadow: 0 3px 3px rgba(63, 63, 63, 0.15); */
@@ -264,12 +293,102 @@ main{
 
 }
 
+button
+{
+    /* text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: CARDC;
+    font-weight:lighter;
+    font-size: 1.5em;
+    border-radius: 5px;
+    color: #272D42;
+    background-color: #f5f5f5;
+    border: 2px solid #072c1a;
+    margin: 3px;
+    padding: 10px;
+    letter-spacing: .1rem; */
+
+    /* text-align: center; */
+    /* cursor: pointer;
+    text-decoration: none;
+    font-weight: bolder;
+    font-size: 1.5em;
+    border-radius: 5px;
+
+    
+    color: #FFBB5C;
+    text-shadow: 1px 2px 0px #9f0034;
+    
+    border: 2px solid #072c1a;
+    margin: 3px;
+    padding: 10px;
+    letter-spacing: .1rem; */
+    
+    position: relative;
+    display: inline-block;
+    margin: 0.5em;
+    padding: 0.25em 1em;
+    border: 0;
+    border-radius: 30px;
+    text-align: center;
+    white-space: nowrap;
+    font-family: ChampagneAndLimousine;
+    background-color: transparent;
+    border: 1px solid #FFBB5C;
+    color: #FFBB5C;
+    /* text-shadow: 1px 1px 0px #9f0034; */
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: bolder;
+    font-size: 1em;
+    transition: all 0.3s ease-in-out;
+
+}
+button:hover{
+    background-color: #f5f5f5;
+    color: #9f0034;
+    text-shadow: none;
+
+}
+
+#numCards
+{
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+     border-radius: 20px;
+     border: 1px solid #FFBB5C;
+     color: #272D42;
+     background-color: #f5f5f5;
+     width: 50px;
+     height: 25px;
+     padding-left: 10px;
+}
+
+#numCards:focus {
+    outline: none;
+}
+
+
+#orderMyHand
+{
+    position:absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+}
+
 .deck{
     /* background-color: #009F6B; */
     /* background-color: #321E1E; */
     background-color: #116E41;
 }  
 
+
+button
+{
+
+}
 /* .move
 {
     animation: cardMove 5s;
@@ -307,3 +426,4 @@ main{
   } */
 
   /* Define the animation */
+

@@ -4,6 +4,7 @@ import { createElement, addChildElement, addListener, removeListener, biggerCard
 import { notifyCardMove, notifyCardFlip, notifyCursorUp, notifyCursorDown } from './client.js';
 
 
+
 // Creation of class Card
 
 export class Card {
@@ -12,7 +13,8 @@ export class Card {
     static imgSrc = 'img/';
     static imgExt = '.svg';
     static imgBackCard = '1B';
-    
+    static mouseDown = false;
+    static mouseClicked = false;
     static maxZ = 1;
     static handLine = window.innerHeight - (window.innerHeight * 0.4);
 
@@ -30,6 +32,7 @@ export class Card {
         this.id = this.value.name + this.suit;
         this.front = front;
         this.zIndex = zIndex;
+        this.index = undefined;
         
         
         this.startTime;
@@ -84,22 +87,37 @@ export class Card {
 
     onMouseHover(e) {
         if (!this.isDragging)
+        {
+            if (this.isPartOfHand && !Card.mouseDown)
+                this.changePosition({x: this.pos.x, y: 580}, this.zIndex, true, true, 0.1);
+            // else
+            //     this.changePosition({x: this.pos.x, y: this.pos.y - 20}, this.zIndex, false, true, 0.1);
+
             addListener(window, 'mousedown', this.onMouseDown)
+
+        }
     }
 
     onMouseOut(e) {
         if (!this.isDragging) {
+            if (this.isPartOfHand && !Card.mouseDown)
+                this.changePosition({x: this.pos.x, y: 600}, this.zIndex, true, true, 0.1);
+            // else
+            //     this.changePosition({x: this.pos.x, y: this.pos.y + 20}, this.zIndex, false, true, 0.1);
 
             removeListener(window, 'mouseup', this.onMouseUp);
             removeListener(window, 'mousedown', this.onMouseDown);
             this.isOut = false;
+            Card.mouseClicked = false;
+
         }
         else this.isOut = true;
 
     }
 
     onMouseDown(e) {
-
+        Card.mouseDown = true;
+        Card.mouseClicked = true;
         this.isDragging = true;
 
         addListener(window, 'mouseup', this.onMouseUp);
@@ -110,7 +128,8 @@ export class Card {
         this.offset.x = e.clientX - this.pos.x;
         this.offset.y = e.clientY - this.pos.y;
         
-        this.setzIndex();
+        if (!this.isPartOfHand)
+            this.setzIndex();
         
         if (!this.wasPartOfHand)
             notifyCursorDown(this.id, this.zIndex)
@@ -140,7 +159,7 @@ export class Card {
     }
 
     onMouseUp(e) {
-
+        Card.mouseDown = false;
         this.isDragging = false;
         removeListener(window, 'mousemove', this.onMousemove)
 
@@ -171,26 +190,31 @@ export class Card {
     changePosition(pos, zIndex, onHand=false, animation=false, sec=0.5, rot={ z: 0, y: 0 }) {
         
         if (animation) {
-            console.log("SEC", sec)
             this.isDragging = false;
             this.cardElem.style.transition = "all " + sec + "s ease-in-out";
             setTimeout(() => {
                 this.cardElem.style.transition = "all 0s";
-            }, 500);
+            }, sec * 100);
         } 
 
         this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
         if (onHand) this.cardElem.style.transform += 'scale(2)';
 
-        this.pos = pos;   
+        this.pos = pos;  
         this.zIndex = zIndex;
-        this.setzIndex();
+        // if (!this.isOnHand)
+            this.setzIndex();
     }
 
     setzIndex() {
-        if (this.zIndex < Card.maxZ)
+        if (this.zIndex < Card.maxZ && !this.isPartOfHand)
             this.zIndex = ++Card.maxZ;
         this.cardElem.style.zIndex = this.zIndex;
+    }
+
+    setzIndex2(zIndex) {
+        this.zIndex = zIndex;
+        this.cardElem.style.zIndex = zIndex;
     }
 
     getPosition() {

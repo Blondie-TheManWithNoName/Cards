@@ -32,6 +32,7 @@ socket.on('connect', () =>
 export function notifyCardMove(card, newPosition)
 {
   let cardId = card.id
+  if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
   socket.emit('moveCard', { cardId, newPosition, player});
 }
 
@@ -57,6 +58,7 @@ export function notifyCursorUp(card, pos)
     if (card.wasPartOfHand)
     {
       // drag and drop
+      player.showHand(window.innerWidth/2);
     }
     else
     {
@@ -239,7 +241,6 @@ socket.on('dealing', (card) =>
 
 socket.on('cardAddedToHand', (cardId) =>
 {
-  console.log("ADDED", cardId)
   deck.deleteCardFromId(cardId, true);
 });
 
@@ -309,13 +310,9 @@ bySuiteBtn.addEventListener('click', () =>
   
   dealBtn.addEventListener('click', () =>
   {    
-    // deck.byDefault();
+    deck.byDefault();
     if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
     socket.emit('deal', numCards.value);
-    // deck.deal(player, numCards.value);
-    // player.showHand(window.innerWidth/2);
-
-    // player.showHand(window.innerWidth/2)
   });
 
   myCardsBtn.addEventListener('click', () =>

@@ -1,4 +1,4 @@
-import { addListener, removeListener } from './util.js';
+import { addListener, createElement, addChildElement } from './util.js';
 import { Card } from './card.js';
 
 export class Player {
@@ -62,28 +62,81 @@ export class Player {
 
     addCardToHand(card) {
         if (!this.checkCard(card.id))
-            this.hand.push(card);
+    {
+        let elem = createElement('div', 'cardBox');
+        elem.id = this.hand.length;
+        addChildElement(document.getElementById("hand"), elem);
+        this.hand.push(card);
+}
         card.isPartOfHand = true;
         card.wasPartOfHand = true;
     }
 
     deleteCardFromHand(card) {
+        document.getElementsByClassName("cardBox")[this.hand.length - 1].remove();
         for (let i = 0; i < this.hand.length; ++i)
             if (this.hand[i].id === card.id) this.hand.splice(i, 1);
-
+        
         card.isPartOfHand = false;
     }
 
     showHand(center) {
-        let x = center - (this.hand.length / 2) * 52 * 2;
-        let y = 600;
         let z = 1;
-        for (const card of this.hand) {
-            console.log(card);
-            card.changePosition({ x: x, y: y }, z, true, true, 0.25);
+        for (let i=0; i < this.hand.length; ++i) {
+            // let x = center - (this.hand.length / 2) * 52 * 2;
+        let x = center - 40;
+
+        var myDiv = document.getElementsByClassName("cardBox")[i];
+
+        // Step 2: Get the coordinates of the center
+        var rect = myDiv.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2 - 40;
+        // var centerY = rect.top + rect.height / 2;
+
+        this.hand[i].changePosition({ x: centerX, y: 600 }, z, true, true, 0.25);
             // card.setFront(true);
             ++z;
             x += 40 * 2;
         }
     }
+
+    getIndex(cardId)
+    {
+        for (let i=0; i < this.hand.length; ++i)
+            if (cardId === this.hand[i].id) return i;
+        
+        return false;
+    }
+
+    check(card, newPosition)
+    {
+        let index = this.getIndex(card.id);
+        console.log("index", index);
+        for (const card of this.hand)
+            console.log(card.id)
+        var myDiv = document.getElementsByClassName("cardBox")[index];
+        var rect = myDiv.getBoundingClientRect();
+        // console.log("newPosition", newPosition.x);
+        // console.log("rect.left", rect.left);
+
+        if (newPosition.x + 40 < rect.left && index !== 0)
+        {
+            this.hand[index - 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 600 }, this.hand[index].zIndex, true, true, 0.25);
+            let temp = this.hand[index]
+            this.hand[index] = this.hand[index - 1];
+            this.hand[index - 1] = temp;
+            this.hand[index - 1].setzIndex2(temp.zIndex - 1);
+        }
+        else if (newPosition.x + 40 > rect.right && index !== this.hand.length - 1)
+        {
+            this.hand[index + 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 600 }, this.hand[index].zIndex, true, true, 0.25);
+            let temp = this.hand[index]
+            this.hand[index] = this.hand[index + 1];
+            this.hand[index + 1] = temp;
+            this.hand[index + 1].setzIndex2(temp.zIndex + 1);
+        }
+    }
 }
+
+
+

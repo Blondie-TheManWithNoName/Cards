@@ -23,16 +23,6 @@ const players = []
 
 var numPlayers = 0;
 
-function sleep(ms) {
-  console.log("sleep function called");
-  const start = Date.now();
-  let now = start;
-  while (now - start < ms) {
-    now = Date.now();
-  }
-}
-
-
 for (let i=0; i < colors.length; ++i  )
   players.push(new Player(0, colors[i], names[i]))
 
@@ -67,7 +57,7 @@ io.on('connection', (socket) =>
 
       socket.on('disconnect', () =>
       {
-        console.log("TOTAL USERS: " + players.length)
+        log("TOTAL USERS: " + players.length)
         --numPlayers
       });
     }
@@ -83,8 +73,8 @@ io.on('connection', (socket) =>
         socket.emit('player', players[index]);
         
         // Server Logs
-        console.log('NEW USER ID: ' + players[index].id + " NAME: " + players[index].name + " and COLOR: " + players[index].color);
-        console.log("TOTAL USERS: " + numPlayers);
+        log('NEW USER ID: ' + players[index].id + " NAME: " + players[index].name + " and COLOR: " + players[index].color);
+        log("TOTAL USERS: " + numPlayers);
       });
     
     
@@ -198,11 +188,7 @@ io.on('connection', (socket) =>
               for (const player2 of players)
               {
                 if (id !== player2.id && player2.id !== 0)
-                {
-                  console.log("GGG", deck.getCard(deck.cards.length - 1).id)
-                  console.log("player2.id", player2.name)
                   io.to(player2.id).emit('cardAddedToHand', deck.getCard(deck.cards.length - 1).id);
-                }
               }
               deck.deleteCard(deck.cards.length - 1);
               await delay(250);
@@ -210,10 +196,6 @@ io.on('connection', (socket) =>
             }
           }
         }
-
-
-        // io.emit('assignDeck', deck, deck.getMaxz());
-
       });
 
       async function delay(ms) {
@@ -251,7 +233,7 @@ io.on('connection', (socket) =>
           colors.push(players[i].color)
           names.push(players[i].name)
           players[i].id = 0;
-          console.log("TOTAL USERS: " + numPlayers)
+          log("TOTAL USERS: " + numPlayers)
         }
         --numPlayers;
       });
@@ -268,7 +250,7 @@ server.on('error', (err) =>
 
 server.listen(PORT, () =>
 {
-    console.log("SERVER READY")
+    log("SERVER READY")
 });
 
 function log(msg)

@@ -8,6 +8,14 @@
 
   }
 
+.cardBox
+{
+    height: 100%;
+    width: var(--card-width);
+    /* background-color: red; */
+}
+
+  
 .color{
     display: inline-flex;
     width: 50px;
@@ -94,6 +102,7 @@ p{
 }
 body{
     font-family: ChampagneAndLimousine;
+    margin: 0;
     /* transform: translate(0, 100vw) rotate(90deg); */
 
 }

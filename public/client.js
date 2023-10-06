@@ -298,8 +298,8 @@ bySuiteBtn.addEventListener('click', () =>
   flipBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
-    socket.emit('flipDeck');
     deck.flipDeck();
+    socket.emit('flipDeck');
   });
 
 

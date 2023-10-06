@@ -22,10 +22,14 @@ export class Deck {
     }
 
     flipDeck() {
+        
         this.front = !this.front;
         for (const card of this.cards)
-            card.flipCard(this.front);
-
+        {
+            // console.log("HEY HEY")
+            card.flipCard(false, this.front, false);
+        }
+    
         // this.cards[this.value.length-1][0].flipCard(this.front);
         // this.cards[this.value.length-1][1].flipCard(this.front);
     }
@@ -85,15 +89,15 @@ export class Deck {
         }
     }
 
-    byDefault(hands) {
+    byDefault() {
 
-        this.x = 100;
-        this.y = 100;
+        let x = 100;
+        let y = 100;
         for (const card of this.cards) {
-            card.changePosition({ x: this.x, y: this.y }, this.z, false, true)
+            card.changePosition({ x: x, y: y }, this.z, false, true)
             ++this.z;
-            this.x += 0.5;
-            this.y += 0.5;
+            x += 0.5;
+            y += 0.5;
 
         }
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)
@@ -106,7 +110,7 @@ export class Deck {
         this.initializeDeck();
         for (const card of this.cards) {
             this.z = 1;
-            card.changePosition({ x: x, y: y }, this.z, false, true)
+            card.changePosition({ x: x, y: y }, this.z, false, true);
 
             if (i < 12) {
                 ++this.z;

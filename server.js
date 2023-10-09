@@ -15,7 +15,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
-const LOG = true
+const LOG = false
 
 const colors = ["#ED553B", "#F6D55C", "#65451F", "#20639B"];
 const names = ["Fox", "Lion", "Eagle", "Dolphin"];

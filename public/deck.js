@@ -16,9 +16,11 @@ export class Deck {
         if (deck === undefined)
             this.initializeDeck();
         else {
+            
             this.front = deck.front;
             Card.maxZ = maxZ;
             this.initializeDeck(deck);
+            console.log("Card.maxZ CLIENT", Card.maxZ)
         }
     }
 

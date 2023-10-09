@@ -136,10 +136,12 @@ export class Card {
 
         this.offset.x = e.clientX - this.pos.x;
         this.offset.y = e.clientY - this.pos.y;
-
         if (!this.isPartOfHand)
             this.setzIndex();
-
+        
+        // console.log("this.isPartOfHand", this.isPartOfHand)
+        // console.log("Card.zMax", Card.maxZ)
+        // console.log("card.zIndex", this.zIndex)
         if (!this.wasPartOfHand)
             notifyCursorDown(this.id, this.zIndex)
     }
@@ -193,7 +195,6 @@ export class Card {
     flipCard(notify = false, front, animation=true) {
         
         (front === undefined) ? this.front = !this.front : this.front = front;
-        console.log("EHEM")
 
         if (animation)
         {
@@ -248,15 +249,17 @@ export class Card {
         if (onHand) this.cardElem.style.transform += 'scale(2)';
 
         this.pos = pos;
-        this.zIndex = zIndex;
+        if (zIndex !== undefined) this.setzIndex2(zIndex);
         // if (!this.isOnHand)
-        this.setzIndex();
+        // this.setzIndex();
     }
 
     setzIndex() {
+
         if (this.zIndex < Card.maxZ && !this.isPartOfHand)
             this.zIndex = ++Card.maxZ;
         this.cardElem.style.zIndex = this.zIndex;
+
     }
 
     setzIndex2(zIndex) {

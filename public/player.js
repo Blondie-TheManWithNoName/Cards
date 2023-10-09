@@ -57,7 +57,7 @@ export class Player {
     }
 
     createCard(card) {
-        this.addCardToHand(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front));
+        this.addCardToHand(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
     }
 
     addCardToHand(card) {
@@ -111,9 +111,6 @@ export class Player {
     check(card, newPosition)
     {
         let index = this.getIndex(card.id);
-        console.log("index", index);
-        for (const card of this.hand)
-            console.log(card.id)
         var myDiv = document.getElementsByClassName("cardBox")[index];
         var rect = myDiv.getBoundingClientRect();
         // console.log("newPosition", newPosition.x);

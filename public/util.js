@@ -60,7 +60,7 @@ export function randomColor()
 
 
 
-export function quickSort(arr) {
+export function quickSort(arr, by = 'value.rank') {
     if (arr.length <= 1) {
       return arr;
     }
@@ -70,14 +70,31 @@ export function quickSort(arr) {
     const right = [];
   
     for (let i = 1; i < arr.length; i++) {
-      if (arr[i].value.rank < pivot.value.rank) {
+      const pivotValue = getNestedProperty(pivot, by);
+      const arrValue = getNestedProperty(arr[i], by);
+      if (arrValue < pivotValue) {
         left.push(arr[i]);
       } else {
         right.push(arr[i]);
       }
     }
   
-    return [...quickSort(left), pivot, ...quickSort(right)];
+    return [...quickSort(left, by), pivot, ...quickSort(right, by)];
+  }
+  
+  function getNestedProperty(obj, propPath) {
+    const props = propPath.split('.');
+    let value = obj;
+  
+    for (const prop of props) {
+      if (value.hasOwnProperty(prop)) {
+        value = value[prop];
+      } else {
+        return undefined; // Property doesn't exist
+      }
+    }
+  
+    return value;
   }
 
 export function biggerCard(card, inside)

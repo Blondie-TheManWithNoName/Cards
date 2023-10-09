@@ -77,6 +77,7 @@ export function notifyCursorUp(card, pos)
     {
       socket.emit('updatePlayerHand', player.id, card, false);
       player.deleteCardFromHand(card);
+      console.log("cardIndex", card.index)
       deck.addCardServer(card);
       player.showHand(window.innerWidth/2);
     }

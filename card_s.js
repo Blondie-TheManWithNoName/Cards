@@ -63,9 +63,11 @@ export class Card {
           this.front = front;
         }
 
-        changePosition(pos)
+        changePosition(pos, zIndex)
         {
-          this.pos = pos;         
+          this.pos = pos;     
+          this.zIndex = zIndex;
+          this.setzIndex();   
         }
         
         getPosition()

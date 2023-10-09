@@ -1,4 +1,4 @@
-import { cardValueEnum, cardSuitEnum, addListener } from './util.js';
+import { cardValueEnum, cardSuitEnum, addListener, quickSort } from './util.js';
 import { Card } from './card.js';
 import { Player } from './player.js';
 import { notifyShuffle } from './client.js';
@@ -12,6 +12,7 @@ export class Deck {
         this.front = true;
         this.z = 1;
         this.cards = []
+        this.sorted = deck.sorted;
         if (deck === undefined)
             this.initializeDeck();
         else {
@@ -38,6 +39,7 @@ export class Deck {
         let currentIndex = this.cards.length;
         let temporaryValue, randomIndex;
         let change = []
+        this.sorted = false;
         while (currentIndex !== 0) {
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
@@ -105,53 +107,78 @@ export class Deck {
     }
 
     bySuit() {
-        let x, y = 100;
-        let i = 0
-        this.initializeDeck();
+        let x = 100; 
+        let y = 100;
+        let i = 0;
+        let previous = 0;
+
+        if (!this.sorted) this.cards = quickSort(this.cards, 'index');
+
         for (const card of this.cards) {
             this.z = 1;
-            card.changePosition({ x: x, y: y }, this.z, false, true);
+            
+            while (card.index - previous >= 1)
+            {
 
-            if (i < 12) {
-                ++this.z;
-                x += 50;
-                ++i;
+                if (i < 12) {
+                    ++this.z;
+                    x += 50;
+                    ++i;
+                }
+                else {
+                    x = 100;
+                    y += 130;
+                    i = 0;
+                }
+                ++previous;
+
             }
-            else {
-                x = 100;
-                y += 160;
-                i = 0;
-            }
+            card.changePosition({ x: x, y: y }, this.z, false, true);
+            previous = card.index;
+
         }
     }
 
     byRank() {
         
-        // for (const card of this.cards)
-        //     console.log(card.index)
-
-        // this.initializeDeck();
-        // let x, y = 100;
-        // let i, j = 0;
-        // for (const card of this.cards) {
-        //     this.z = 1;
-        //     card.changePosition({ x: x, y: y }, this.z, false, true)
-        //     ++this.z;
-        //     if (i < 12) {
-        //         y += 160;
-        //         ++i;
-        //     }
-        //     else {
-        //         y = 100;
-        //         x = 100 + (j) * 15;
-        //         i = 0;
-        //     }
-        //     if (i % 4 == 0 && i != 0) {
-        //         y = 100;
-        //         x += 350;
-        //         ++j;
-        //     }
-        // }
+        if (!this.sorted) this.cards = quickSort(this.cards, 'index');
+        
+        let x = 100;
+        let y = 100;
+        let i=0;
+        let j=0;
+        let previous = 0;
+        for (const card of this.cards)
+        {
+            this.z = 1;
+            while (card.index - previous >= 1)
+            {
+                
+                if (i < 12)
+                {
+                    y += 130;
+                    ++i;
+                }
+                else
+                {
+                    y = 100;
+                    x = 100 + (j)*15;
+                    i = 0;
+                }
+                if (i%4 == 0 && i != 0)
+                {
+                    y = 100;
+                    x += 350;
+                    ++j;
+                    
+                }
+                ++previous;
+            }
+            
+            card.changePosition({ x: x, y: y }, this.z, false, true)
+            ++this.z;
+            previous = card.index;
+        }
 
         // this.cards[this.value.length-1][0].changePosition({x: 100*5, y: 100}, this.z)
         // this.cards[this.value.length-1][1].changePosition({x: 100*6, y: 100}, this.z)
@@ -190,7 +217,6 @@ export class Deck {
         let i;
         Card.maxZ = maxZ;
         this.front = deck.front;
-        console.log("this.cards.length", this.cards.length)
         for (i =0; i < deck.cards.length; ++i)
         {
             this.cards[i].assign(deck.cards[i]);
@@ -212,21 +238,46 @@ export class Deck {
     }
 
     deleteCard(index, dom = false) {
-        console.log("deleting", this.cards[index])
         if (dom) this.cards[index].deleteCard();
         this.cards.splice(index, 1);
     }
 
     addCard(card) {
         this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
+        if (card.index !== this.cards.length - 1)
+            this.sorted = false;
+
     }
 
     addCardServer(card) {
+        
+        // We put the card on top
         this.cards.push(card);
+        if (card.index !== this.cards.length - 1)
+            this.sorted = false;
+
+        // let previous = 0;
+        // if (this.sorted)
+        // {
+        //     for (let i = 0; i < this.cards.length; ++i)
+        //     {
+        //         if (this.cards[i + 1] === undefined) this.cards.push(card);
+        //         else
+        //         {
+        //             if (this.cards[i] >this.cards[i + 1])
+        //         }
+        //         this.cards.splice(i, 0, card);
+        //         previous = this.cards[i].index;
+        //     }
+        // }
+        // else
+        //     this.cards.push(card);
+
     }
 
     assignFromShuffle(change) {
         let temporaryValue;
+        this.sorted = false;
         for (let i = 0; i < change.length; ++i) {
             temporaryValue = this.cards[change[i][0]]
             this.cards[change[i][0]] = this.cards[change[i][1]];

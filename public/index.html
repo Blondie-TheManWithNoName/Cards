@@ -10,14 +10,17 @@
 <div id="background"></div>
 <body class="deck">
     <div id="menu">
+        <div class="leave">
+            <button tabindex="-1" id="leave">Leave</button>
+        </div>
         <div class="buttons">
-            <button tabindex="-1" id="byDefault">Default</button>
+            <button tabindex="-1" id="byDefault">Stack</button>
             <button tabindex="-1" id="bySuite">Suite</button>
             <button tabindex="-1" id="byRank">Rank</button>
             <button tabindex="-1" id="flip">Flip</button>
             <button tabindex="-1" id="shuffle">Shuffle</button>
             <button tabindex="-1" id="deal">Deal</button>
-            <input tabindex="-1" type="number" id="numCards" name="numCards" value="5">
+            <input tabindex="-1" type="number" id="numCards" name="numCards" value="5" min="1" max="52" required>
             <!-- <button id="connect">Connect</button> -->
         </div>
         <div class="colorAndName">
@@ -28,9 +31,10 @@
 
     </div>
     <div id="game">
-        <div id="mat" style="height: 70vh;"></div>
+        <div id="mat" style="height: 65vh;"></div>
+        <div id="toHand"></div>
         <div id="hand">
-        <button id="orderMyHand">Order My Hand</button>
+        <button id="orderMyHand">Order</button>
     </div>
 </div>
 </body>

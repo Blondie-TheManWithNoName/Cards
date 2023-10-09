@@ -12,7 +12,21 @@ const cardSize = {x: 80, y: 112}
 
 document.getElementById('game').classList.add("disabled");
 
+const toHand = document.getElementById("toHand")
 
+const eqSize = getEquation(toHand.getBoundingClientRect().top, 1, toHand.getBoundingClientRect().bottom, 2);
+
+
+console.log(toHand.getBoundingClientRect().top)
+console.log(toHand.getBoundingClientRect().bottom)
+
+// Get equation to move the cover-section
+function getEquation(x1, y1, x2, y2)
+{
+  let m = (y2 - y1) / (x2 - x1);
+  let b = y1 - (m * x1);
+  return [m, b];
+}
 
 // CONNECTION
 socket.on('connect', () =>
@@ -23,7 +37,6 @@ socket.on('connect', () =>
 
 
 
-
   /////////////////////
  /// S E N D E R S ///
 /////////////////////
@@ -31,9 +44,12 @@ socket.on('connect', () =>
 // Function to notify the server about a card position change
 export function notifyCardMove(card, newPosition)
 {
-  let cardId = card.id
+  let cardId = card.id;
+
   if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
   if (!card.isPartOfHand && card.wasPartOfHand) card.setzIndex();
+  if (newPosition.y >= toHand.getBoundingClientRect().top && newPosition.y <= toHand.getBoundingClientRect().bottom && !card.isPartOfHand)
+    card.cardElem.style.transform += 'scale(' + (newPosition.y*eqSize[0] + eqSize[1]) + ')';
   socket.emit('moveCard', { cardId, newPosition, player});
 }
 
@@ -52,6 +68,8 @@ export function notifyCursorDown(cardId, zIndex)
 // Function to notify the server when cur
 export function notifyCursorUp(card, pos)
 {
+
+
 
 
   if (card.isPartOfHand)

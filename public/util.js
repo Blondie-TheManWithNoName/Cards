@@ -116,4 +116,26 @@ export function biggerCard(card, inside)
 }
 
       // for (const card of deck.cards)
-      //   console.log(card.id)
+      //   console.log(card.id)]
+
+
+    //   function cubicBezierScale(t) {
+    //     const p0 = 0;
+    //     const p1 = 0.51;
+    //     const p2 = 0.42;
+    //     const p3 = 0.98;
+      
+    //     const tSquared = t * t;
+    //     const tCubed = tSquared * t;
+      
+    //     const scale = p0 * (1 - tCubed) + p1 * (3 * tSquared - 2 * tCubed) + p2 * (3 * tCubed - 2 * tSquared) + p3 * tCubed;
+      
+    //     // Scale between 1 and 2
+    //     return 1 + scale;
+    //   }
+    //   if (newPosition.y >= toHand.getBoundingClientRect().top && newPosition.y <= toHand.getBoundingClientRect().bottom && !card.isPartOfHand)
+    //   {
+    //     card.cardElem.style.transform += 'scale(' + (Math.min(Math.max(cubicBezierScale((newPosition.y - minY) / (maxY - minY)), 1), 2)) + ')';
+    //       console.log('scale(' + (cubicBezierScale((newPosition.y - minY) / (maxY - minY))) + ')')
+    //     //   console.log((eqSize[0]*newPosition.y) + eqSize[1]);
+    //   }      

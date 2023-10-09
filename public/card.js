@@ -156,16 +156,16 @@ export class Card {
     }
 
     onMousemove(e) {
-
+        
+        this.isOnHand(Math.round(e.clientY - this.offset.y));
         this.cardElem.style.transform = 'translate3d(' + Math.round(e.clientX - this.offset.x) + 'px, ' + Math.round(e.clientY - this.offset.y) + 'px, 0)'
         if (this.isPartOfHand) this.cardElem.style.transform += 'scale(2)';
-
-
+        
+        
         // Notify Server
         notifyCardMove(this, { x: e.clientX - this.offset.x, y: e.clientY - this.offset.y });
-
+        
         // Check if its on Hand
-        this.isOnHand(Math.round(e.clientY - this.offset.y));
 
     }
 

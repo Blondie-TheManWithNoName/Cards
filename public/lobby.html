@@ -6,20 +6,37 @@
     <title>Cards</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="deck" id="div-lobby">
+<body class="div-lobby">
     <div class="lobby-container">
         <div class="lobby-container-btn">
+            <div class="title-container">
+                <p class="title">CARD MAT</p>
+            </div>
             <div class="lobby-btn">
-                <a class="lobby-button" href="index.html">Create Room</a>
-                <a class="lobby-button" id="join-button">Join Room</a>
+                <button class="lobby-button" id="create-button">Create Room</button>
+                <button class="lobby-button" id="join-button">Join Room</button>
             </div>
             
+
             <div class="lobby-join">
-                <a  id="back-button">Back</a>
-                <input type="text" id="roomNumber" name="numCards" maxlength="4" pattern="\d{4}">
+                <div>
+                    <button id="back-button">Back</button>
+                </div>
+
+                <div class="lobby-cards">
+                    <p id="roomCode">ROOM CODE</p>
+                    <input type="text" id="roomNumber" name="numCards" maxlength="4" pattern="\d{4}">
+                    <button  id="join-button2">Join</button>
+                </div>
+                
+            </div>
+            <div id="mat">
             </div>
         </div>
     </div>
+    <div id="connect"></div>
+
 </body>
-<script src="lobby.js"></script>
+<script type="module" src="lobby.js"></script>
+<script type="module" src="card_lobby.js"></script>
 </html>

@@ -1,4 +1,4 @@
-import { addListener, createElement, addChildElement } from './util.js';
+import { addListener, createElement, addChildElement, quickSort } from './util.js';
 import { Card } from './card.js';
 
 export class Player {
@@ -136,6 +136,12 @@ export class Player {
             this.hand[index + 1].setzIndex2(temp.zIndex + 1);
         }
     }
+
+    order()
+    {
+        this.hand = quickSort(this.hand);
+    }
+
 }
 
 

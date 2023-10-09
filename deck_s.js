@@ -59,7 +59,7 @@ export class Deck {
             for (let i = 0; i < this.suit.length - 1; ++i) {
                 // cards[i] = []
                 for (let j = 0; j < this.value.length - 1; ++j) {
-                    this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z));
+                    this.cards.push(new Card(this.suit[i], this.value[j], {x:this.x, y:this.y}, this.z, this.front, this.cards.length));
                 }
             }
         }
@@ -239,7 +239,7 @@ export class Deck {
         //     if (this.cards[i].id === cardId) {
         //         return
         //     }
-        this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex));
+        this.cards.push(new Card(card.suit, card.value, {x:card.pos.x, y:card.pos.y}, card.zIndex, card.front, card.index));
     }
 
     assignFromShuffle(change)

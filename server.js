@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 
 import {Deck} from './deck_s.js';
 import {Player} from './player_s.js';
+import { cardValueEnum, cardSuitEnum } from './util.js';
 
 
 const app = express();
@@ -20,6 +21,7 @@ const colors = ["#ED553B", "#F6D55C", "#65451F", "#20639B"];
 const names = ["Fox", "Lion", "Eagle", "Dolphin"];
 const deck = new Deck();
 const players = []
+const rooms = []
 
 var numPlayers = 0;
 
@@ -47,14 +49,25 @@ function onConnection(id, color)
 }
 
 
+function createCode()
+{
+  let code = "";
+  let list = Object.values(cardValueEnum).map(card => card.name);
+  for (let i=0; i < 4; ++i)
+    code += list[Math.floor(Math.random()*list.length)];
+
+  return code;
+}
+
 io.on('connection', (socket) =>
 {
-
+  
+  
     ++numPlayers;
     if (numPlayers > 4)
     {
       socket.emit('chooseColor', [], "Server full! ");
-
+      
       socket.on('disconnect', () =>
       {
         log("TOTAL USERS: " + players.length)
@@ -63,9 +76,9 @@ io.on('connection', (socket) =>
     }
     else
     {
-      socket.emit('deck', deck, deck.getMaxz());
-      socket.emit('chooseColor', colorLeft(), "Choose a color: ");
-
+      let code = createCode();
+      socket.emit('deck', deck, deck.getMaxz(), code);
+      socket.emit('chooseColor', colorLeft(), "CHOOSE A COLOR");
       socket.on('initialInfo', (color) =>
       {
         // Set player ID and Color and send it

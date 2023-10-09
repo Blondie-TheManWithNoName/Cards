@@ -1,7 +1,6 @@
 
 
 import { createElement, addChildElement, addListener, removeListener } from './util.js';
-import { notifyCardMove, notifyCardFlip, notifyCursorUp, notifyCursorDown } from './client.js';
 
 
 
@@ -23,17 +22,19 @@ export class Card {
     onMouseUp = this.onMouseUp.bind(this)
 
 
-    constructor(suit, value, pos = { x: 0, y: 0 }, zIndex = 1, front = true, index=undefined, rot=0) {
+    constructor(suit, value, pos = { x: 0, y: 0 }, zIndex = 1, front = true, rot=0, code=false) {
 
         // Card Properties
         this.suit = suit;
         this.value = value;
         this.pos = { x: pos.x, y: pos.y }
+        this.posOG = { x: pos.x, y: pos.y }
         this.id = this.value.name + this.suit;
         this.front = front;
         this.zIndex = zIndex;
-        this.index = index;
-
+        this.index = undefined;
+        this.rot = rot;
+        this.code = code;
 
         this.startTime;
         if (Card.maxZ < zIndex) Card.maxZ = zIndex;
@@ -53,7 +54,8 @@ export class Card {
         this.cardElem = createElement('div', 'card');
         this.cardElem.id = this.id;
         this.cardElem.style.zIndex = this.zIndex;
-        this.cardElem.style.transform = 'translate(' + this.pos.x + 'px,' + this.pos.y + 'px)';
+        this.cardElem.style.transform = 'translate(' + this.pos.x + 'px,' + this.pos.y + 'px) rotateZ(' + this.rot + 'deg)';
+        if (!this.code)  this.cardElem.style.transform += 'scale(1.5)'
 
         this.cardInnerElem = createElement('div', 'card-inner');
         if (!this.front) this.cardInnerElem.style.transform = 'rotateY(-180deg)';
@@ -72,10 +74,13 @@ export class Card {
         addChildElement(this.cardInnerElem, this.cardBackElem);
         addChildElement(this.cardElem, this.cardInnerElem);
         addChildElement(document.getElementById("mat"), this.cardElem);
+        // Listeners
+        if (!this.code)
+        {
+            addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
+            addListener(this.cardElem, 'mouseout', this.onMouseOut.bind(this))
 
-        // Listeners     
-        addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
-        addListener(this.cardElem, 'mouseout', this.onMouseOut.bind(this))
+        }
 
     }
 
@@ -86,38 +91,33 @@ export class Card {
     }
 
     onMouseHover(e) {
-        if (!this.isDragging) {
-            // else
-            //     this.changePosition({x: this.pos.x, y: this.pos.y - 20}, this.zIndex, false, true, 0.1);
-            
+        if (!this.isDragging && !Card.mouseClicked) {
+
             addListener(window, 'mousedown', this.onMouseDown)
-            if (this.isPartOfHand && !Card.mouseDown)
-            {
-                this.changePosition({ x: this.pos.x, y: 650 }, this.zIndex, true, true, 0.15);
-            }
+            this.changePosition({x: this.pos.x + 35 * Math.sin(this.degreesToRadians(this.rot)), y: this.pos.y - 35 * Math.cos(this.degreesToRadians(this.rot))}, this.zIndex, false, true, 0.250, this.rot)
 
         }
     }
-    
-    async  delay(ms) {
+
+    degreesToRadians(degrees) {
+        return (degrees * Math.PI) / 180;
+      }
+      async  delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
-      
-      async onMouseOut(e) {
-          if (!this.isDragging) {
-              if (this.isPartOfHand && !Card.mouseDown)
-              {
-                //   await this.delay(75);
-                  this.changePosition({ x: this.pos.x, y: 690 }, this.zIndex, true, true, 0.15);
-
-              }
+    async onMouseOut(e) {
+        if (!this.isDragging) {
             // else
             //     this.changePosition({x: this.pos.x, y: this.pos.y + 20}, this.zIndex, false, true, 0.1);
-
+            
             removeListener(window, 'mouseup', this.onMouseUp);
             removeListener(window, 'mousedown', this.onMouseDown);
             this.isOut = false;
             Card.mouseClicked = false;
+            await this.delay(75);
+            // if (Card.mouseClicked) 
+            this.changePosition(this.posOG, this.zIndex, false, true, 0.5, this.rot)
+            // else this.changePosition({x: this.pos.x - 35 * Math.sin(this.degreesToRadians(this.rot)), y: this.pos.y + 35 * Math.cos(this.degreesToRadians(this.rot))}, this.zIndex, false, true, 0.25, this.rot)
 
         }
         else this.isOut = true;
@@ -128,42 +128,32 @@ export class Card {
         Card.mouseDown = true;
         Card.mouseClicked = true;
         this.isDragging = true;
-
         addListener(window, 'mouseup', this.onMouseUp);
         addListener(window, 'mousemove', this.onMousemove);
         e.preventDefault();
         this.startTime = Date.now();
-
         this.offset.x = e.clientX - this.pos.x;
         this.offset.y = e.clientY - this.pos.y;
 
-        if (!this.isPartOfHand)
-            this.setzIndex();
-
-        if (!this.wasPartOfHand)
-            notifyCursorDown(this.id, this.zIndex)
-    }
+    
+}
 
     isOnHand(pos) {
-
+        
         if (pos < Card.handLine)
-            this.isPartOfHand = false;
-        else  //- (pos.y >= handLine cardSize.y/2.5))
+        this.isPartOfHand = false;
+    else  //- (pos.y >= handLine cardSize.y/2.5))
             this.isPartOfHand = true;
 
-    }
-
-    onMousemove(e) {
-
-        this.cardElem.style.transform = 'translate3d(' + Math.round(e.clientX - this.offset.x) + 'px, ' + Math.round(e.clientY - this.offset.y) + 'px, 0)'
-        if (this.isPartOfHand) this.cardElem.style.transform += 'scale(2)';
+        }
+        
+        onMousemove(e) {
+            
+       this.cardElem.style.transform = 'translate3d(' + Math.round(e.clientX - this.offset.x) + 'px, ' + Math.round(e.clientY - this.offset.y) + 'px, 0) scale(1.5) rotateZ(' + this.rot + 'deg)';
 
 
         // Notify Server
-        notifyCardMove(this, { x: e.clientX - this.offset.x, y: e.clientY - this.offset.y });
 
-        // Check if its on Hand
-        this.isOnHand(Math.round(e.clientY - this.offset.y));
 
     }
 
@@ -178,13 +168,12 @@ export class Card {
             this.flipCard(true);
 
         }
-
-        // Update position of the card
-        this.pos.x = e.clientX - this.offset.x
-        this.pos.y = e.clientY - this.offset.y
+        // this.changePosition(this.pos, this.zIndex, false, true, 0.5, this.rot)
+        // // Update position of the card
+        // this.pos.x = e.clientX - this.offset.x
+        // this.pos.y = e.clientY - this.offset.y
 
         // Notify Server
-        notifyCursorUp(this, this.pos)
 
         if (this.isOut) this.onMouseOut();
 
@@ -193,7 +182,6 @@ export class Card {
     flipCard(notify = false, front, animation=true) {
         
         (front === undefined) ? this.front = !this.front : this.front = front;
-        console.log("EHEM")
 
         if (animation)
         {
@@ -223,8 +211,7 @@ export class Card {
         }
 
         // Notify server if it isnt part of a Hand and its not coming from the server
-        if (!this.isPartOfHand && notify)
-            notifyCardFlip(this.id)
+
     }
 
     changeTransitionTime() {
@@ -234,23 +221,26 @@ export class Card {
 
     }
 
-    changePosition(pos, zIndex, onHand = false, animation = false, sec = 0.5, rot = { z: 0, y: 0 }) {
+    changePosition(pos, zIndex, onHand = false, animation = false, sec = 0.5, rot = 0, change=false) {
 
         if (animation) {
             this.isDragging = false;
-            this.cardElem.style.transition = "all " + sec + "s ease-in-out";
+            this.cardElem.style.transition = "all " + sec + "s cubic-bezier(0.4, 0, 0.2, 1)";
             setTimeout(() => {
                 this.cardElem.style.transition = "all 0s";
             }, sec * 100);
         }
 
-        this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
-        if (onHand) this.cardElem.style.transform += 'scale(2)';
+        this.cardElem.style.transform = 'translate3d(' + Math.round(pos.x) + 'px, ' + Math.round(pos.y) + 'px, 0) rotateZ(' + rot + 'deg)';
+        if (!this.code)  this.cardElem.style.transform += 'scale(1.5)'
+
 
         this.pos = pos;
+        if (change) this.posOG = pos;
         this.zIndex = zIndex;
+        this.rot = rot;
         // if (!this.isOnHand)
-        this.setzIndex();
+        // this.setzIndex();
     }
 
     setzIndex() {

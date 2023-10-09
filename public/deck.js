@@ -58,12 +58,12 @@ export class Deck {
             if (deck === undefined) {
                 for (let i = 0; i < this.suit.length - 1; ++i) {
                     for (let j = 0; j < this.value.length - 1; ++j)
-                        this.cards.push(new Card(this.suit[i], this.value[j], { x: 0, y: 0 }, this.z));
+                        this.cards.push(new Card(this.suit[i], this.value[j], { x: 0, y: 0 }, this.z, true, this.cards.length));
                 }
             }
             else {
                 for (const card of deck.cards)
-                    this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front));
+                    this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
             }
         }
         else {
@@ -126,28 +126,32 @@ export class Deck {
     }
 
     byRank() {
-        this.initializeDeck();
-        let x, y = 100;
-        let i, j = 0;
-        for (const card of this.cards) {
-            this.z = 1;
-            card.changePosition({ x: x, y: y }, this.z, false, true)
-            ++this.z;
-            if (i < 12) {
-                y += 160;
-                ++i;
-            }
-            else {
-                y = 100;
-                x = 100 + (j) * 15;
-                i = 0;
-            }
-            if (i % 4 == 0 && i != 0) {
-                y = 100;
-                x += 350;
-                ++j;
-            }
-        }
+        
+        // for (const card of this.cards)
+        //     console.log(card.index)
+
+        // this.initializeDeck();
+        // let x, y = 100;
+        // let i, j = 0;
+        // for (const card of this.cards) {
+        //     this.z = 1;
+        //     card.changePosition({ x: x, y: y }, this.z, false, true)
+        //     ++this.z;
+        //     if (i < 12) {
+        //         y += 160;
+        //         ++i;
+        //     }
+        //     else {
+        //         y = 100;
+        //         x = 100 + (j) * 15;
+        //         i = 0;
+        //     }
+        //     if (i % 4 == 0 && i != 0) {
+        //         y = 100;
+        //         x += 350;
+        //         ++j;
+        //     }
+        // }
 
         // this.cards[this.value.length-1][0].changePosition({x: 100*5, y: 100}, this.z)
         // this.cards[this.value.length-1][1].changePosition({x: 100*6, y: 100}, this.z)
@@ -214,7 +218,7 @@ export class Deck {
     }
 
     addCard(card) {
-        this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex));
+        this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
     }
 
     addCardServer(card) {

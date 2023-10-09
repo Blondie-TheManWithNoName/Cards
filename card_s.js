@@ -12,7 +12,7 @@ export class Card {
 
         mouseDown = false;
         
-        constructor(suit, value, pos, zIndex, front)
+        constructor(suit, value, pos, zIndex, front, index)
         {
             this.cardUp = false;
             this.flippingcardElem
@@ -20,6 +20,8 @@ export class Card {
             this.cardFrontImg
             this.suit = suit;
             this.value =  value;
+            this.index = index;
+
             this.id = this.value.name + this.suit;
             this.startTime;
             this.player = undefined;

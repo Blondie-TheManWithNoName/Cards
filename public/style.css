@@ -10,8 +10,27 @@
 
   html{
     overflow: hidden;
+    user-select: none;
 
   }
+
+.title-container{
+    outline-offset: -5px;
+    /* padding: 40px; */
+    width: 500px;
+    height: 500px;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    /* align-items: center; */
+}
+
+.title
+{
+    font-size: 3.5em;
+    text-shadow: 0.03em 0.06em 0em #9f0034;
+
+}
 
 .cardBox
 {
@@ -23,26 +42,40 @@
   
 .color{
     display: inline-flex;
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     align-items: center;
     cursor: pointer;
     margin: 15px;
-    margin-top: 175px;
+    margin-top: 100px;
+    border: 1px solid #FFBB5C;
 }
 
+
+#background
+{
+    background-color: #2b905f;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10000;
+    /* position: absolute; */
+    /* display: inline; */
+}
 #colorChoose
 {
-    width: 40vw;
-    height: 30vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 30vw;
+    height: 20vh;
+    background-color: #2b905f;
     position: absolute;
+    border: 1px solid #FFBB5C;
+    outline: 1px solid #FFBB5C;
+    border-radius: 150px;
     margin: auto;
     top: 50%;
     left: 50%;  
-    transform: translate(-50%, -50%);
-    z-index: 1000;
+    transform: translate(-50%, -100%);
+    z-index: 10001;
     /* opacity: 50%; */
     justify-content: center;
     display: flex;
@@ -58,11 +91,16 @@
     justify-content: center;
     bottom: 0;
 }
-
+.div-lobby
+{
+    background-color: #2b905f;
+}
 #mat
 {
-    height: 70vh;
-    background-color: #069969;
+    
+    /* background-color: #069969; */
+    background-color: #2b905f;
+    overflow: hidden;
     /* background-color: #0e9a61; */
     /* background-image: url(rsc/grid-me.png); */
     /* background-repeat:repeat; */
@@ -115,6 +153,13 @@
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
 }
+#code
+{
+    font-weight: bolder;
+    color: #FFBB5C;
+    letter-spacing: 1em;
+
+}
 
 .disabled
 {
@@ -123,10 +168,12 @@
 
 
 p{
-    font-size: 40px;
+    font-size: 32px;
     font-weight: bolder;
     color: #FFBB5C;
-    text-shadow: 1px 2px 0px #9f0034;
+    text-shadow: 2px 2px 0px #9f0034;
+    /* text-shadow: 0.03em 0.06em 0em #9f0034; */
+
     position: absolute;
 }
 body{
@@ -146,7 +193,16 @@ main{
 
 #back-button
 {
+    width: 5em;
+}
 
+.lobby-cards
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 
@@ -184,7 +240,7 @@ main{
 
 .card-front, .card-back{
     border-radius: 6px;
-    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    box-shadow:  0px 0px 0px 1px rgba(0,0,0,0.1);
     background-color: #f5f5f5;
 
     /* box-shadow: 0 3px 3px rgba(63, 63, 63, 0.15); */
@@ -213,57 +269,28 @@ main{
 
 }
 
-/* .card:hover .card-inner{
-    rotate: 1 0 0 10deg;
-    /* !important; 
-} */
-
-/* .card:active .card-inner{
-    pointer-events: none;
-
-} */
-
-
-#back-button
-{
-    text-align: center;
-    
-    overflow: hidden;
-    width: 15%;
-    height: 6vh;
-    margin-top: 2%;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-
-    font-weight: bolder;
-    text-transform: uppercase;
-    font-family: ChampagneAndLimousine;
-    font-size: 1em;
-}
-
 .lobby-container
 {
 
     overflow-y: hidden;
 }
 
-.lobby-btn
-{
-    display: flex;
-    flex-direction: column;
+
+.lobby-join{
+    position: relative;
+    margin-top: 200vh;
 }
 
-.lobby-join, .lobby-btn
+.lobby-btn
 {
-    margin-top: 50vh;
+    position: absolute;
 }
 
 .lobby-container-btn
 {
     
     /* overflow-y: hidden; */
-    transition: all 1s ease-in-out;
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -271,60 +298,48 @@ main{
     align-items: center;
     justify-content: center;
 }
-
-.lobby-button
-{
-    text-align: center;
-    
-    overflow: hidden;
-    width: 100%;
-    height: 6vh;
-    margin-top: 20%;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    background-color: #f5f5f5;
-
-    font-weight: bolder;
-    color: #9f0034;
-    text-transform: uppercase;
-    font-family: ChampagneAndLimousine;
-    font-size: 2em;
-
+#roomCode{
+    font-size: 1.2em;    
+    padding: 0.25em 1em;
+    position: relative;
+    /* width: 100%; */
+    margin-bottom: 0.2em;
+    margin-top: 23%;
+    text-align:center
 }
 
+.lobby-btn
+{
+    border: 1px solid #FFBB5C;
+    outline: 1px solid #FFBB5C;
+    outline-offset: -5px;
+    padding: 40px;
+    border-radius: 90px;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lobby-join{
+    border: 1px solid #FFBB5C;
+    outline: 1px solid #FFBB5C;
+    outline-offset: -5px;
+    padding: 40px;
+    border-radius: 90px;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+}
+.lobby-button
+{
+    
+}
 button
 {
-    /* text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    font-family: CARDC;
-    font-weight:lighter;
-    font-size: 1.5em;
-    border-radius: 5px;
-    color: #272D42;
-    background-color: #f5f5f5;
-    border: 2px solid #072c1a;
-    margin: 3px;
-    padding: 10px;
-    letter-spacing: .1rem; */
-
-    /* text-align: center; */
-    /* cursor: pointer;
-    text-decoration: none;
-    font-weight: bolder;
-    font-size: 1.5em;
-    border-radius: 5px;
-
-    
-    color: #FFBB5C;
-    text-shadow: 1px 2px 0px #9f0034;
-    
-    border: 2px solid #072c1a;
-    margin: 3px;
-    padding: 10px;
-    letter-spacing: .1rem; */
-    
+     
     position: relative;
     display: inline-block;
     margin: 0.5em;
@@ -337,12 +352,12 @@ button
     background-color: transparent;
     border: 1px solid #FFBB5C;
     color: #FFBB5C;
-    /* text-shadow: 1px 1px 0px #9f0034; */
     text-transform: uppercase;
     cursor: pointer;
     font-weight: bolder;
     font-size: 1em;
     transition: all 0.3s ease-in-out;
+    height: 1.8em;
 
 }
 button:hover{
@@ -351,8 +366,13 @@ button:hover{
     text-shadow: none;
 
 }
-
 #numCards
+{
+    width: 50px;
+
+}
+
+input
 {
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
@@ -360,12 +380,29 @@ button:hover{
      border: 1px solid #FFBB5C;
      color: #272D42;
      background-color: #f5f5f5;
-     width: 50px;
      height: 25px;
      padding-left: 10px;
+     color: #9f0034;
+     
+}
+#join-button2{
+    padding: 0.25em 1em;
+    width: 8em;
+    margin-top: 38%;
 }
 
-#numCards:focus {
+#roomNumber
+{
+    /* margin: 0.5em; */
+    padding: 0.25em 1em;
+    /* margin-left: 36%; */
+    width: 8em;
+    /* margin-top: 25%; */
+    text-align:center
+    
+}
+
+input:focus {
     outline: none;
 }
 
@@ -383,47 +420,3 @@ button:hover{
     /* background-color: #321E1E; */
     background-color: #116E41;
 }  
-
-
-button
-{
-
-}
-/* .move
-{
-    animation: cardMove 5s;
-}
-
-@keyframes cardMove {
-    0%{
-        left: 8px;
-    }
-
-    50% {
-        left: 50px;
-    }
-    
-    100% {
-        left: 8px;
-    }
-    
-  } */
-
-  /* .bot:hover ~ .card-inner{
-      transform-origin: 50% 25%!important;
-      transform: rotateX(10deg)!important;
-      transform: scale(2)!important;
-
-  }    
-
-
-  .top:hover ~ .card-inner {
-    transform-origin: 50% 75%!important;
-    transform: rotateX(-10deg)!important;
-     rotateZ(-2deg);
-     transform: scale(2)!important;
-
-  } */
-
-  /* Define the animation */
-

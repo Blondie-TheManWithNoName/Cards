@@ -6,30 +6,29 @@
     <title>Deck</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<div id="colorChoose"></div>
+<div id="background"></div>
 <body class="deck">
-    <div id="colorChoose">
-        
-    </div>
     <div id="menu">
         <div class="buttons">
-            <button id="byDefault">Default</button>
-            <button id="bySuite">Suite</button>
-            <button id="byRank">Rank</button>
-            <button id="flip">Flip</button>
-            <button id="shuffle">Shuffle</button>
-            <button id="deal">Deal</button>
-            <input type="number" id="numCards" name="numCards" value="5">
+            <button tabindex="-1" id="byDefault">Default</button>
+            <button tabindex="-1" id="bySuite">Suite</button>
+            <button tabindex="-1" id="byRank">Rank</button>
+            <button tabindex="-1" id="flip">Flip</button>
+            <button tabindex="-1" id="shuffle">Shuffle</button>
+            <button tabindex="-1" id="deal">Deal</button>
+            <input tabindex="-1" type="number" id="numCards" name="numCards" value="5">
+            <!-- <button id="connect">Connect</button> -->
         </div>
         <div class="colorAndName">
             <div id="color"></div>
             <div id="name"></div>
+            <div id="code"></div>
         </div>
 
     </div>
     <div id="game">
-
-        
-        <div id="mat"></div>
+        <div id="mat" style="height: 70vh;"></div>
         <div id="hand">
         <button id="orderMyHand">Order My Hand</button>
     </div>

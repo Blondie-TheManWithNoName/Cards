@@ -12,18 +12,18 @@ export const cardValueEnum = Object.freeze({
     Jack: {rank: 11, name: 'J'},
     Queen: {rank: 12, name: 'Q'},
     King: {rank: 13, name: 'K'},
-    Ace: {rank: 14, name: 'A'},
-    Joker:{rank: 0, name: 'J'}
+    Ace: {rank: 14, name: 'A'}
+    // Joker:{rank: 0, name: 'J'}
     
 })
 
 export const cardSuitEnum = Object.freeze({
     
-    Diamonds: 'D',
     Clubs: 'C',
+    Diamonds: 'D',
     Hearts: 'H',
-    Spades: 'S',
-    Joker: 'J'
+    Spades: 'S'
+    // Joker: 'J'
 })
 
 const colors = ["#20639B", "#3CAEA3", "F6D55C", "#ED553B"];
@@ -60,7 +60,25 @@ export function randomColor()
 
 
 
-
+export function quickSort(arr) {
+    if (arr.length <= 1) {
+      return arr;
+    }
+  
+    const pivot = arr[0];
+    const left = [];
+    const right = [];
+  
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i].value.rank < pivot.value.rank) {
+        left.push(arr[i]);
+      } else {
+        right.push(arr[i]);
+      }
+    }
+  
+    return [...quickSort(left), pivot, ...quickSort(right)];
+  }
 
 export function biggerCard(card, inside)
 {

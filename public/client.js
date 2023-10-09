@@ -4,7 +4,7 @@ import {Player} from './player.js';
 // Creation of a player and deck      
 const player = new Player();
 var deck;
-
+var code = ""
 const socket = io();
 
 const handLine = window.innerHeight - (window.innerHeight*0.4);
@@ -135,6 +135,7 @@ socket.on("chooseColor", (colors, msg) =>
     elem.addEventListener('click', () =>
     {
       document.getElementById("colorChoose").remove();
+      document.getElementById("background").remove();
       socket.emit('initialInfo', color);
     document.getElementById('game').classList.remove("disabled");
     });
@@ -151,9 +152,11 @@ socket.on('message', (text) =>
 });
 
 // Receive current deck hold by the Server
-socket.on('deck', (deck_, maxZ) =>
+socket.on('deck', (deck_, maxZ, code_) =>
 {
   deck = new Deck(deck_, maxZ);
+
+  code = code_;
 });
 
 // Receive player with ID and Color given by the Server
@@ -162,6 +165,8 @@ socket.on('player', (player_) =>
   player.assign(player_);
   document.getElementById("name").textContent = player_.name;
   document.getElementById("color").style.backgroundColor = player_.color;
+  console.log("code", code)
+  document.getElementById("code").textContent = code;
   for(const card of player_.hand)
   {
     player.createCard(card)
@@ -272,6 +277,7 @@ const dealBtn = document.getElementById('deal');
 const myCardsBtn = document.getElementById('myCards');
 const orderMyHandBtn = document.getElementById('orderMyHand');
 const numCards = document.getElementById('numCards');
+// const connect = document.getElementById('connect');
 
   byDefaultBtn.addEventListener('click', () =>
   {
@@ -316,11 +322,17 @@ bySuiteBtn.addEventListener('click', () =>
     socket.emit('deal', numCards.value);
   });
 
+  // Call the order method for the players Hand
   orderMyHandBtn.addEventListener('click', () =>
   {
-    // Call the shuffle function inside the Deck class
-    deck.bySuit(player.getHand());
+    player.order();
+    player.showHand(window.innerWidth/2);
   });
+
+  // connect.addEventListener('click', () =>
+  // {
+    
+  // });
 
   window.onload = (event) => {
 

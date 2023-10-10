@@ -14,8 +14,10 @@ const allowedCharacters = /^[123456789JQKA]+$/;
 
 document.getElementById("create-button").addEventListener("click", () => 
 {
-    window.location="http://127.0.0.1:8080/";
-
+    window.location="http://127.0.0.1:8080/game.html";
+    // app.get('/', function (req, res) {
+    // res.redirect('public/game.html');
+// });
 });
 
 async function delay(ms) {
@@ -116,9 +118,9 @@ window.onload = async (event) => {
        
             
             // Calculate x and y coordinates
-            cards2.push(new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.25 -35, y: y - i*0.25 -900}, i, true, -(52 / 2) ));
-            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.5 - 300, y: y + i*0.5 + 250}, i, true, -(52/6) )
-            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x - i*0.5 + 950, y: y + i*0.5 + 250}, i, true, (52/6) )
+            cards2.push(new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.25 -35, y: y - i*0.25 -760}, i, true, -(52 / 2) ));
+            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.5 - 300, y: y + i*0.5 + 290}, i, true, -(52/6) )
+            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x - i*0.5 + 950, y: y + i*0.5 + 290}, i, true, (52/6) )
             ++i;
         }
     }
@@ -132,7 +134,7 @@ window.onload = async (event) => {
         const y = radius * Math.sin(angle);
         let sec = 0.04 + Math.pow(40.99914*Math.e, (-53.12935*x))
         for (let j=i; j < cards2.length; ++j)
-            cards2[j].changePosition({ x:  x + j*0.25 -35, y: y -j*0.25 -900}, cards2[i].zIndex , false, true,sec, (i - (52 / 2)), true)
+            cards2[j].changePosition({ x:  x + j*0.25 -35, y: y -j*0.25 -760}, cards2[i].zIndex , false, true,sec, (i - (52 / 2)), true)
         await delay(sec*1000);
     }
 

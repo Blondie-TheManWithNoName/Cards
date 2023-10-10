@@ -25,6 +25,13 @@ const rooms = []
 
 var numPlayers = 0;
 
+
+// app.get('/contactus.html', (req,res) => {
+//   data= fs.readFile('/home/swift-03/WebstormProjects/website/static/HTML/contactus.html',   function (err, data) {
+//   res.setHeader('Content-Type', 'text/html');
+//   res.send(data);
+// });
+
 for (let i=0; i < colors.length; ++i  )
   players.push(new Player(0, colors[i], names[i]))
 

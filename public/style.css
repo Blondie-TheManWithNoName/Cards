@@ -8,39 +8,34 @@
     src: url(rsc/CARDC.ttf);
 }
 
-  html{
+html {
     overflow: hidden;
     user-select: none;
 
-  }
+}
 
-.title-container{
+.title-container {
     outline-offset: -5px;
-    /* padding: 40px; */
     width: 500px;
     height: 500px;
     display: flex;
     position: absolute;
     justify-content: center;
-    /* align-items: center; */
 }
 
-.title
-{
+.title {
     font-size: 3.5em;
     text-shadow: 0.03em 0.06em 0em #9f0034;
 
 }
 
-.cardBox
-{
+.cardBox {
     height: 100%;
     width: var(--card-width);
-    /* background-color: red; */
 }
 
-  
-.color{
+
+.color {
     display: inline-flex;
     width: 30px;
     height: 30px;
@@ -49,30 +44,27 @@
     cursor: pointer;
     margin: 15px;
     margin-top: 100px;
-    /* border: 1px solid #FFBB5C; */
     outline: 1px solid #FFBB5C;
     outline-offset: 5px;
 
     transition: all 250ms ease-in-out;
 }
-.color:hover
-{
-    outline: 1px solid #9f0034;
+
+.color:hover {
+    outline-offset: 0px;
 }
 
 
-#background
-{
+#background {
     background-color: #2b905f;
     height: 100vh;
     width: 100vw;
     z-index: 10000;
     position: fixed;
-    /* position: absolute; */
-    /* display: inline; */
+
 }
-#colorChoose
-{
+
+#colorChoose {
     width: 30vw;
     height: 20vh;
     background-color: #2b905f;
@@ -83,17 +75,15 @@
     border-radius: 150px;
     margin: auto;
     top: 50%;
-    left: 50%;  
+    left: 50%;
     transform: translate(-50%, -100%);
     z-index: 10001;
-    /* opacity: 50%; */
     justify-content: center;
     display: flex;
 }
 
 
-#hand
-{
+#hand {
     height: 30vh;
     background-color: #116E41;
     display: flex;
@@ -102,42 +92,38 @@
     bottom: 0;
     border: 1px solid #FFBB5C;
 
-    
+
 }
 
-#toHand
-{
+#toHand {
     height: 5vh;
     background-color: #2b905f;
-    /* background: repeating-linear-gradient(#116E41, #116E41 5px, #FFBB5C 7px); */
 
 }
-.div-lobby
-{
+
+.div-lobby {
     background-color: #2b905f;
 }
-#mat
-{
-    
-    /* background-color: #069969; */
+
+#mat {
+
     background-color: #2b905f;
     overflow: hidden;
-    /* background-color: #0e9a61; */
-    /* background-image: url(rsc/grid-me.png); */
-    /* background-repeat:repeat; */
-    /* rotate: 90deg; */
+
     /* transform: rotateZ('90deg')!important; */
 }
-:root{
+
+:root {
     /* ratio 63:88 */
-    --card-width:80px; /* 105 */
-    --card-height:112px; /* 147 */
-    --card-horizontal-space:100px;
+    --card-width: 80px;
+    /* 105 */
+    --card-height: 112px;
+    /* 147 */
+    --card-horizontal-space: 100px;
 }
 
 
-#menu
-{
+#menu {
     position: absolute;
     display: flex;
     flex-direction: row;
@@ -148,63 +134,56 @@
     justify-content: space-between;
 }
 
-.colorAndName
-{
-    /* position: relative; */
+.colorAndName {
     display: inline;
     width: 100px;
     justify-content: center;
-    /* display: inline; */
-    /* top: 100; */
-    
+
 }
 
-#color{
+#color {
     display: inline-block;
     width: 20px;
     height: 20px;
     border-radius: 100%;
 }
 
-#name
-{
+#name {
     display: inline-block;
     font-size: 40px;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
 }
-#code
-{
+
+#code {
     font-weight: bolder;
     color: #FFBB5C;
     letter-spacing: 1em;
 
 }
 
-.disabled
-{
+.disabled {
     pointer-events: none;
 }
 
 
-p{
+p {
     font-size: 32px;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 2px 2px 0px #9f0034;
-    /* text-shadow: 0.03em 0.06em 0em #9f0034; */
 
     position: absolute;
 }
-body{
+
+body {
     font-family: ChampagneAndLimousine;
     margin: 0;
-    /* transform: translate(0, 100vw) rotate(90deg); */
 
 }
 
-main{
+main {
     height: 55%;
     display: flex;
     justify-content: center;
@@ -212,13 +191,11 @@ main{
 }
 
 
-#back-button
-{
+#back-button {
     width: 5em;
 }
 
-.lobby-cards
-{
+.lobby-cards {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,28 +204,24 @@ main{
 }
 
 
-.card{
+.card {
     position: absolute;
-    height:var(--card-height);
+    height: var(--card-height);
     width: var(--card-width);
     perspective: 1000px;
     cursor: pointer;
     border-radius: 0px;
-    /* transition: all 0.5s ease-in-out; */
-    
+
 }
-.card-inner{
+
+.card-inner {
     left: 0;
     position: relative;
     width: 100%;
     height: 100%;
     text-align: center;
-    /* transition: all 0.1s linear; */
-    /* transition: transform 0.1s linear;    */
     transform-style: preserve-3d;
-    /* transform-origin: left 40px; */
-    /* border-radius: 6px; */
-    
+
 }
 
 .card-inner.flipped-front {
@@ -259,14 +232,12 @@ main{
     transform: rotateY(-180deg);
 }
 
-.card-front, .card-back{
+.card-front,
+.card-back {
     border-radius: 6px;
-    box-shadow:  0px 0px 0px 1px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
     background-color: #f5f5f5;
-
-    /* box-shadow: 0 3px 3px rgba(63, 63, 63, 0.15); */
-
-    position: absolute; 
+    position: absolute;
     width: 100%;
     height: 100%;
     -webkit-backface-visibility: hidden;
@@ -274,8 +245,9 @@ main{
     user-select: none;
 
 }
-.card-img{
-    height:100%;
+
+.card-img {
+    height: 100%;
     user-drag: none;
     -webkit-user-drag: none;
     user-select: none;
@@ -283,34 +255,29 @@ main{
     -webkit-user-select: none;
     -ms-user-select: none;
 }
-.card-back{
+
+.card-back {
     transform: rotateY(180deg);
     z-index: 1;
-    /* transform: translateX(50px); */
 
 }
 
-.lobby-container
-{
+.lobby-container {
 
     overflow-y: hidden;
 }
 
 
-.lobby-join{
+.lobby-join {
     position: relative;
     margin-top: 200vh;
 }
 
-.lobby-btn
-{
+.lobby-btn {
     position: absolute;
 }
 
-.lobby-container-btn
-{
-    
-    /* overflow-y: hidden; */
+.lobby-container-btn {
     transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100vh;
     display: flex;
@@ -319,18 +286,17 @@ main{
     align-items: center;
     justify-content: center;
 }
-#roomCode{
-    font-size: 1.2em;    
+
+#roomCode {
+    font-size: 1.2em;
     padding: 0.25em 1em;
     position: relative;
-    /* width: 100%; */
     margin-bottom: 0.2em;
     margin-top: 23%;
-    text-align:center
+    text-align: center
 }
 
-.lobby-btn
-{
+.lobby-btn {
     border: 1px solid #FFBB5C;
     outline: 1px solid #FFBB5C;
     outline-offset: -5px;
@@ -342,7 +308,7 @@ main{
     align-items: center;
 }
 
-.lobby-join{
+.lobby-join {
     border: 1px solid #FFBB5C;
     outline: 1px solid #FFBB5C;
     outline-offset: -5px;
@@ -354,13 +320,14 @@ main{
     align-items: flex-start;
 
 }
-.lobby-button
-{
-    
+
+.lobby-button {
+    width: 8em;;
+
 }
-button
-{
-     
+
+button {
+
     position: relative;
     display: inline-block;
     margin: 0.5em;
@@ -382,7 +349,8 @@ button
     height: 1.8em;
 
 }
-button:hover{
+
+button:hover {
     background-color: #f5f5f5;
     color: #9f0034;
     border: 1px solid #9f0034;
@@ -390,8 +358,8 @@ button:hover{
     text-shadow: none;
 
 }
-#numCards
-{
+
+#numCards {
     width: 2.5em;
     padding: 0.2em;
     padding-bottom: 0;
@@ -401,8 +369,7 @@ button:hover{
     margin-left: 0;
 }
 
-#deal
-{
+#deal {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     margin-right: 0;
@@ -410,34 +377,29 @@ button:hover{
 
 }
 
-input
-{
+input {
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
-     border-radius: 20px;
-     border: 1px solid #FFBB5C;
-     color: #272D42;
-     background-color: #f5f5f5;
-     height: 1.8em;
-     padding-left: 10px;
-     color: #9f0034;
-     
+    border-radius: 20px;
+    border: 1px solid #FFBB5C;
+    color: #272D42;
+    background-color: #f5f5f5;
+    height: 1.8em;
+    padding-left: 10px;
+    color: #9f0034;
+
 }
-#join-button2{
+
+#join-button2 {
     padding: 0.25em 1em;
     width: 8em;
     margin-top: 38%;
 }
 
-#roomNumber
-{
-    /* margin: 0.5em; */
+#roomNumber {
     padding: 0.25em 1em;
-    /* margin-left: 36%; */
     width: 8em;
-    /* margin-top: 25%; */
-    text-align:center
-    
+    text-align: center
 }
 
 input:focus {
@@ -445,16 +407,13 @@ input:focus {
 }
 
 
-#orderMyHand
-{
-    position:absolute;
+#orderMyHand {
+    position: absolute;
     display: block;
     bottom: 0;
     left: 0;
 }
 
-.deck{
-    /* background-color: #009F6B; */
-    /* background-color: #321E1E; */
+.deck {
     background-color: #116E41;
-}  
+}

@@ -2,11 +2,15 @@
 import http from 'http';
 import express from 'express';
 import { Server } from 'socket.io'; 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 import {Deck} from './deck_s.js';
 import {Player} from './player_s.js';
 import { cardValueEnum, cardSuitEnum } from './util.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 app.use(express.static('public'));
@@ -25,6 +29,10 @@ const rooms = []
 
 var numPlayers = 0;
 
+
+app.get('/game', (req, res) => {
+  res.sendFile(__dirname + '/public/game.html');
+});
 
 // app.get('/contactus.html', (req,res) => {
 //   data= fs.readFile('/home/swift-03/WebstormProjects/website/static/HTML/contactus.html',   function (err, data) {

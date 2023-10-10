@@ -297,6 +297,7 @@ const dealBtn = document.getElementById('deal');
 const myCardsBtn = document.getElementById('myCards');
 const orderMyHandBtn = document.getElementById('orderMyHand');
 const numCards = document.getElementById('numCards');
+const leaveBtn = document.getElementById('leave');
 // const connect = document.getElementById('connect');
 
   byDefaultBtn.addEventListener('click', () =>
@@ -348,6 +349,13 @@ bySuiteBtn.addEventListener('click', () =>
     player.order();
     player.showHand(window.innerWidth/2);
   });
+
+   // Call the order method for the players Hand
+   leaveBtn.addEventListener('click', () =>
+   {
+     window.location="/";
+   });
+
 
   // connect.addEventListener('click', () =>
   // {

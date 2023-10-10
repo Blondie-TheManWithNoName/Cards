@@ -14,7 +14,7 @@ const allowedCharacters = /^[123456789JQKA]+$/;
 
 document.getElementById("create-button").addEventListener("click", () => 
 {
-    window.location="/game.html";
+    window.location.href ="/game";
     // app.get('/', function (req, res) {
     // res.redirect('public/game.html');
 // });

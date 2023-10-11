@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
     else {
         let code;
 
-        if (roomCode === null)
+        if (roomCode === 'null' || roomCode === null || roomCode === undefined)
         {
             code = createCode();
             createRoom(code);

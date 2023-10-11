@@ -10,11 +10,20 @@ var cards = []
 var cards2 = []
 const allowedCharacters = /^[123456789JQKA]+$/;
 
-
+const inputElement = document.getElementById("roomNumber");
 
 document.getElementById("create-button").addEventListener("click", () => 
 {
     window.location.href ="/game";
+    // app.get('/', function (req, res) {
+    // res.redirect('public/game.html');
+// });
+});
+
+document.getElementById("join-button2").addEventListener("click", () => 
+{
+    // console.log("inputElement.textContent", inputElement.textContent)
+    window.location.href ="/game?roomCode=" + inputElement.value;
     // app.get('/', function (req, res) {
     // res.redirect('public/game.html');
 // });
@@ -43,7 +52,7 @@ document.getElementById("back-button").addEventListener("click", () =>
 
 function manageInput(data, index)
 {       
-    let inputElement = document.getElementById("roomNumber");
+    
 
     let b = false;
 
@@ -63,9 +72,9 @@ function manageInput(data, index)
 }
 
 
-document.getElementById("roomNumber").addEventListener("input", (e) => 
+inputElement.addEventListener("input", (e) => 
 {
-    let inputElement = document.getElementById("roomNumber");
+
     if (e.data === null)
     {
         if (e.inputType == "deleteContentBackward" || e.inputType == "deleteContentForward")

@@ -6,8 +6,23 @@
     <title>Deck</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<div id="colorChoose"></div>
-<div id="background"></div>
+<div id="background">
+    <div id="colorChoose-container">
+        <div>
+        <button id="back-button">Back</button>
+        </div>
+        <div id="colorChoose">
+            <p id="nameTitle">NAME</p>
+            <input tabindex="-1" type="text" id="input-name" placeholder="Blondie" required>
+            <p id="nameTitle">COLOR</p>
+            <div id="color-container"></div>
+            <button tabindex="-1" id="play">Play</button>
+        </div>
+
+    </div>
+
+
+</div>
 <body class="deck">
     <div id="menu">
         <div class="leave">

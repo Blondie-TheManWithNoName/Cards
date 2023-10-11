@@ -37,23 +37,61 @@ html {
 
 .color {
     display: inline-flex;
-    width: 30px;
-    height: 30px;
+    width: 1.8em;
+    height: 1.8em;
     border-radius: 50%;
     align-items: center;
     cursor: pointer;
-    margin: 15px;
-    margin-top: 100px;
-    outline: 1px solid #FFBB5C;
-    outline-offset: 5px;
+    margin: 1em;
+    outline: 0.05em solid #FFBB5C;
+    outline-offset: 0.3em;
 
     transition: all 250ms ease-in-out;
 }
 
 .color:hover {
-    outline-offset: 0px;
+    outline-offset: 0em;
 }
 
+.selected{
+    outline-offset: 0em;
+}
+
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked + label {
+    outline-offset: 0em;
+}
+
+label {
+    /* display: inline-block; */
+    display: flex;
+    width: 1.8em;
+    height: 1.8em;
+    margin: 1em;
+    outline: 0.05em solid #FFBB5C;
+    outline-offset: 0.3em;
+    border-radius: 50%;
+    transition: all 250ms ease-in-out;
+    cursor: pointer;
+}
+
+
+
+label:hover span { 
+    outline-offset: 0em;
+}
+
+span {
+    display: inline-flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+
+    }
 
 #background {
     background-color: #2b905f;
@@ -61,25 +99,52 @@ html {
     width: 100vw;
     z-index: 10000;
     position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000000;
+
+}
+
+#input-name
+{
+    width: 10em;
+}
+
+#color-container
+{
+    display: flex;
+    justify-content: center;
+}
+
+#colorChoose-container
+{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid #FFBB5C;
+    outline: 1px solid #FFBB5C;
+    width: 30vw;
+    height: 40vh;
+    outline-offset: -5px;
+    border-radius: 100px;
+    z-index: 10001;
+    padding: 3em;
+    margin: auto;
 
 }
 
 #colorChoose {
-    width: 30vw;
-    height: 20vh;
-    background-color: #2b905f;
-    position: absolute;
-    border: 1px solid #FFBB5C;
-    outline: 1px solid #FFBB5C;
-    outline-offset: -5px;
-    border-radius: 150px;
-    margin: auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    z-index: 10001;
-    justify-content: center;
+
+    /* background-color: #2b905f; */
+    width: 100%;
+
     display: flex;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+    align-items: center;
 }
 
 
@@ -138,15 +203,17 @@ html {
     display: inline;
     width: 100px;
     justify-content: center;
+    margin-right: 1em;
 
 }
 
 #color {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 100%;
+    width: 100%;
+    height: 1em;
+    border-radius: 2em;
 }
+
 
 #name {
     display: inline-block;
@@ -157,10 +224,20 @@ html {
 }
 
 #code {
-    font-weight: bolder;
     color: #FFBB5C;
     letter-spacing: 1em;
+    text-indent: 0.5em;
+    cursor: pointer;
+    transition: all 100ms;
+    border: 2px solid #116E41;
+    background-color: #2b905f;
+    text-align: center;
 
+}
+
+#code:active
+{
+    scale: 0.9;
 }
 
 .disabled {
@@ -296,6 +373,22 @@ main {
     text-align: center
 }
 
+#nameTitle
+{
+    font-size: 1.2em;
+    padding: 0.25em 1em;
+    position: relative;
+    margin-bottom: 0.2em;
+    text-align: center;
+    margin-top: 2em;
+
+}
+
+#play
+{
+    margin-top: 3em;
+}
+
 .lobby-btn {
     border: 1px solid #FFBB5C;
     outline: 1px solid #FFBB5C;
@@ -336,7 +429,6 @@ button {
     width: 5em;
     border-radius: 30px;
     text-align: center;
-    white-space: nowrap;
     font-family: ChampagneAndLimousine;
     background-color: transparent;
     border: 1px solid #FFBB5C;
@@ -394,6 +486,11 @@ input {
     padding: 0.25em 1em;
     width: 8em;
     margin-top: 38%;
+}
+#play
+{
+    padding: 0.25em 1em;
+    width: 8em;
 }
 
 #roomNumber {

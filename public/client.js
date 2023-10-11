@@ -5,8 +5,17 @@ import {Player} from './player.js';
 const player = new Player();
 var deck;
 var code = ""
-const socket = io();
 
+
+const urlParams = new URLSearchParams(window.location.search);
+console.log("URL",urlParams);
+const roomCode = urlParams.get('roomCode');
+const socket = io("https://cards.up.railway.app/", { query: "roomCode="+roomCode });
+const url = new URL(location);
+history.pushState({}, "sadasdas", url);
+
+
+var checkedColor = ""
 const handLine = window.innerHeight - (window.innerHeight*0.4);
 const cardSize = {x: 80, y: 112}
 
@@ -50,19 +59,19 @@ export function notifyCardMove(card, newPosition)
   if (!card.isPartOfHand && card.wasPartOfHand) card.setzIndex();
   if (newPosition.y >= toHand.getBoundingClientRect().top && newPosition.y <= toHand.getBoundingClientRect().bottom && !card.isPartOfHand)
     card.cardElem.style.transform += 'scale(' + (newPosition.y*eqSize[0] + eqSize[1]) + ')';
-  socket.emit('moveCard', { cardId, newPosition, player});
+  socket.emit('moveCard', { code, cardId, newPosition, player});
 }
 
 // Function to notify the server about card flip
 export function notifyCardFlip(cardId)
 {
-  socket.emit('flipCard', { cardId, player});
+  socket.emit('flipCard', { code, cardId, player});
 }
 
 // Function to notify the server when cursor is down
 export function notifyCursorDown(cardId, zIndex)
 {
-  socket.emit('cursorDown', { cardId, player, zIndex});
+  socket.emit('cursorDown', { code, cardId, player, zIndex});
 }
 
 // Function to notify the server when cur
@@ -84,7 +93,7 @@ export function notifyCursorUp(card, pos)
       player.addCardToHand(card);
       deck.deleteCardFromId(card.id);
       player.showHand(window.innerWidth/2); 
-      socket.emit('updatePlayerHand', player.id, card, true);
+      socket.emit('updatePlayerHand', code, player.id, card, true);
     }
     card.wasPartOfHand = true;
   }
@@ -93,7 +102,7 @@ export function notifyCursorUp(card, pos)
 
     if (card.wasPartOfHand)
     {
-      socket.emit('updatePlayerHand', player.id, card, false);
+      socket.emit('updatePlayerHand', code, player.id, card, false);
       player.deleteCardFromHand(card);
       console.log("cardIndex", card.index)
       deck.addCardServer(card);
@@ -102,7 +111,7 @@ export function notifyCursorUp(card, pos)
     else
     {
       const cardId = card.id
-      socket.emit('cursorUp', { cardId, player});
+      socket.emit('cursorUp', { code, cardId, player});
     }
     card.wasPartOfHand = false;
     
@@ -122,12 +131,14 @@ export function notifyCursorUp(card, pos)
 
 export function notifyShuffle(change)
 {
-    socket.emit('shuffle', change);
+    socket.emit('shuffle', code, change);
 }
 
 
-
-
+document.getElementById("back-button").addEventListener('click', () =>
+{
+  window.location.href ="/";
+});
 
 
   /////////////////////////
@@ -141,25 +152,57 @@ socket.on("chooseColor", (colors, msg) =>
   // document.getElementById("game").disabled = true;
 
   console.log(colors)
-  let message = document.createElement('p');
-  message.innerHTML = msg;
-  document.getElementById("colorChoose").appendChild(message);
+  // let message = document.createElement('p');
+  // message.innerHTML = msg;
+  // document.getElementById("colorChoose").appendChild(message);
   
   for (const color of colors)
   {
-    let elem = document.createElement('div');
+    let elem = document.createElement('input');
     elem.classList.add('color');
     elem.style.backgroundColor = color;
+    elem.setAttribute("type", "radio");
+    elem.setAttribute("name", "color");
     elem.setAttribute("id", color);
-    elem.addEventListener('click', () =>
+    
+    let label = document.createElement('label');
+    label.setAttribute("for", color);
+  
+    label.addEventListener('click', () =>
     {
-      document.getElementById("colorChoose").remove();
-      document.getElementById("background").remove();
-      socket.emit('initialInfo', color);
-    document.getElementById('game').classList.remove("disabled");
+      checkedColor = color;
     });
-    document.getElementById("colorChoose").appendChild(elem);
+    let span = document.createElement('span');
+    span.style.backgroundColor = color;
+    span.classList.add(color);
+
+
+
+    label.appendChild(span);
+    document.getElementById("color-container").appendChild(elem);
+    document.getElementById("color-container").appendChild(label);
   }
+});
+
+document.getElementById("code").addEventListener('click', () =>
+{
+
+  navigator.clipboard.writeText(code);
+});
+
+document.getElementById("play").addEventListener('click', () =>
+{
+
+
+  const name = document.getElementById("input-name").value;
+  
+  document.getElementById("colorChoose").remove();
+  document.getElementById("background").remove()
+  
+
+  const color = checkedColor;
+  socket.emit('initialInfo', {code, color, name});
+  document.getElementById('game').classList.remove("disabled");
 });
 
 
@@ -174,15 +217,23 @@ socket.on('message', (text) =>
 socket.on('deck', (deck_, maxZ, code_) =>
 {
   deck = new Deck(deck_, maxZ);
+  for(const card of deck.cards)
+  {
 
-
+    console.log(card)
+  }
+  
+  
   code = code_;
+  console.log(code)
+  // socket.join(code);
 });
 
 // Receive player with ID and Color given by the Server
 socket.on('player', (player_) =>
 {
   player.assign(player_);
+  console.log(player_.color);
   document.getElementById("name").textContent = player_.name;
   document.getElementById("color").style.backgroundColor = player_.color;
   console.log("code", code)
@@ -304,21 +355,21 @@ const leaveBtn = document.getElementById('leave');
   {
     // Call the shuffle function inside the Deck class
     deck.byDefault([player.getHand()]);
-    socket.emit('byDefault', { deck, player});
+    socket.emit('byDefault', code);
 
   });
 
 bySuiteBtn.addEventListener('click', () =>
 {
     // Call the shuffle function inside the Deck class
-    socket.emit('bySuit');
+    socket.emit('bySuit', code);
     deck.bySuit();
   });
 
   byRankBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
-    socket.emit('byRank');
+    socket.emit('byRank', code);
     deck.byRank();
   });
   
@@ -326,7 +377,7 @@ bySuiteBtn.addEventListener('click', () =>
   {
     // Call the shuffle function inside the Deck class
     deck.flipDeck();
-    socket.emit('flipDeck');
+    socket.emit('flipDeck', code);
   });
 
 
@@ -340,7 +391,7 @@ bySuiteBtn.addEventListener('click', () =>
   {    
     deck.byDefault();
     if (numCards.value == undefined || numCards.value == 0) numCards.value = 5;
-    socket.emit('deal', numCards.value);
+    socket.emit('deal', code, numCards.value);
   });
 
   // Call the order method for the players Hand

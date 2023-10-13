@@ -228,13 +228,13 @@ io.on('connection', (socket) => {
         // Handle card flip from a client
         socket.on('deal', async (code, numCards) => {
             for (let i = 0; i < numCards; ++i) {
-                for (const player of players) {
+                for (const player in rooms[code].players) {
                     if (player.id !== 0) {
                         const id = player.id;
-                        rooms[code].deck.deal(player);
+                        rooms[code].deck.deal(rooms[code].players[player]);
                         io.to(id).emit('dealing', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1));
 
-                        for (const player2 of players) {
+                        for (const player2 in rooms[code].players) {
                             if (id !== player2.id && player2.id !== 0)
                                 io.to(player2.id).emit('cardAddedToHand', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1).id);
                         }

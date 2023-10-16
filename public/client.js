@@ -5,12 +5,12 @@ import {Player} from './player.js';
 const player = new Player();
 var deck;
 var code = ""
-
+var rot = 0
 
 const urlParams = new URLSearchParams(window.location.search);
 console.log("URL",urlParams);
 const roomCode = urlParams.get('roomCode');
-const socket = io("https://cards.up.railway.app/", { query: "roomCode="+roomCode });
+const socket = io("http://127.0.0.1:8080/", { query: "roomCode="+roomCode });
 const url = new URL(location);
 history.pushState({}, "sadasdas", url);
 
@@ -23,19 +23,12 @@ document.getElementById('game').classList.add("disabled");
 
 const toHand = document.getElementById("toHand")
 
-const eqSize = getEquation(toHand.getBoundingClientRect().top, 1, toHand.getBoundingClientRect().bottom, 2);
 
 
-console.log(toHand.getBoundingClientRect().top)
-console.log(toHand.getBoundingClientRect().bottom)
+// console.log(toHand.getBoundingClientRect().top)
+// console.log(toHand.getBoundingClientRect().bottom)
 
-// Get equation to move the cover-section
-function getEquation(x1, y1, x2, y2)
-{
-  let m = (y2 - y1) / (x2 - x1);
-  let b = y1 - (m * x1);
-  return [m, b];
-}
+
 
 // CONNECTION
 socket.on('connect', () =>
@@ -44,7 +37,20 @@ socket.on('connect', () =>
   // socket.emit('initialInfo', player.id);
 });
 
+// const zoomElement = document.getElementById("mat");
+// let zoom = 1;
+// const ZOOM_SPEED = 0.3;
 
+// document.addEventListener("wheel", function (e) {
+//   if (e.deltaY > 0) {
+//     if (zoom > 1)
+//       zoomElement.style.scale = `${(zoom -= ZOOM_SPEED)}`;
+//   } else {
+//     if (zoom < 3)
+//       zoomElement.style.scale = `${(zoom += ZOOM_SPEED)}`;
+//   }
+//   console.log("zoom", zoom)
+// });
 
   /////////////////////
  /// S E N D E R S ///
@@ -57,8 +63,10 @@ export function notifyCardMove(card, newPosition)
 
   if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
   if (!card.isPartOfHand && card.wasPartOfHand) card.setzIndex();
-  if (newPosition.y >= toHand.getBoundingClientRect().top && newPosition.y <= toHand.getBoundingClientRect().bottom && !card.isPartOfHand)
-    card.cardElem.style.transform += 'scale(' + (newPosition.y*eqSize[0] + eqSize[1]) + ')';
+
+  
+  
+
   socket.emit('moveCard', { code, cardId, newPosition, player});
 }
 
@@ -69,9 +77,11 @@ export function notifyCardFlip(cardId)
 }
 
 // Function to notify the server when cursor is down
-export function notifyCursorDown(cardId, zIndex)
+export function notifyCursorDown(card, cardId, zIndex)
 {
-  socket.emit('cursorDown', { code, cardId, player, zIndex});
+  // console.log("ASDASDA")
+  card.rotate(rot);
+  socket.emit('cursorDown', { code, cardId, player, zIndex, rot});
 }
 
 // Function to notify the server when cur
@@ -90,6 +100,7 @@ export function notifyCursorUp(card, pos)
     }
     else
     {
+      console.log("HOLA")
       player.addCardToHand(card);
       deck.deleteCardFromId(card.id);
       player.showHand(window.innerWidth/2); 
@@ -201,6 +212,14 @@ document.getElementById("play").addEventListener('click', () =>
   
 
   const color = checkedColor;
+
+  if (checkedColor === "#ED553B") rot = 0;
+  else if (checkedColor === "#F6D55C") rot = 90;
+  else if (checkedColor === "#65451F") rot = 180;
+  else if (checkedColor === "#20639B") rot = 270;
+
+  document.getElementById("mat").style.rotate = rot + 'deg';
+
   socket.emit('initialInfo', {code, color, name});
   document.getElementById('game').classList.remove("disabled");
 });
@@ -260,12 +279,13 @@ socket.on('cardFlipped', ( cardId) =>
 });
 
 // Receive when a cursor went DOWN on a card
-socket.on('cursorDowned', (cardId, player_) =>
+socket.on('cursorDowned', (cardId, player_, rot) =>
 {
   console.log("cursordowned")
   const card = deck.getCardFromId(cardId);
   card.setDraggingTrue();
   card.setzIndex();
+  card.rotate(rot);
   card.setBorder(player_.color);
 });
 

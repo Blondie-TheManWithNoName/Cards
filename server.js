@@ -172,13 +172,14 @@ io.on('connection', (socket) => {
 
 
         // Handle cursor down from a client
-        socket.on('cursorDown', ({ code, cardId, player, zIndex }) => {
+        socket.on('cursorDown', ({ code, cardId, player, zIndex, rot }) => {
             log("cursorDown " + cardId + " by " + player.name);
 
             const card = rooms[code].deck.getCardFromId(cardId);
             if (card) {
-                card.setzIndex(zIndex)
-                socket.to(code).emit('cursorDowned', cardId, player, zIndex);
+                card.setzIndex(zIndex);
+                card.rotate(rot);
+                socket.to(code).emit('cursorDowned', cardId, player, rot);
             }
         });
 

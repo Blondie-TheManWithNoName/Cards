@@ -1,10 +1,12 @@
-import { cardValueEnum, cardSuitEnum, addListener, quickSort } from './util.js';
+import { cardValueEnum, cardSuitEnum, addListener, quickSort, getPercentX, getPercentY } from './util.js';
 import { Card } from './card.js';
 import { Player } from './player.js';
 import { notifyShuffle } from './client.js';
 
 export class Deck {
 
+
+    static matElem = document.getElementById("mat")
 
     constructor(deck, maxZ) {
         this.suit = Object.values(cardSuitEnum);
@@ -94,14 +96,15 @@ export class Deck {
     }
 
     byDefault() {
-
-        let x = 100;
-        let y = 100;
+        let matRect = Deck.matElem.getBoundingClientRect();
+        let x = 50 - 6.5;
+        let y = 50 - 8.8;
         for (const card of this.cards) {
             card.changePosition({ x: x, y: y }, this.z, false, true)
             ++this.z;
-            x += 0.5;
-            y += 0.5;
+            x += 0.025;
+            if (x === 25.5) x = 100;
+            y += 0.025;
 
         }
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)
@@ -109,8 +112,8 @@ export class Deck {
     }
 
     bySuit() {
-        let x = 100; 
-        let y = 100;
+        let x = 15; 
+        let y = 20;
         let i = 0;
         let previous = 0;
 
@@ -124,12 +127,12 @@ export class Deck {
 
                 if (i < 12) {
                     ++this.z;
-                    x += 50;
+                    x += 5;
                     ++i;
                 }
                 else {
-                    x = 100;
-                    y += 130;
+                    x = 15;
+                    y += 15;
                     i = 0;
                 }
                 ++previous;
@@ -145,8 +148,8 @@ export class Deck {
         
         if (!this.sorted) this.cards = quickSort(this.cards, 'index');
         
-        let x = 100;
-        let y = 100;
+        let x = 30;
+        let y = 20;
         let i=0;
         let j=0;
         let previous = 0;
@@ -158,19 +161,19 @@ export class Deck {
                 
                 if (i < 12)
                 {
-                    y += 130;
+                    y += 15;
                     ++i;
                 }
                 else
                 {
-                    y = 100;
-                    x = 100 + (j)*15;
+                    y = 20;
+                    x = 30 + (j)*0.5;
                     i = 0;
                 }
                 if (i%4 == 0 && i != 0)
                 {
-                    y = 100;
-                    x += 350;
+                    y = 20;
+                    x += 15;
                     ++j;
                     
                 }

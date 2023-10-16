@@ -45,3 +45,14 @@ export function quickSort(arr, by='index') {
   
     return [...quickSort(left), pivot, ...quickSort(right)];
   }
+
+
+export function getPercentX(coord)
+{
+  return (coord/window.innerWidth)*100;
+}
+
+export function getPercentY(coord)
+{
+  return (coord/window.innerHeight)*100;
+}

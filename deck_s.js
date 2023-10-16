@@ -11,8 +11,8 @@ export class Deck {
         this.suit = Object.values(cardSuitEnum);
         this.value = Object.values(cardValueEnum);
         this.front = true;
-        this.x = 100;
-        this.y = 100;
+        this.x = 0;
+        this.y = 0;
         this.z = 1;
         this.cards = []
         this.sorted = true;
@@ -95,8 +95,8 @@ export class Deck {
     byDefault(hands)
     {
 
-        this.x = 100;
-        this.y = 100;
+        this.x = 0;
+        this.y = 0;
         if (hands !== undefined)
         {
             for (const hand of hands)
@@ -112,8 +112,8 @@ export class Deck {
         {
                 card.changePosition({x: this.x, y: this.y})
                 card.setzIndex()
-                this.x += 0.5;
-                this.y += 0.5;
+                this.x += 0.025;
+                this.y += 0.025;
 
         }        
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)

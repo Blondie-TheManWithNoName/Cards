@@ -139,3 +139,25 @@ export function biggerCard(card, inside)
     //       console.log('scale(' + (cubicBezierScale((newPosition.y - minY) / (maxY - minY))) + ')')
     //     //   console.log((eqSize[0]*newPosition.y) + eqSize[1]);
     //   }      
+
+
+export function getPercentX(coord)
+{
+ let matRect = document.getElementById("mat").getBoundingClientRect();
+  return ((coord - (window.innerWidth - matRect.width)/2)/matRect.width)*100;
+}
+
+export function getPercentY(coord)
+{
+  let matRect = document.getElementById("mat").getBoundingClientRect();
+  return ((coord - (window.innerHeight - matRect.height)/2)/matRect.height)*100;
+
+}
+
+// Get equation to move the cover-section
+export function getEquation(x1, y1, x2, y2)
+{
+  let m = (y2 - y1) / (x2 - x1);
+  let b = y1 - (m * x1);
+  return [m, b];
+}

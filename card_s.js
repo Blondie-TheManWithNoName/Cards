@@ -90,7 +90,10 @@ export class Card {
               this.zIndex = ++Card.maxZ; 
         }
 
-        
+        rotate(rot=0)
+        {
+            this.rot = rot;
+        }
         getMaxZ()
         {
             return Card.maxZ;

@@ -1,4 +1,4 @@
-import { addListener, createElement, addChildElement, quickSort } from './util.js';
+import { addListener, createElement, addChildElement, quickSort, getPercentX, getPercentY } from './util.js';
 import { Card } from './card.js';
 
 export class Player {
@@ -65,8 +65,19 @@ export class Player {
     {
         let elem = createElement('div', 'cardBox');
         elem.id = this.hand.length;
+        // elem.appendChild(card.cardElem);
+
+        // card.cardElem.style.top = (card.pos.y - 100)  + '%';
+
+        // let x = (document.getElementById("hand").getBoundingClientRect().width - document.getElementById("mat").getBoundingClientRect().width)/2;
+        // console.log("card.pos.x/100", (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)
+        // // card.cardElem.style.left = (x + (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)  + '%';
+        // card.cardElem.style.left =  ((card.pos.x-50)/100)*document.getElementById("mat").getBoundingClientRect().width + '%';
+
         addChildElement(document.getElementById("hand"), elem);
         this.hand.push(card);
+
+        
 }
         card.isPartOfHand = true;
         card.wasPartOfHand = true;
@@ -80,23 +91,31 @@ export class Player {
         card.isPartOfHand = false;
     }
 
-    showHand(center) {
+    showHand() {
         let z = 1;
         for (let i=0; i < this.hand.length; ++i) {
             // let x = center - (this.hand.length / 2) * 52 * 2;
-        let x = center - 40;
+            // let x = center - 40;
 
-        var myDiv = document.getElementsByClassName("cardBox")[i];
+            var myDiv = document.getElementsByClassName("cardBox")[i];
 
-        // Step 2: Get the coordinates of the center
-        var rect = myDiv.getBoundingClientRect();
-        var centerX = rect.left + rect.width / 2 - 40;
-        // var centerY = rect.top + rect.height / 2;
+            // Step 2: Get the coordinates of the center
+            var rect = myDiv.getBoundingClientRect();
+            var rectHand = document.getElementById("hand").getBoundingClientRect();
 
-        this.hand[i].changePosition({ x: centerX, y: 690 }, z, true, true, 0.25, {z: 0, y: 0});
+            var centerX = ((rect.left + rect.right) / 2)
+            // var centerY = rect.top + rect.height / 2;
+            console.log("ID", this.hand[i].id)
+            console.log("centerX", centerX)
+            console.log("percent", getPercentX(centerX)-5.5)
+
+            if (this.hand[i].rot === 0)
+                this.hand[i].changePosition({ x: getPercentX(centerX)-5.5, y: 100+6.5}, z, true, true, 0.25, {z: 0, y: 0});
+            else if (this.hand[i].rot === 90)
+                this.hand[i].changePosition({ x: 100+6.5, y: getPercentX(centerX)-5.5}, z, true, true, 0.25, {z: 0, y: 0});
             // card.setFront(true);
             ++z;
-            x += 40 * 2;
+            // x += 40 * 2;
         }
     }
 
@@ -113,24 +132,48 @@ export class Player {
         let index = this.getIndex(card.id);
         var myDiv = document.getElementsByClassName("cardBox")[index];
         var rect = myDiv.getBoundingClientRect();
-        // console.log("newPosition", newPosition.x);
-        // console.log("rect.left", rect.left);
+        var rectHand = document.getElementById("hand").getBoundingClientRect();
+        var rectMenu = document.getElementById("menu").getBoundingClientRect();
+        
+        var rectMat = document.getElementById("mat").getBoundingClientRect()
 
-        if (newPosition.x + 40 < rect.left && index !== 0)
+        if (card.rot === 0)
         {
-            this.hand[index - 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 690 }, this.hand[index].zIndex, true, true, 0.25);
-            let temp = this.hand[index]
-            this.hand[index] = this.hand[index - 1];
-            this.hand[index - 1] = temp;
-            this.hand[index - 1].setzIndex2(temp.zIndex - 1);
+            if (newPosition.x + 5 < getPercentX(rect.left) && index !== 0)
+            {
+                this.hand[index - 1].changePosition({ x:getPercentX(rect.left + rect.width / 2) - 5.5, y: 100+6.5 }, this.hand[index].zIndex, true, true, 0.25);
+                let temp = this.hand[index]
+                this.hand[index] = this.hand[index - 1];
+                this.hand[index - 1] = temp;
+                this.hand[index - 1].setzIndex2(temp.zIndex - 1);
+            }
+            else if (newPosition.x + 5 > getPercentX(rect.right) && index !== this.hand.length - 1)
+            {
+                this.hand[index + 1].changePosition({ x: getPercentX(rect.left + rect.width / 2) - 5.5, y: 100+6.5 }, this.hand[index].zIndex, true, true, 0.25);
+                let temp = this.hand[index]
+                this.hand[index] = this.hand[index + 1];
+                this.hand[index + 1] = temp;
+                this.hand[index + 1].setzIndex2(temp.zIndex + 1);
+            }
         }
-        else if (newPosition.x + 40 > rect.right && index !== this.hand.length - 1)
+        else if (card.rot === 90)
         {
-            this.hand[index + 1].changePosition({ x: rect.left + rect.width / 2 - 40, y: 690 }, this.hand[index].zIndex, true, true, 0.25);
-            let temp = this.hand[index]
-            this.hand[index] = this.hand[index + 1];
-            this.hand[index + 1] = temp;
-            this.hand[index + 1].setzIndex2(temp.zIndex + 1);
+            if (newPosition.x + 5 < getPercentX(rect.left) && index !== 0)
+            {
+                this.hand[index - 1].changePosition({ x:100+6.5, y: getPercentX(rect.left + rect.width / 2) - 5.5 }, this.hand[index].zIndex, true, true, 0.25);
+                let temp = this.hand[index]
+                this.hand[index] = this.hand[index - 1];
+                this.hand[index - 1] = temp;
+                this.hand[index - 1].setzIndex2(temp.zIndex - 1);
+            }
+            else if (newPosition.x + 5 > getPercentX(rect.right) && index !== this.hand.length - 1)
+            {
+                this.hand[index + 1].changePosition({ x: 100+6.5 , y: getPercentX(rect.left + rect.width / 2) - 5.5 }, this.hand[index].zIndex, true, true, 0.25);
+                let temp = this.hand[index]
+                this.hand[index] = this.hand[index + 1];
+                this.hand[index + 1] = temp;
+                this.hand[index + 1].setzIndex2(temp.zIndex + 1);
+            }
         }
     }
 

@@ -10,7 +10,7 @@ var rot = 0
 const urlParams = new URLSearchParams(window.location.search);
 console.log("URL",urlParams);
 const roomCode = urlParams.get('roomCode');
-const socket = io("http://127.0.0.1:8080/", { query: "roomCode="+roomCode });
+const socket = io("https://cards.up.railway.app/", { query: "roomCode="+roomCode });
 const url = new URL(location);
 history.pushState({}, "sadasdas", url);
 

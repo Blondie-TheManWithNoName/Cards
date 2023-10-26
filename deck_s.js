@@ -95,39 +95,29 @@ export class Deck {
     byDefault(hands)
     {
 
-        this.x = 0;
-        this.y = 0;
-        if (hands !== undefined)
-        {
-            for (const hand of hands)
-            {
-                this.cards = this.cards.concat(hand)
-                // for (let i = hand.length; i >= 0; --i)
-                //     this.cards.push(hand[i])
+        let x = 50 - (0.025 * 51)//50 - 6.5;
+        let y = 50 - (0.025 * 51)//50 - 8.8;
+        for (const card of this.cards) {
+            card.changePosition({ x: x, y: y }, this.z, false, true)
+            ++this.z;
+            x += 0.025;
+            if (x === 25.5) x = 100;
+            y += 0.025;
 
-                hand.length = 0
-            }
         }
-        for (const card of this.cards)
-        {
-                card.changePosition({x: this.x, y: this.y})
-                card.setzIndex()
-                this.x += 0.025;
-                this.y += 0.025;
-
-        }        
+        // }        
         // this.cards[this.value.length-1][0].changePosition({x: ++this.x, y: ++this.y}, this.z)
         // this.cards[this.value.length-1][1].changePosition({x: ++this.x, y: ++this.y}, this.z)
 
     }
 
     bySuit() {
-        let x = 100; 
-        let y = 100;
+        let x = 15; 
+        let y = 20;
         let i = 0;
         let previous = 0;
 
-        if (!this.sorted) this.cards = quickSort(this.cards);
+        if (!this.sorted) this.cards = quickSort(this.cards, 'index');
 
         for (const card of this.cards) {
             this.z = 1;
@@ -137,18 +127,18 @@ export class Deck {
 
                 if (i < 12) {
                     ++this.z;
-                    x += 50;
+                    x += 5;
                     ++i;
                 }
                 else {
-                    x = 100;
-                    y += 130;
+                    x = 15;
+                    y += 15;
                     i = 0;
                 }
                 ++previous;
 
             }
-            card.changePosition({ x: x, y: y }, this.z);
+            card.changePosition({ x: x, y: y }, this.z, false, true);
             previous = card.index;
 
         }
@@ -156,10 +146,10 @@ export class Deck {
 
     byRank()
     {
-        if (!this.sorted) this.cards = quickSort(this.cards);
-
-        this.x = 100;
-        this.y = 100;
+        if (!this.sorted) this.cards = quickSort(this.cards, 'index');
+        
+        let x = 30;
+        let y = 20;
         let i=0;
         let j=0;
         let previous = 0;
@@ -171,26 +161,26 @@ export class Deck {
                 
                 if (i < 12)
                 {
-                    this.y += 130;
+                    y += 15;
                     ++i;
                 }
                 else
                 {
-                    this.y = 100;
-                    this.x = 100 + (j)*15;
+                    y = 20;
+                    x = 30 + (j)*0.5;
                     i = 0;
                 }
                 if (i%4 == 0 && i != 0)
                 {
-                    this.y = 100;
-                    this.x += 350;
+                    y = 20;
+                    x += 15;
                     ++j;
                     
                 }
                 ++previous;
             }
             
-            card.changePosition({x: this.x, y: this.y}, this.z);
+            card.changePosition({ x: x, y: y }, this.z, false, true)
             ++this.z;
             previous = card.index;
         }
@@ -202,10 +192,10 @@ export class Deck {
     
 
     deal(player) {
-        let x = 900;
-        let y = 600;
-        this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex, true, true);
-        player.addCardToHand(this.cards[this.cards.length - 1])
+        let x = 50;
+        let y = 100 + 12;
+        this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex);
+        player.addCardToHand(this.cards[this.cards.length - 1]);
         
     }
     

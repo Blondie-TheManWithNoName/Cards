@@ -176,6 +176,7 @@ span {
     background-color: #2b905f;
     z-index: 1;
     transition: scale 250ms;
+    /* transform-origin: 50% 100%; */
     /* scale: 2; */
     /* overflow: hidden; */
     /* overflow-y: hidden; */
@@ -319,6 +320,8 @@ main {
     cursor: pointer;
     border-radius: 0px;
     transition: rotate 250ms;
+    /* transform-origin: 50% 50%; */
+
 
 }
 

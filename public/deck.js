@@ -22,7 +22,6 @@ export class Deck {
             this.front = deck.front;
             Card.maxZ = maxZ;
             this.initializeDeck(deck);
-            console.log("Card.maxZ CLIENT", Card.maxZ)
         }
     }
 
@@ -31,7 +30,6 @@ export class Deck {
         this.front = !this.front;
         for (const card of this.cards)
         {
-            // console.log("HEY HEY")
             card.flipCard(false, this.front, false);
         }
     
@@ -97,8 +95,8 @@ export class Deck {
 
     byDefault() {
         let matRect = Deck.matElem.getBoundingClientRect();
-        let x = 50 - 6.5;
-        let y = 50 - 8.8;
+        let x = 50 - (0.025 * 51)//50 - 6.5;
+        let y = 50 - (0.025 * 51)//50 - 8.8;
         for (const card of this.cards) {
             card.changePosition({ x: x, y: y }, this.z, false, true)
             ++this.z;
@@ -249,6 +247,7 @@ export class Deck {
 
     addCard(card) {
         this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
+        // this.cards.push(card);
         if (card.index !== this.cards.length - 1)
             this.sorted = false;
 

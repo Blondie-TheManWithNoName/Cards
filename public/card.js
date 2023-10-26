@@ -1,15 +1,20 @@
 
 
 import { createElement, addChildElement, addListener, removeListener, getEquation } from './util.js';
-import { notifyCardMove, notifyCardFlip, notifyCursorUp, notifyCursorDown } from './client.js';
+import { notifyCardMove, notifyCardFlip, notifyCursorUp, notifyCursorDown } from './client.js'; 
 
 
 const eqSize1 = getEquation(90 , 1, 100 , 2);
 const eqSize2 = getEquation(10 , 1, 0 , 2);
+const WIDTH = (((0.063 * window.innerHeight)/document.getElementById("mat").getBoundingClientRect().width)*100)/2; //px
+const HEIGHT = (((0.088 * window.innerHeight)/document.getElementById("mat").getBoundingClientRect().height)*100)/2; //px
+
+
 
 // Creation of class Card
 
 
+const hand = document.getElementById("hand")
 
 export class Card {
 
@@ -18,15 +23,9 @@ export class Card {
     static imgExt = '.svg';
     static imgBackCard = '1B';
     static mouseDown = false;
-    static mouseClicked = false;
     static maxZ = 1;
-    static handLine = (document.getElementById("hand").getBoundingClientRect().top / window.innerHeight) * 100;
-    static remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    static matElem = document.getElementById("mat")
-    static matRect = Card.matElem.getBoundingClientRect();
+    static matRect = document.getElementById("mat").getBoundingClientRect();
 
-    static hand = document.getElementById("hand")
-    static handRect = Card.hand.getBoundingClientRect();
 
     onMouseDown = this.onMouseDown.bind(this)
     onMousemove = this.onMousemove.bind(this)
@@ -36,14 +35,18 @@ export class Card {
     constructor(suit, value, pos = { x: 0, y: 0 }, zIndex = 1, front = true, index=undefined, rot=0) {
 
         // Card Properties
+        this.xSend = pos.x;
+        this.ySend = pos.y;
+
         this.suit = suit;
         this.value = value;
-        this.pos = { x: pos.x, y: pos.y }
+        this.pos = { x: pos.x, y: pos.y}
         this.id = this.value.name + this.suit;
         this.front = front;
         this.zIndex = zIndex;
         this.index = index;
         this.rot = rot;
+        this.disabled = false;
 
 
         this.startTime;
@@ -52,7 +55,6 @@ export class Card {
         this.wasPartOfHand = false;
         this.offset = { x: pos.x, y: pos.y }
         this.isDragging = false;
-        this.isOut = false;
 
         this.createElements();
     }
@@ -64,9 +66,8 @@ export class Card {
         this.cardElem = createElement('div', 'card');
         this.cardElem.id = this.id;
         this.cardElem.style.zIndex = this.zIndex;
-        this.cardElem.style.left = this.pos.x + '%';
-        this.cardElem.style.top = this.pos.y + '%';
-
+        this.cardElem.style.left = (this.pos.x - WIDTH) + '%';
+        this.cardElem.style.top = (this.pos.y - HEIGHT) + '%';
         this.cardInnerElem = createElement('div', 'card-inner');
         if (!this.front) this.cardInnerElem.style.transform = 'rotateY(-180deg)';
 
@@ -83,7 +84,7 @@ export class Card {
         addChildElement(this.cardInnerElem, this.cardFrontElem);
         addChildElement(this.cardInnerElem, this.cardBackElem);
         addChildElement(this.cardElem, this.cardInnerElem);
-        addChildElement(Card.matElem, this.cardElem);
+        addChildElement(document.getElementById("mat"), this.cardElem);
 
         // Listeners     
         addListener(this.cardElem, 'mouseover', this.onMouseHover.bind(this))
@@ -91,23 +92,11 @@ export class Card {
 
     }
 
-    changeCard(suit, value) {
-        this.suit = suit;
-        this.value = value;
-        this.cardFrontImg.src = Card.imgSrc + this.value.name + this.suit + Card.imgExt;
-    }
-
     onMouseHover(e) {
-        if (!this.isDragging) {
-            // else
-            //     this.changePosition({x: this.pos.x, y: this.pos.y - 20}, this.zIndex, false, true, 0.1);
-            
+        if (!this.isDragging && !this.disabled) {
             addListener(window, 'mousedown', this.onMouseDown)
-            if (this.isPartOfHand && !Card.mouseDown)
-            {
-                // this.changePosition({ x: this.pos.x, y: 650 }, this.zIndex, true, true, 0.15);
-            }
-
+            // if (this.isPartOfHand && !Card.mouseDown)
+                // this.changePosition({ x: this.pos.x, y: 100 }, this.zIndex, true, true, 0.15);
         }
     }
     
@@ -117,87 +106,62 @@ export class Card {
       
       async onMouseOut(e) {
           if (!this.isDragging) {
-              if (this.isPartOfHand && !Card.mouseDown)
-              {
-                //   await this.delay(75);
-                var rectHand = document.getElementById("hand").getBoundingClientRect();
-                // this.changePosition({ x: this.pos.x, y: rectHand.top }, this.zIndex, true, true, 0.15);
-
-              }
-            // else
-            //     this.changePosition({x: this.pos.x, y: this.pos.y + 20}, this.zIndex, false, true, 0.1);
+            //   if (this.isPartOfHand && !Card.mouseDown)
+                // this.changePosition({ x: this.pos.x, y: 100 + 6.5 }, this.zIndex, true, true, 0.15);
 
             removeListener(window, 'mouseup', this.onMouseUp);
             removeListener(window, 'mousedown', this.onMouseDown);
-            this.isOut = false;
-            Card.mouseClicked = false;
-
         }
-        else this.isOut = true;
 
     }
 
     onMouseDown(e) {
         Card.mouseDown = true;
-        Card.mouseClicked = true;
         this.isDragging = true;
         const containerRect = document.getElementById("game").getBoundingClientRect();
 
         addListener(window, 'mouseup', this.onMouseUp);
         addListener(window, 'mousemove', this.onMousemove);
+        
         e.preventDefault();
         this.startTime = Date.now();
-        Card.matRect = Card.matElem.getBoundingClientRect();
-        Card.handRect = Card.hand.getBoundingClientRect();
+        Card.matRect = document.getElementById("mat").getBoundingClientRect();
+        Card.handRect = hand.getBoundingClientRect();
 
-
-        
-        
-
-        // this.offset.x = (document.getElementById("mat").offsetWidth * this.pos.x) / 100 + 20;
-        // console.log("this.offset.x", this.offset.x)
-        // console.log("this.offset.y", this.offset.y)
         if (!this.isPartOfHand)
-        this.setzIndex();
+            this.setzIndex();
     
-    // console.log("this.isPartOfHand", this.isPartOfHand)
-    // console.log("Card.zMax", Card.maxZ)
-    // console.log("card.zIndex", this.zIndex)
-    if (!this.wasPartOfHand)
-    notifyCursorDown(this, this.id, this.zIndex)
+        if (!this.wasPartOfHand)
+            notifyCursorDown(this, this.id, this.zIndex)
 
-        console.log("eclientX", (e.clientX))
-        console.log("((e.clientX/Card.matRect.width)*100)", ((e.clientX/Card.matRect.width)*100))
-    if (this.rot === 0)
-    {
-        this.offset.x = (((e.clientX/Card.matRect.width)*100) - this.pos.x);
-        this.offset.y = (((e.clientY/Card.matRect.height)* 100) - this.pos.y);
-    }
-    else if (this.rot === 90)
-    {
-        this.offset.x = (((e.clientX/Card.matRect.width)* 100) + this.pos.y);
-        this.offset.y = (((e.clientY/Card.matRect.height)*100) - this.pos.x);
-    }
-    else if (this.rot === 180)
-    {
-        this.offset.x = (((e.clientX/Card.matRect.width)*100) + this.pos.x);
-        this.offset.y = (((e.clientY/Card.matRect.height)* 100) + this.pos.y);
-    }
-    else if (this.rot === 270)
-    {
-        this.offset.x = (((e.clientX/Card.matRect.width)* 100) - this.pos.y);
-        this.offset.y = (((e.clientY/Card.matRect.height)*100) + this.pos.x);
-    }
+     
 
-
-    console.log("this.offset.x", this.offset.x)
+        if (this.rot === 0)
+        {
+            this.offset.x = (((e.clientX/Card.matRect.width)*100) - this.pos.x);
+            this.offset.y = (((e.clientY/Card.matRect.height)*100) - this.pos.y);
+        }
+        else if (this.rot === 90)
+        {
+            this.offset.x = (((e.clientX/Card.matRect.width)*100) + this.pos.y);
+            this.offset.y = (((e.clientY/Card.matRect.height)*100) - this.pos.x);
+        }
+        else if (this.rot === 180)
+        {
+            this.offset.x = (((e.clientX/Card.matRect.width)*100) + this.pos.x);
+            this.offset.y = (((e.clientY/Card.matRect.height)* 100) + this.pos.y);
+        }
+        else if (this.rot === 270)
+        {
+            this.offset.x = (((e.clientX/Card.matRect.height)*100) - this.pos.y);
+            this.offset.y = (((e.clientY/Card.matRect.width)*100) + this.pos.x);
+        }
 }   
 
     isOnHand(pos) {
 
         if (pos < 100)
         {
-
             this.isPartOfHand = false;
         }
         else  //- (pos.y >= handLine cardSize.y/2.5))
@@ -209,18 +173,32 @@ export class Card {
 
     scale(pos)
     {
+        // console.log("POS", pos)
         if (pos >= 90  && pos <= 100)
-            this.cardElem.style.transform = 'scale(' + (yMove*eqSize[0] + eqSize[1]) + ')';
+            this.cardElem.style.transform = 'scale(' + (pos*eqSize1[0] + eqSize1[1]) + ')';
         else if (pos < 90)
             this.cardElem.style.transform = 'scale(1)'
         else if (pos > 100)
             this.cardElem.style.transform = 'scale(2)'
     }
+
+    move(xMove, yMove)
+    {
+        if ((xMove <= 100 && xMove >= 0) || (xMove > 100 && this.rot == 90))
+        {
+            this.xSend = xMove;
+            this.cardElem.style.left = (xMove - WIDTH) + '%';
+        }
+        if ((yMove <= 100 && yMove >= 0) || (yMove > 100 && this.rot == 0))
+        {
+            this.ySend = yMove;
+            this.cardElem.style.top = (yMove- HEIGHT) + '%';
+        }
+        notifyCardMove(this, { x: this.xSend, y: this.ySend });
+    }
     
     onMousemove(e) {
-
         
-        // console.log("WHAT!!!!!")
         let xPercent = 0;
         let yPercent = 0;
         let xMove = 0;
@@ -229,61 +207,29 @@ export class Card {
         yPercent = (e.clientY/Card.matRect.height)*100;
         xMove = xPercent - this.offset.x;
         yMove = yPercent - this.offset.y;
+
         if (this.rot === 0)
         {
-            // console.log("ROT 0", xMove, yMove)
-            this.cardElem.style.left = xMove + '%';
-            this.cardElem.style.top = yMove + '%';
-            notifyCardMove(this, { x: xMove, y: yMove });
-
-            if (yMove >= 90  && yMove <= 100)
-                this.cardElem.style.transform = 'scale(' + (yMove*eqSize1[0] + eqSize1[1]) + ')';
-            else if (yMove < 90)
-                this.cardElem.style.transform = 'scale(1)'
-            else if (yMove > 100)
-                this.cardElem.style.transform = 'scale(2)'
+            this.move(xMove, yMove);
+            this.scale(this.ySend);
         }
+
         else if (this.rot === 90)
         {
-            // console.log("ROT 90", yMove, -xMove)
-            this.cardElem.style.left = yMove + '%';
-            this.cardElem.style.top = -xMove + '%';
-            notifyCardMove(this, { x: yMove, y: -xMove });
-
+            this.move(yMove, -xMove);
+            this.scale(this.xSend);
             
-            if (yMove >= 90  && yMove <= 100)
-                this.cardElem.style.transform = 'scale(' + (yMove*eqSize1[0] + eqSize1[1]) + ')';
-            else if (yMove < 90)
-                this.cardElem.style.transform = 'scale(1)'
-            else if (yMove > 100)
-            this.cardElem.style.transform = 'scale(2)'
         }
         else if (this.rot === 180)
         {
-            // console.log("ROT 90", yMove, -xMove)
-            this.cardElem.style.left = -xMove + '%';
-            this.cardElem.style.top = -yMove + '%';
-            notifyCardMove(this, { x: -xMove, y: -yMove });
-            console.log("yMove", yMove)
-            if (yMove <= 0  && yMove >= 10)
-                this.cardElem.style.transform = 'scale(' + (yMove*eqSize2[0] + eqSize2[1]) + ')';
-            else if (yMove < 10)
-                this.cardElem.style.transform = 'scale(1)'
-            else if (yMove > 0)
-            this.cardElem.style.transform = 'scale(2)'
+            this.move(-xMove, -yMove);
+            // this.scale(-this.xSend);
         }
         else if (this.rot === 270)
         {
-            this.cardElem.style.left = -yMove + '%';
-            this.cardElem.style.top = xMove + '%';
-            notifyCardMove(this, { x: -yMove, y: xMove });
+            this.move(-yMove, xMove);
+            // this.scale(-this.xSend);
 
-            if (yMove >= 0  && yMove <= 10)
-                this.cardElem.style.transform = 'scale(' + (yMove*eqSize2[0] + eqSize2[1]) + ')';
-            else if (yMove < 10)
-                this.cardElem.style.transform = 'scale(1)'
-            else if (yMove > 0)
-            this.cardElem.style.transform = 'scale(2)'
         }
 
   
@@ -302,54 +248,22 @@ export class Card {
         Card.mouseDown = false;
         this.isDragging = false;
         removeListener(window, 'mousemove', this.onMousemove)
-        
+
         // flip sides
-        if (Date.now() - this.startTime < 300 && (this.pos.x === ((e.clientX/Card.matRect.width)*100) - this.offset.x || this.pos.y === ((e.clientY/Card.matRect.height)*100) - this.offset.y)) {
-            
+        if (Date.now() - this.startTime < 300 && (this.pos.x === this.xSend && this.pos.y === this.ySend)) {  
             this.flipCard(true);
-            
         }
-        // if (((e.clientX/Card.matRect.width)*100) - this.offset.x < 0 || ((e.clientX/Card.matRect.width)*100) - this.offset.x  > 100
-        // || ((e.clientY/Card.matRect.width)*100) - this.offset.y  < 0 || ((e.clientY/Card.matRect.width)*100) - this.offset.y > 100)
-        // {
-        //     console.log("OUT")
-        //     this.changePosition(this.pos, this.zIndex, false, true)
-        // }
-        // else
-        // {
 
         // Update position of the card
-        if (this.rot === 0)
-        {
-            this.pos.x = ((e.clientX/Card.matRect.width)*100) - this.offset.x;
-            this.pos.y = ((e.clientY/Card.matRect.height)*100) - this.offset.y;
+            this.pos.x = this.xSend;
+            this.pos.y = this.ySend;
             this.isOnHand(this.pos.y);
-        }        
-        else if (this.rot === 90)
-        {
-            this.pos.x = ((e.clientY/Card.matRect.width)*100) - this.offset.y;
-            this.pos.y = -(((e.clientX/Card.matRect.height)*100) - this.offset.x);
-            this.isOnHand(this.pos.x);
-        }
-        else if (this.rot === 180)
-        {
-            this.pos.x = -(((e.clientX/Card.matRect.width)*100) - this.offset.x);
-            this.pos.y = -(((e.clientY/Card.matRect.height)*100) - this.offset.y);
-            this.isOnHand(-this.pos.y);
-        }
-        else if (this.rot === 270)
-        {
-            this.pos.x = -(((e.clientY/Card.matRect.width)*100) - this.offset.y);
-            this.pos.y = (((e.clientX/Card.matRect.height)*100) - this.offset.x);
-            this.isOnHand(-this.pos.x);
-        }
-            
-            // }
+
             
         // Notify Server
         notifyCursorUp(this, this.pos)
+        console.log("isdragging", this.isDragging)
 
-        if (this.isOut) this.onMouseOut();
 
     }
 
@@ -361,7 +275,6 @@ export class Card {
         {
             this.cardInnerElem.style.transition = "transform 0.3s ease"
             if (!this.front) {
-                // console.log("BYE");
                 this.cardInnerElem.style.transform = 'rotateY(-60deg) translateX(100%) rotateZ(-10deg)'
                 setTimeout(() => {
                     this.cardInnerElem.style.transform = 'rotateY(-180deg) translateX(0) rotateZ(0)'
@@ -380,7 +293,6 @@ export class Card {
         }
         else
         {
-            // console.log("HELLO");
             (this.front) ? this.cardInnerElem.style.transform = 'rotateY(0deg)' : this.cardInnerElem.style.transform = 'rotateY(-180deg)';
         }
 
@@ -391,7 +303,7 @@ export class Card {
 
     changeTransitionTime() {
         setTimeout(() => {
-            this.cardInnerElem.style.transition = "all 0s linear"
+            this.cardInnerElem.style.transition = "transform 0s linear, rotate 250ms"
         }, 75);
 
     }
@@ -399,31 +311,39 @@ export class Card {
     rotate(rot=0)
     {
         this.cardElem.style.rotate = (-rot) + 'deg';
+        this.cardElem.style.transformOrigin = "50% 50%";
         this.rot = rot;
     }
 
-    changePosition(pos, zIndex, onHand = false, animation = false, sec = 0.5, rot = 0) {
+    changePosition(pos, zIndex, onHand = false, animation = false, sec = 0.5, rot = this.rot) {
 
         if (animation) {
             this.isDragging = false;
-            this.cardElem.style.transition = "all " + sec + "s ease-in-out";
+            this.cardElem.style.transition = "left " + sec + "s ease-in-out, top " + sec + "s ease-in-out";
             setTimeout(() => {
-                this.cardElem.style.transition = "all 0s";
+                this.cardElem.style.transition = "left 0s, top 0s, rotate 250ms";
             }, sec * 100);
         }
+        this.scale(pos.y)
         // pos.x = (document.getElementById("mat").offsetWidth * 50) / 100 + 20;
         // console.log("pos.x", pos.x)
         
         // this.cardElem.style.transform = 'translate3d(' + (pos.x) + '%, ' + (pos.y) + '%, 0) rotateZ(' + rot.z + 'deg) rotateY(' + rot.y + 'deg)'
-            this.cardElem.style.left = pos.x + '%';
-            this.cardElem.style.top = pos.y + '%';
-            this.rotate(rot);
 
-        if (onHand) this.cardElem.style.transform = 'scale(2)';
+            this.cardElem.style.left = (pos.x - WIDTH) + '%';
+            this.cardElem.style.top = (pos.y - HEIGHT) + '%';
 
-        this.pos = pos;
+            // this.rotate(rot);
+
+        // if (onHand) this.cardElem.style.transform = 'scale(2)';
+
+        this.pos = {x: (pos.x), y: (pos.y)};
         if (zIndex !== undefined) this.setzIndex2(zIndex);
-        // if (!this.isOnHand)
+        if (onHand)
+        {
+            // notifyCardMove(this, { x: (pos.x - WIDTH), y: (pos.y - HEIGHT) });
+        
+        }
         // this.setzIndex();
     }
 
@@ -445,8 +365,8 @@ export class Card {
     }
 
     setBorder(color) {
-        this.cardFrontElem.style.border = this.cardBackElem.style.border = "solid 0.5rem" + color;
-        this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "-0.5rem";
+        this.cardFrontElem.style.border = this.cardBackElem.style.border = "solid 0.25rem" + color;
+        this.cardFrontElem.style.margin = this.cardBackElem.style.margin = "-0.25rem";
     }
 
     resetBorder() {

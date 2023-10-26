@@ -121,31 +121,31 @@ window.onload = async (event) => {
     const radius = 800; // Radius of the fan
     const x = radius * Math.cos(angle);
     const y = radius * Math.sin(angle);
-    for (const keySuit of suit) {
-        for (const key of value)
-        {   
+    // for (const keySuit of suit) {
+    //     for (const key of value)
+    //     {   
        
             
-            // Calculate x and y coordinates
-            cards2.push(new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.25 -35, y: y - i*0.25 -760}, i, true, -(52 / 2) ));
-            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.5 - 300, y: y + i*0.5 + 290}, i, true, -(52/6) )
-            new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x - i*0.5 + 950, y: y + i*0.5 + 290}, i, true, (52/6) )
-            ++i;
-        }
-    }
-    await delay(250);
+    //         // Calculate x and y coordinates
+    //         cards2.push(new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.25 -35, y: y - i*0.25 -760}, i, true, -(52 / 2) ));
+    //         new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x + i*0.5 - 300, y: y + i*0.5 + 290}, i, true, -(52/6) )
+    //         new Card(cardSuitEnum[keySuit], cardValueEnum[key], { x:  x - i*0.5 + 950, y: y + i*0.5 + 290}, i, true, (52/6) )
+    //         ++i;
+    //     }
+    // }
+    // await delay(250);
     
-    for (let i=0; i < cards2.length; ++i)
-    {
-        const angle = (i / (52 - 3)) *(Math.PI / 3) + Math.PI/3 + Math.PI; // Angle range between 0 to π
-        const radius = 800; // Radius of the fan
-        const x = radius * Math.cos(angle);
-        const y = radius * Math.sin(angle);
-        let sec = 0.04 + Math.pow(40.99914*Math.e, (-53.12935*x))
-        for (let j=i; j < cards2.length; ++j)
-            cards2[j].changePosition({ x:  x + j*0.25 -35, y: y -j*0.25 -760}, cards2[i].zIndex , false, true,sec, (i - (52 / 2)), true)
-        await delay(sec*1000);
-    }
+    // for (let i=0; i < cards2.length; ++i)
+    // {
+    //     const angle = (i / (52 - 3)) *(Math.PI / 3) + Math.PI/3 + Math.PI; // Angle range between 0 to π
+    //     const radius = 800; // Radius of the fan
+    //     const x = radius * Math.cos(angle);
+    //     const y = radius * Math.sin(angle);
+    //     let sec = 0.04 + Math.pow(40.99914*Math.e, (-53.12935*x))
+    //     for (let j=i; j < cards2.length; ++j)
+    //         cards2[j].changePosition({ x:  x + j*0.25 -35, y: y -j*0.25 -760}, cards2[i].zIndex , false, true,sec, (i - (52 / 2)), true)
+    //     await delay(sec*1000);
+    // }
 
 
     

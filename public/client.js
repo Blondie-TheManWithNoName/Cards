@@ -37,20 +37,20 @@ socket.on('connect', () =>
   // socket.emit('initialInfo', player.id);
 });
 
-// const zoomElement = document.getElementById("mat");
-// let zoom = 1;
-// const ZOOM_SPEED = 0.3;
+const zoomElement = document.getElementById("mat");
+let zoom = 1;
+const ZOOM_SPEED = 0.3;
 
-// document.addEventListener("wheel", function (e) {
-//   if (e.deltaY > 0) {
-//     if (zoom > 1)
-//       zoomElement.style.scale = `${(zoom -= ZOOM_SPEED)}`;
-//   } else {
-//     if (zoom < 3)
-//       zoomElement.style.scale = `${(zoom += ZOOM_SPEED)}`;
-//   }
-//   console.log("zoom", zoom)
-// });
+document.addEventListener("wheel", function (e) {
+  if (e.deltaY > 0) {
+    if (zoom > 1)
+      zoomElement.style.scale = `${(zoom -= ZOOM_SPEED)}`;
+  } else {
+    if (zoom < 3)
+      zoomElement.style.scale = `${(zoom += ZOOM_SPEED)}`;
+  }
+  console.log("zoom", zoom)
+});
 
   /////////////////////
  /// S E N D E R S ///
@@ -79,7 +79,6 @@ export function notifyCardFlip(cardId)
 // Function to notify the server when cursor is down
 export function notifyCursorDown(card, cardId, zIndex)
 {
-  // console.log("ASDASDA")
   card.rotate(rot);
   socket.emit('cursorDown', { code, cardId, player, zIndex, rot});
 }
@@ -90,7 +89,8 @@ export function notifyCursorUp(card, pos)
 
 
 
-
+  const cardId = card.id
+  socket.emit('cursorUp', { code, cardId, player});
   if (card.isPartOfHand)
   {
     if (card.wasPartOfHand)
@@ -100,7 +100,6 @@ export function notifyCursorUp(card, pos)
     }
     else
     {
-      console.log("HOLA")
       player.addCardToHand(card);
       deck.deleteCardFromId(card.id);
       player.showHand(window.innerWidth/2); 
@@ -110,12 +109,12 @@ export function notifyCursorUp(card, pos)
   }
   else
   {
-
+    
     if (card.wasPartOfHand)
     {
+      console.log("HHHHH")
       socket.emit('updatePlayerHand', code, player.id, card, false);
       player.deleteCardFromHand(card);
-      console.log("cardIndex", card.index)
       deck.addCardServer(card);
       player.showHand(window.innerWidth/2);
     }
@@ -160,13 +159,6 @@ document.getElementById("back-button").addEventListener('click', () =>
 
 socket.on("chooseColor", (colors, msg) =>
 {
-  // document.getElementById("game").disabled = true;
-
-  console.log(colors)
-  // let message = document.createElement('p');
-  // message.innerHTML = msg;
-  // document.getElementById("colorChoose").appendChild(message);
-  
   for (const color of colors)
   {
     let elem = document.createElement('input');
@@ -213,10 +205,10 @@ document.getElementById("play").addEventListener('click', () =>
 
   const color = checkedColor;
 
-  if (checkedColor === "#ED553B") rot = 0;
-  else if (checkedColor === "#F6D55C") rot = 90;
-  else if (checkedColor === "#65451F") rot = 180;
-  else if (checkedColor === "#20639B") rot = 270;
+  // if (checkedColor === "#ED553B") rot = 0;
+  // else if (checkedColor === "#F6D55C") rot = 90;
+  // else if (checkedColor === "#65451F") rot = 180;
+  // else if (checkedColor === "#20639B") rot = 270;
 
   document.getElementById("mat").style.rotate = rot + 'deg';
 
@@ -236,16 +228,7 @@ socket.on('message', (text) =>
 socket.on('deck', (deck_, maxZ, code_) =>
 {
   deck = new Deck(deck_, maxZ);
-  for(const card of deck.cards)
-  {
-
-    console.log(card)
-  }
-  
-  
   code = code_;
-  console.log(code)
-  // socket.join(code);
 });
 
 // Receive player with ID and Color given by the Server
@@ -339,6 +322,11 @@ socket.on('dealing', (card) =>
 socket.on('cardAddedToHand', (cardId) =>
 {
   deck.deleteCardFromId(cardId, true);
+  for (let i = 0; i < deck.cards.length; ++i){
+    if (deck.cards[i].id === cardId) deck.cards[i].disabled = true;
+  }
+
+
 });
 
 socket.on('cardDeletedFromHand', (card) =>

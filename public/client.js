@@ -205,10 +205,10 @@ document.getElementById("play").addEventListener('click', () =>
 
   const color = checkedColor;
 
-  // if (checkedColor === "#ED553B") rot = 0;
-  // else if (checkedColor === "#F6D55C") rot = 90;
-  // else if (checkedColor === "#65451F") rot = 180;
-  // else if (checkedColor === "#20639B") rot = 270;
+  if (checkedColor === "#ED553B") rot = 0;
+  else if (checkedColor === "#F6D55C") rot = 90;
+  else if (checkedColor === "#65451F") rot = 180;
+  else if (checkedColor === "#20639B") rot = 270;
 
   document.getElementById("mat").style.rotate = rot + 'deg';
 

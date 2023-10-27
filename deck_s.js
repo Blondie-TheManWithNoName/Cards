@@ -194,8 +194,11 @@ export class Deck {
     deal(player) {
         let x = 50;
         let y = 100 + 12;
-        this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex);
-        player.addCardToHand(this.cards[this.cards.length - 1]);
+        if (this.cards.length > 0)
+        {
+            this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex);
+            player.addCardToHand(this.cards[this.cards.length - 1]);
+        }
         
     }
     

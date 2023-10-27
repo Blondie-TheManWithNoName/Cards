@@ -244,7 +244,7 @@ span {
 
 #name {
     display: inline-block;
-    font-size: 40px;
+    font-size: 2em;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
@@ -449,7 +449,7 @@ main {
 }
 
 .lobby-button {
-    width: 8em;;
+    width: 8.5em;
 
 }
 

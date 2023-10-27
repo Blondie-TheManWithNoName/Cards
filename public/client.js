@@ -10,6 +10,7 @@ var rot = 0
 const urlParams = new URLSearchParams(window.location.search);
 console.log("URL",urlParams);
 const roomCode = urlParams.get('roomCode');
+//https://cards.up.railway.app/
 const socket = io("http://127.0.0.1:8080/", { query: "roomCode="+roomCode });
 const url = new URL(location);
 history.pushState({}, "sadasdas", url);
@@ -93,6 +94,7 @@ export function notifyCursorUp(card, pos)
   socket.emit('cursorUp', { code, cardId, player});
   if (card.isPartOfHand)
   {
+    console.log("ONHAND")
     if (card.wasPartOfHand)
     {
       // drag and drop
@@ -112,7 +114,6 @@ export function notifyCursorUp(card, pos)
     
     if (card.wasPartOfHand)
     {
-      console.log("HHHHH")
       socket.emit('updatePlayerHand', code, player.id, card, false);
       player.deleteCardFromHand(card);
       deck.addCardServer(card);
@@ -124,18 +125,6 @@ export function notifyCursorUp(card, pos)
       socket.emit('cursorUp', { code, cardId, player});
     }
     card.wasPartOfHand = false;
-    
-    // if (card.pos.y < handLine)
-    // {
-    //   card.changePosition({x: card.pos.x, y: handLine + 10}, card.zIndex, 0.2);
-    //   notifyCardMove(card, {x:card.pos.x, y:handLine + 10});
-    // }
-    // if (card.pos.y < handLine && card.pos.y + cardSize.y >= handLine)
-    // {
-    //   card.changePosition({x: card.pos.x, y: handLine - cardSize.y - 10}, card.zIndex, 0.2);  
-    //   notifyCardMove(card, {x:card.pos.x, y:handLine - cardSize.y - 10});
-    // }
-
   }
 }
 
@@ -197,7 +186,8 @@ document.getElementById("play").addEventListener('click', () =>
 {
 
 
-  const name = document.getElementById("input-name").value;
+  let name = document.getElementById("input-name").value;
+  if (name === "") name = "Blondie"
   
   document.getElementById("colorChoose").remove();
   document.getElementById("background").remove()
@@ -205,10 +195,10 @@ document.getElementById("play").addEventListener('click', () =>
 
   const color = checkedColor;
 
-  // if (checkedColor === "#ED553B") rot = 0;
-  // else if (checkedColor === "#F6D55C") rot = 90;
-  // else if (checkedColor === "#65451F") rot = 180;
-  // else if (checkedColor === "#20639B") rot = 270;
+  if (checkedColor === "#ED553B") rot = 0;
+  else if (checkedColor === "#F6D55C") rot = 90;
+  else if (checkedColor === "#65451F") rot = 180;
+  else if (checkedColor === "#20639B") rot = 270;
 
   document.getElementById("mat").style.rotate = rot + 'deg';
 

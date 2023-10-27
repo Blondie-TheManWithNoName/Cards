@@ -188,18 +188,11 @@ export class Deck {
     }
 
     deal(player) {
-        let x = window.innerWidth/2;
-        let y = 600;
-        this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex, true, true, 2);
-        player.addCardToHand(this.cards[this.cards.length - 1])
-        this.deleteCard(this.cards.length - 1);
-    
-    
-        // for (let i=0; i < numCards; ++i) {
-        //     index = this.cards.length - 1;
-        //     player.addCardToHand(this.cards[index]);
-        //     this.cards.splice(index, 1);
-        // }
+        if (this.cards.length > 0)
+        {
+            player.addCardToHand(this.cards[this.cards.length - 1])
+            this.deleteCard(this.cards.length - 1);
+        }
     }
 
     getCard(index) {

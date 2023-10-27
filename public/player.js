@@ -114,7 +114,11 @@ export class Player {
             // console.log("percent", getPercentX(centerX)-5.5)
 
             if (this.hand[i].rot === 0)
+            {
+
                 this.hand[i].changePosition({ x: getPercentX(centerX), y: 100 + 12 }, z, true, true, 0.25, this.hand[i].rot);
+                this.hand[i].cardElem.style.transform = 'scale(2)'; 
+            }
             // else if (this.hand[i].rot === 90)
             //     this.hand[i].changePosition({ x: 100+12, y: getPercentX(centerX)-5.5}, z, true, true, 0.25, this.hand[i].rot);
             // card.setFront(true);

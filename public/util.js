@@ -13,7 +13,6 @@ export const cardValueEnum = Object.freeze({
     Queen: {rank: 12, name: 'Q'},
     King: {rank: 13, name: 'K'},
     Ace: {rank: 14, name: 'A'}
-    // Joker:{rank: 0, name: 'J'}
     
 })
 
@@ -23,7 +22,6 @@ export const cardSuitEnum = Object.freeze({
     Diamonds: 'D',
     Hearts: 'H',
     Spades: 'S'
-    // Joker: 'J'
 })
 
 const colors = ["#20639B", "#3CAEA3", "F6D55C", "#ED553B"];

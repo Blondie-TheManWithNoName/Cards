@@ -9,6 +9,7 @@ export class Player {
         this.score = 0;
         this.hand = []
         this.color;
+        this.rot = 0;
         this.id = undefined;
 
         // (turn === undefined) ? this.turn = true : this.turn = turn;
@@ -17,6 +18,11 @@ export class Player {
         addListener(document.body, 'mouseenter', this.onMouseEnter.bind(this))
     }
 
+    rotation(rot)
+    {
+        this.rot = rot;
+    }
+    
     getMovingCard(card) {
         this.movingCard = card;
     }
@@ -57,74 +63,70 @@ export class Player {
     }
 
     createCard(card) {
-        this.addCardToHand(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
+        // this.addCardToHand(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
     }
 
-    addCardToHand(card) {
-        if (!this.checkCard(card.id))
-        {
-            let elem = createElement('div', 'cardBox');
-            elem.id = this.hand.length;
-        // elem.appendChild(card.cardElem);
+    addCard(card) {
+        // if (!this.checkCard(card.id))
+        // {
+        //     let elem = createElement('div', 'cardBox');
+        //     elem.id = this.hand.length;
+        // // elem.appendChild(card.cardElem);
 
-        // document.getElementById("hand").appendChild(document.getElementById(card.id)); 
+        // // document.getElementById("hand").appendChild(document.getElementById(card.id)); 
 
-        // card.cardElem.style.top = (card.pos.y - 100)  + '%';
+        // // card.cardElem.style.top = (card.pos.y - 100)  + '%';
 
-        // let x = (document.getElementById("hand").getBoundingClientRect().width - document.getElementById("mat").getBoundingClientRect().width)/2;
-        // console.log("card.pos.x/100", (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)
-        // card.cardElem.style.left = (x + (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)  + '%';
-        // card.cardElem.style.left =  ((card.pos.x-50)/100)*document.getElementById("mat").getBoundingClientRect().width + '%';
-        // card.cardElem.style.top =  (card.pos.y - 100) + '%';
+        // // let x = (document.getElementById("hand").getBoundingClientRect().width - document.getElementById("mat").getBoundingClientRect().width)/2;
+        // // console.log("card.pos.x/100", (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)
+        // // card.cardElem.style.left = (x + (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)  + '%';
+        // // card.cardElem.style.left =  ((card.pos.x-50)/100)*document.getElementById("mat").getBoundingClientRect().width + '%';
+        // // card.cardElem.style.top =  (card.pos.y - 100) + '%';
 
-            addChildElement(document.getElementById("hand"), elem);
-            this.hand.push(card);
+        //     addChildElement(document.getElementById("hand"), elem);
+            
+            
+        // }       
 
-        
-        }       
+        card.index = this.hand.length;
+        this.hand.push(card);
+        card.owner = 1;
         card.isPartOfHand = true;
         card.wasPartOfHand = true;
     }
 
-    deleteCardFromHand(card) {
-        document.getElementsByClassName("cardBox")[this.hand.length - 1].remove();
-        for (let i = 0; i < this.hand.length; ++i)
-            if (this.hand[i].id === card.id) this.hand.splice(i, 1);
-        
+    deleteCard(card) {
+        // document.getElementsByClassName("cardBox")[this.hand.length - 1].remove();
+        this.hand.splice(card.index, 1);
         card.isPartOfHand = false;
     }
 
     showHand() {
-        let z = 1;
-        for (let i=0; i < this.hand.length; ++i) {
-            // let x = center - (this.hand.length / 2) * 52 * 2;
-            // let x = center - 40;
+        // let z = 1;
+        // for (let i=0; i < this.hand.length; ++i) {
 
-            var myDiv = document.getElementsByClassName("cardBox")[i];
+        //     var myDiv = document.getElementsByClassName("cardBox")[i];
 
-            // Step 2: Get the coordinates of the center
-            var rect = myDiv.getBoundingClientRect();
-            var rectHand = document.getElementById("hand").getBoundingClientRect();
+        //     // Step 2: Get the coordinates of the center
+        //     var rect = myDiv.getBoundingClientRect();
+        //     var rectHand = document.getElementById("hand").getBoundingClientRect();
 
-            var centerX = ((rect.left + rect.right) / 2)
-            var centerY = (rect.height / 2)
-            // var centerY = rect.top + rect.height / 2;
-            // console.log("ID", this.hand[i].id)
-            // console.log("centerX", getPercentY(centerY))
-            // console.log("percent", getPercentX(centerX)-5.5)
+        //     var centerX = ((rect.left + rect.right) / 2)
+        //     var centerY = (rect.height / 2)
 
-            if (this.hand[i].rot === 0)
-            {
 
-                this.hand[i].changePosition({ x: getPercentX(centerX), y: 100 + 12 }, z, true, true, 0.25, this.hand[i].rot);
-                this.hand[i].cardElem.style.transform = 'scale(2)'; 
-            }
-            // else if (this.hand[i].rot === 90)
-            //     this.hand[i].changePosition({ x: 100+12, y: getPercentX(centerX)-5.5}, z, true, true, 0.25, this.hand[i].rot);
-            // card.setFront(true);
-            ++z;
-            // x += 40 * 2;
-        }
+        //     if (this.hand[i].rot === 0)
+        //     {
+
+        //         this.hand[i].changePosition({ x: getPercentX(centerX), y: 100 + 12 }, z, true, true, 0.25, this.hand[i].rot);
+        //         this.hand[i].cardElem.style.transform = 'scale(2)'; 
+        //     }
+        //     // else if (this.hand[i].rot === 90)
+        //     //     this.hand[i].changePosition({ x: 100+12, y: getPercentX(centerX)-5.5}, z, true, true, 0.25, this.hand[i].rot);
+        //     // card.setFront(true);
+        //     ++z;
+        //     // x += 40 * 2;
+        // }
     }
 
     getIndex(cardId)

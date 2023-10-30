@@ -45,7 +45,25 @@ class Room {
 
     joinPlayer(color, name, id)
     {
-        this.players[id] = new Player(id, color, name);
+        let t = false;
+        for (const _id in this.players)
+        {
+            console.log("this.players[_id].color", this.players[_id].color)
+            console.log("color", color)
+
+            console.log("this.players[_id].name", this.players[_id].name)
+            console.log("name", name)
+            if (name === this.players[_id].name && color === this.players[_id].color)
+            {
+                console.log("Change")
+                this.players[_id] = id;
+                t = true;
+            }
+            console.log("")
+        }
+
+        if (!t)this.players[id] = new Player(id, color, name);
+
         return this.players[id];
     }
 

@@ -12,7 +12,7 @@ export class Card {
 
         mouseDown = false;
         
-        constructor(suit, value, pos, zIndex, front, index)
+        constructor(suit, value, index=undefined, pos = { x: 0, y: 0 }, zIndex = 1, front = true, rot=0, owner = 0)
         {
             this.cardUp = false;
             this.flippingcardElem

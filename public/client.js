@@ -50,7 +50,6 @@ document.addEventListener("wheel", function (e) {
     if (zoom < 3)
       zoomElement.style.scale = `${(zoom += ZOOM_SPEED)}`;
   }
-  console.log("zoom", zoom)
 });
 
   /////////////////////
@@ -62,7 +61,7 @@ export function notifyCardMove(card, newPosition)
 {
   let cardId = card.id;
 
-  if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
+  // if (card.isPartOfHand && card.wasPartOfHand) player.check(card, newPosition);
   if (!card.isPartOfHand && card.wasPartOfHand) card.setzIndex();
 
   
@@ -102,9 +101,13 @@ export function notifyCursorUp(card, pos)
     }
     else
     {
-      player.addCardToHand(card);
-      deck.deleteCardFromId(card.id);
-      player.showHand(window.innerWidth/2); 
+
+      player.addCard(card)
+      deck.deleteCard(card)
+
+      // player.addCardToHand(card);
+      // deck.deleteCardFromId(card.id);
+      // player.showHand(window.innerWidth/2); 
       socket.emit('updatePlayerHand', code, player.id, card, true);
     }
     card.wasPartOfHand = true;
@@ -115,8 +118,8 @@ export function notifyCursorUp(card, pos)
     if (card.wasPartOfHand)
     {
       socket.emit('updatePlayerHand', code, player.id, card, false);
-      player.deleteCardFromHand(card);
-      deck.addCardServer(card);
+      player.deleteCard(card);
+      deck.addCard(card);
       player.showHand(window.innerWidth/2);
     }
     else
@@ -232,7 +235,8 @@ socket.on('player', (player_) =>
   document.getElementById("code").textContent = code;
   for(const card of player_.hand)
   {
-    player.createCard(card)
+    player.addCard(card)
+    deck.addCardToPlayer(card, player.rot)
     // deck.deleteCardServer(card.id)
   }
   player.showHand(window.innerWidth/2);
@@ -259,6 +263,7 @@ socket.on('cursorDowned', (cardId, player_, rot) =>
   card.setDraggingTrue();
   card.setzIndex();
   card.rotate(rot);
+  player.rotation(rot);
   card.setBorder(player_.color);
 });
 
@@ -322,12 +327,6 @@ socket.on('cardAddedToHand', (cardId) =>
 socket.on('cardDeletedFromHand', (card) =>
 {
   deck.addCard(card);
-});
-
-
-socket.on('assignDeck', (deck_, zMax) =>
-{
-  deck.assign(deck_, zMax);
 });
 
 

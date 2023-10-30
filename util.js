@@ -12,8 +12,7 @@ export const cardValueEnum = Object.freeze({
     Jack: {rank: 11, name: 'J'},
     Queen: {rank: 12, name: 'Q'},
     King: {rank: 13, name: 'K'},
-    Ace: {rank: 14, name: 'A'},
-    Joker:{rank: 0, name: 'J'}
+    Ace: {rank: 14, name: 'A'}
     
 })
 
@@ -22,8 +21,7 @@ export const cardSuitEnum = Object.freeze({
     Clubs: 'C',
     Diamonds: 'D',
     Hearts: 'H',
-    Spades: 'S',
-    Joker: 'J'
+    Spades: 'S'
 })
 
 

@@ -161,7 +161,8 @@ span {
     justify-content: center;
     bottom: 0;
     border: 1px solid #FFBB5C;
-    /* z-index: 2; */
+    z-index: 2;
+    /* opacity: 50%; */
 
 
 }
@@ -176,6 +177,7 @@ span {
     background-color: #2b905f;
     z-index: 1;
     transition: scale 250ms;
+    border-radius: 1%;
     /* transform-origin: 50% 100%; */
     /* scale: 2; */
     /* overflow: hidden; */
@@ -207,7 +209,7 @@ span {
     position: relative;
     align-items: center;
     width: 100vw;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 #menu {
@@ -215,22 +217,36 @@ span {
     overflow: hidden;
     display: flex;
     flex-direction: row;
-    background-color: #116E41;
-    width: 100vw;
+    width: 90vw;
     height: 10vh;
-    justify-content: space-between;
-    border: 1px solid #FFBB5C;
+    /* justify-content: space-between; */
+    justify-content: center;
     /* align-items: center; */
-    -webkit-box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.4);
+}
 
+#outerMenu {
+    display: flex;
+    z-index: 2;
+    background-color: #116E41;
+    /* border: 1px solid #FFBB5C; */
+    width: 100vw;
+    box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.4);
+    flex-direction: row;
+}
 
+.leave {
+    display: flex;
+    width: 10vw;
+    flex-direction: column;
 }
 
 .colorAndName {
     display: inline;
-    width: 100px;
+    /* position: absolute; */
     justify-content: center;
     margin-right: 1em;
+    padding-top: 0.5em;
+    right: 0;
 
 }
 
@@ -244,13 +260,29 @@ span {
 
 #name {
     display: inline-block;
-    font-size: 2em;
+    font-size: 1.75em;
     font-weight: bolder;
     color: #FFBB5C;
     text-shadow: 1px 2px 0px #9f0034;
+    border-radius: 2em;
+    padding-left: 0.5em; 
+    padding-right: 0.5em;
+    /* outline: 1px solid #FFBB5C; */
+}
+
+.name {
+    position: absolute;
+    font-size: 1.25em;
+    font-weight: bolder;
+    color: #FFBB5C;
+    text-shadow: 1px 2px 0px #9f0034;
+    border-radius: 2em;
+    padding-left: 0.5em; 
+    padding-right: 0.5em;
 }
 
 #code {
+    margin-top: 0.25em;
     color: #FFBB5C;
     letter-spacing: 1em;
     text-indent: 0.5em;
@@ -538,11 +570,16 @@ input:focus {
 }
 
 
-#orderMyHand {
+#orderMyHand, #showMyHand {
+    position: relative;
+}
+
+.containerBtnHand {
     position: absolute;
-    display: block;
-    bottom: 0;
+    display: flex;
+    flex-direction: column;
     left: 0;
+    bottom: 0;
 }
 
 .deck {

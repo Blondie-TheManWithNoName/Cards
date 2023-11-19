@@ -139,6 +139,12 @@ export function biggerCard(card, inside)
     //   }      
 
 
+export function updateRect(elem) {
+  console.log("width", document.getElementById(elem).getBoundingClientRect().width)
+  return document.getElementById(elem).getBoundingClientRect();
+}
+
+
 export function getPercentX(coord)
 {
  let matRect = document.getElementById("mat").getBoundingClientRect();
@@ -158,4 +164,15 @@ export function getEquation(x1, y1, x2, y2)
   let m = (y2 - y1) / (x2 - x1);
   let b = y1 - (m * x1);
   return [m, b];
+}
+
+
+export function cardWidth()
+{
+  return (0.063 * window.innerHeight);
+}
+
+export function cardHeight()
+{
+  return (0.088 * window.innerHeight);
 }

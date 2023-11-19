@@ -22,8 +22,8 @@ export class Deck {
         let index = 0;
         for (const suit of suitEnum) {
             for (const value of valueEnum) {
-                this.deck[suit + value.name] = new Card(suit, value, index);
-                this.cards.push(this.deck[suit + value.name]);
+                this.deck[value.name + suit] = new Card(suit, value, index);
+                this.cards.push(this.deck[value.name + suit]);
                 ++index;
             }
         }
@@ -61,20 +61,21 @@ export class Deck {
     byDefault() {
 
         // Coordinates of the center of Mat
-        let x = 50 - (0.025 * 51);
-        let y = 50 - (0.025 * 51);
+        let x = 0 - (0.025 * 51);
+        let y = 0 - (0.025 * 51);
         let z = 1;
         for (const card of this.cards) {
-            card.changePosition({x: x, y: y}, z, false, true)
+            card.changePosition({x: x, y: y}, z)
             ++z;
             x += 0.025;
             y += 0.025;
         }
+
     }
 
     bySuit() {
-        let x = 20;
-        let y = 20;
+        let x = -30;
+        let y = -22.5;
         let z = 1;
         let i = 0, previous = 0;
 
@@ -87,13 +88,13 @@ export class Deck {
                     x += 5;
                 }
                 else {
-                    x = 20;
+                    x = -30;
                     y += 15;
                     i = 0;
                 }
                 ++previous;
             }
-            card.changePosition({x: x, y: y}, z, true);
+            card.changePosition({x: x, y: y}, z);
             previous = card.index;
         }
     }
@@ -101,8 +102,8 @@ export class Deck {
     byRank() {
         if (!this.sorted) this.cards = quickSort(this.cards, 'index');
 
-        let x = 30;
-        let y = 20;
+        let x = -30;
+        let y = -30;
         let z;
         let i = 0, j =0, previous = 0;
         for (const card of this.cards) {
@@ -114,31 +115,31 @@ export class Deck {
                     ++i;
                 }
                 else {
-                    y = 20;
-                    x = 30 + (j * 0.5);
+                    y = -30;
+                    x = -30 + (j * 0.5);
                     i = 0;
                 }
 
                 if (i % 4 == 0 && i != 0) {
-                    y = 20;
+                    y = -30;
                     x += 15;
                     ++j;
                 }
                 ++previous;
             }
 
-            card.changePosition({x: x, y: y}, z, true)
+            card.changePosition({x: x, y: y}, z)
             ++z;
             previous = card.index;
         }
     }
 
     deal(player) {
-        let x = 50;
-        let y = 100 + 12;
+        // let x = 50;
+        // let y = 100 + 12;
         if (this.cards.length > 0) {
-            this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex);
-            player.addCardToHand(this.cards[this.cards.length - 1]);
+            // this.cards[this.cards.length - 1].changePosition({x: x, y: y}, this.cards[this.cards.length - 1].zIndex);
+            player.addCard(this.cards[this.cards.length - 1]);
         }
 
     }
@@ -168,15 +169,24 @@ export class Deck {
                 break;
             }
     }
-
-    deleteCard(index) {
-        this.cards.splice(index, 1);
-    }
-
+   
     addCard(card) {
-        this.cards.push(new Card(card.suit, card.value, { x: card.pos.x, y: card.pos.y }, card.zIndex, card.front, card.index));
-        if (card.index !== this.cards.length - 1)
-            this.sorted = false;
+        if (this.deck[card.id].owner !== -1)
+        {
+            this.deck[card.id].owner = -1;
+            this.deck[card.id].setzIndex2(this.cards.length);
+            this.cards.push(this.deck[card.id]);
+        }
+    }
+    
+    deleteCard(card, owner) {
+        if (this.deck[card.id].owner === -1)
+        {
+            console.log("card", card.id)
+            this.cards.splice(card.index, 1);
+            this.deck[card.id].owner = owner;
+            // this.deck[card.id].owner = this.deck[card.id].saveRot;
+        }
     }
 
     assignFromShuffle(change) {

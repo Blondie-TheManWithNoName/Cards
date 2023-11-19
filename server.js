@@ -20,9 +20,8 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 8080;
 const LOG = false
-
-const colors = ["#ED553B", "#F6D55C", "#65451F", "#20639B"];
-const names = ["Fox", "Lion", "Eagle", "Dolphin"];
+//AD441F
+const colors = ["#CD5C08", "#D08A9B", "#3366CC", "#60453C"];
 // const deck = new Deck();
 // const players = []
 const rooms = {};
@@ -43,41 +42,49 @@ class Room {
         // }
     }
 
-    joinPlayer(color, name, id)
+    joinPlayer(color, name, id, rot)
     {
-        let t = false;
-        for (const _id in this.players)
+        if (this.players[color] !== undefined && this.players[color].id === 0)
         {
-            console.log("this.players[_id].color", this.players[_id].color)
-            console.log("color", color)
-
-            console.log("this.players[_id].name", this.players[_id].name)
-            console.log("name", name)
-            if (name === this.players[_id].name && color === this.players[_id].color)
-            {
-                console.log("Change")
-                this.players[_id] = id;
-                t = true;
-            }
-            console.log("")
+            this.players[color].id = id;
+            this.players[color].name = name;
+            this.players[color].rot = rot;
+        }
+        else
+        {
+            this.players[color] = new Player(id, color, name, rot);
         }
 
-        if (!t)this.players[id] = new Player(id, color, name);
-
-        return this.players[id];
+        return this.players[color];
     }
 
     colorLeft() {
         let colorLeft = [...colors];
-        for (const id in this.players) {
-            let index = colorLeft.indexOf(this.players[id].color);
-            colorLeft.splice(index, 1);
+        for (const color in this.players) {
+            if (this.players[color] === undefined || this.players[color].id !== 0)
+            {
+                let index = colorLeft.indexOf(color);
+                colorLeft.splice(index, 1);
+            }
         }
         return colorLeft;
     }
     removePlayer(id)
     {
-        delete this.players[id];
+        for (const color in this.players) {
+            if (this.players[color].id === id)
+            {
+                if (this.players[color].hand.length === 0)
+                    delete this.players[color];
+                else
+                {
+                    this.players[color].id = 0;
+                    // for (const card of this.players[color].hand) deactivate disable
+                    //     console.log("card", card.id)
+                }
+                break;
+            }
+        }
     }
     
 }
@@ -147,15 +154,17 @@ io.on('connection', (socket) => {
         }
 
         socket.join(code);
-        socket.emit('deck', rooms[code].deck, rooms[code].deck.getMaxz(), code);
+        socket.emit('code', code);
         socket.emit('chooseColor', rooms[code].colorLeft(), "CHOOSE A COLOR");
         
-        socket.on('initialInfo', ({code, color, name}) => {
+        socket.on('initialInfo', ({code, color, name, rot}) => {
             // Set player ID and Color and send it
-            socket.emit('player', rooms[code].joinPlayer(color, name, socket.id));
+            socket.emit('deck', rooms[code].deck, rooms[code].deck.getMaxz(), rot);
+            socket.to(code).emit('newPlayer', name, rot, color);
+            socket.emit('player', rooms[code].players, rooms[code].joinPlayer(color, name, socket.id, rot));
 
             // Server Logs
-            log('NEW USER ID: ' + rooms[code].players[socket.id].id + " NAME: " + rooms[code].players[socket.id].name + " and COLOR: " + rooms[code].players[socket.id].color);
+            log('NEW USER ID: ' + rooms[code].players[color].id + " NAME: " + rooms[code].players[color].name + " and COLOR: " + rooms[code].players[color].color);
             log("TOTAL USERS: " + numPlayers);
         });
 
@@ -163,21 +172,17 @@ io.on('connection', (socket) => {
         // Handle card movement from a client
         socket.on('moveCard', ({ code, cardId, newPosition, time }) => {
             log("moveCard " + cardId + " to " + newPosition.x + " " + newPosition.y);
-
-            const card = rooms[code].deck.getCardFromId(cardId); // PATCH
-            if (card) {
-                card.changePosition(newPosition);
-                socket.to(code).emit('cardMoved', cardId, newPosition, time);
-            }
+                rooms[code].deck.deck[cardId].changePosition(newPosition);
+                socket.broadcast.to(code).emit('cardMoved', cardId, newPosition, time);
         });
 
 
         // Handle card flip from a client
-        socket.on('flipCard', ({ code, cardId, player }) => {
-            log("flipCard " + cardId + " by " + player.name);
+        socket.on('flipCard', ({ code, cardId, player, front }) => {
+            log("flipCard " + cardId + " by " + player.name + " to " + front);
 
-            rooms[code].deck.getCardFromId(cardId).flipCard()
-            socket.to(code).emit('cardFlipped', cardId, player);
+            rooms[code].deck.deck[cardId].flipCard(front)
+            socket.to(code).emit('cardFlipped', cardId, front);
         });
 
 
@@ -193,7 +198,7 @@ io.on('connection', (socket) => {
         socket.on('cursorDown', ({ code, cardId, player, zIndex, rot }) => {
             log("cursorDown " + cardId + " by " + player.name);
 
-            const card = rooms[code].deck.getCardFromId(cardId);
+            const card = rooms[code].deck.deck[cardId];
             if (card) {
                 card.setzIndex(zIndex);
                 card.rotate(rot);
@@ -203,11 +208,10 @@ io.on('connection', (socket) => {
 
 
         // Handle by Default from a client
-        socket.on('byDefault', (code) => {
+        socket.on('byDefault', (code, rot) => {
             log("byDefault");
-
             rooms[code].deck.byDefault();
-            socket.to(code).emit('setDefault');
+            socket.to(code).emit('setDefault', (rot));
         });
 
 
@@ -246,18 +250,21 @@ io.on('connection', (socket) => {
 
         // Handle card flip from a client
         socket.on('deal', async (code, numCards) => {
+            log("deal");
+            console.log("numCards", rooms[code].players)
             for (let i = 0; i < numCards; ++i) {
                 for (const player in rooms[code].players) {
-                    if (player !== 0) {
-                        const id = player.id;
+                    console.log("card", rooms[code].deck.getCard(rooms[code].deck.cards.length - 1))
+                    if (rooms[code].players[player].id !== 0) {
                         rooms[code].deck.deal(rooms[code].players[player]);
-                        io.to(player).emit('dealing', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1));
+                        rooms[code].deck.getCard(rooms[code].deck.cards.length - 1).isPartOfHand = true;
+                        io.to(rooms[code].players[player].id).emit('dealing', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1));
 
                         for (const player2 in rooms[code].players) {
-                            if (player !== player2 && player2 !== 0)
-                                io.to(player2).emit('cardAddedToHand', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1).id);
+                            if (player !== player2 && rooms[code].players[player2].id !== 0)
+                                io.to(rooms[code].players[player2].id).emit('cardAddedToHand', rooms[code].deck.getCard(rooms[code].deck.cards.length - 1));
                         }
-                        rooms[code].deck.deleteCard(rooms[code].deck.cards.length - 1);
+                        rooms[code].deck.deleteCard(rooms[code].deck.getCard(rooms[code].deck.cards.length - 1), rooms[code].players[player].rot);
                         await delay(250);
 
                     }
@@ -279,17 +286,17 @@ io.on('connection', (socket) => {
         }
 
 
-        socket.on('updatePlayerHand', (code, playerId, card, add) => {
+        socket.on('updatePlayerHand', (code, playerColor, card, add) => {
 
             if (add) {
-                log("added card " + card.id + " to Hand of " + playerId);
-                rooms[code].players[playerId].addCardToHand(card);
-                rooms[code].deck.deleteCardFromId(card.id);
-                socket.to(code).emit('cardAddedToHand', card.id);
+                log("added card " + card.id + " to Hand of " + playerColor);
+                rooms[code].players[playerColor].addCard(card);
+                rooms[code].deck.deleteCard(card, rooms[code].players[playerColor].rot);
+                socket.to(code).emit('cardAddedToHand', card, rooms[code].players[playerColor].rot);
             }
             else {
-                log("added card " + card.id + " from Hand of " + playerId);
-                rooms[code].players[playerId].deleteCardFromHand(card);
+                log("added card " + card.id + " from Hand of " + playerColor);
+                rooms[code].players[playerColor].deleteCard(card);
                 rooms[code].deck.addCard(card);
                 socket.to(code).emit('cardDeletedFromHand', card);
             }
@@ -300,7 +307,11 @@ io.on('connection', (socket) => {
         socket.on('disconnect', () => {
             
         for (const code in rooms)
+        {
             rooms[code].removePlayer(socket.id)
+            // socket.to(code).emit('cardDeletedFromHand', card);
+
+        }
 
 
             // if (i != -1) {

@@ -8,23 +8,35 @@ const valueEnum = Object.values(cardValueEnum);
 
 export class Deck {
 
-    static matElem = document.getElementById("mat")
 
-    constructor(deck, maxZ) {
+    constructor(deck, maxZ, rot) {
         this.deck = {}
         this.cards = []
         this.front = deck.front;
         Card.maxZ = maxZ;
 
-        this.initializeDeck(deck);
+        this.initializeDeck(deck, rot);
     }
 
     // Create cards from given deck
-    initializeDeck(deck) {
+    initializeDeck(deck, rot) {
 
-        for (const card of deck.cards) {
-            this.deck[card.suit + card.value.name] = new Card(card.suit, card.value, {x: card.pos.x, y: card.pos.y}, card.zIndex, card.front, card.index);
-            this.cards.push(this.deck[card.suit + card.value.name]);
+        for (const id in deck.deck) {
+            const card = deck.deck[id];
+            if (card.owner !== rot)
+            {
+                this.deck[card.value.name + card.suit] = new Card(card.suit, card.value, {x: card.pos.x, y: card.pos.y}, card.zIndex, card.front, card.index, card.rot, card.owner, "mat");
+                if (card.owner === -1)
+                    this.cards.push(this.deck[card.value.name + card.suit]);
+                else
+                {
+                    this.deck[card.value.name + card.suit].disabled = true;
+                    this.deck[card.value.name + card.suit].rotate(card.owner);
+                }
+            }
+            else{
+                this.deck[card.value.name + card.suit] = new Card(card.suit, card.value, {x: card.pos.x, y: card.pos.y}, card.zIndex, card.front, card.index, card.rot, card.owner, "hand");
+            }
         }
     }
 
@@ -34,10 +46,10 @@ export class Deck {
         let index = 0;
         for (const suit of suitEnum) {
             for (const value of valueEnum) {
-                if (this.deck[suit + value.name].owner === 0)
+                if (this.deck[value.name + suit].owner === -1)
                 {
-                    this.deck[suit + value.name].index = index;
-                    this.cards.push(this.deck[suit + value.name]);
+                    this.deck[value.name + suit].index = index;
+                    this.cards.push(this.deck[value.name + suit]);
                 }
                 ++index;
             }
@@ -73,23 +85,24 @@ export class Deck {
         notifyShuffle(change);
     }
 
-    byDefault() {
+    byDefault(rot) {
 
         // Coordinates of the center of Mat
-        let x = 50 - (0.025 * this.cards.length);
-        let y = 50 - (0.025 * this.cards.length);
+        let x = 0 - (0.025 * this.cards.length);
+        let y = 0 - (0.025 * this.cards.length);
         let z = 1;
+        console.log("this.cards.length", this.cards.length)
         for (const card of this.cards) {
-            card.changePosition({x: x, y: y}, z, true);
+            card.changePosition({x: x, y: y}, z, rot, true);
             ++z;
             x += 0.025;
             y += 0.025;
         }
     }
 
-    bySuit() {
-        let x = 20;
-        let y = 20;
+    bySuit(rot) {
+        let x = -30;
+        let y = -22.5;
         let z = 1;
         let i = 0, previous = 0;
 
@@ -103,22 +116,22 @@ export class Deck {
                     x += 5;
                 }
                 else {
-                    x = 20;
+                    x = -30;
                     y += 15;
                     i = 0;
                 }
                 ++previous;
             }
-            card.changePosition({x: x, y: y}, z, true);
+            card.changePosition({x: x, y: y}, z, rot, true);
             previous = card.index;
         }
     }
 
-    byRank() {
+    byRank(rot) {
         if (!this.sorted) this.cards = quickSort(this.cards, 'index');
 
-        let x = 30;
-        let y = 20;
+        let x = -30;
+        let y = -30;
         let z;
         let i = 0, j =0, previous = 0;
 
@@ -133,20 +146,20 @@ export class Deck {
                     ++i;
                 }
                 else {
-                    y = 20;
-                    x = 30 + (j * 0.5);
+                    y = -30;
+                    x = -30 + (j * 0.5);
                     i = 0;
                 }
 
                 if (i % 4 == 0 && i != 0) {
-                    y = 20;
+                    y = -30;
                     x += 15;
                     ++j;
                 }
                 ++previous;
             }
 
-            card.changePosition({x: x, y: y}, z, true)
+            card.changePosition({x: x, y: y}, z, rot, true)
             ++z;
             previous = card.index;
         }
@@ -155,7 +168,11 @@ export class Deck {
 
     deal(player) {
         if (this.cards.length > 0) {
-            player.addCardToHand(this.cards[this.cards.length - 1])
+            console.log("DEALING", this.cards[this.cards.length - 1].id)
+            document.getElementById("hand").appendChild(this.cards[this.cards.length - 1].cardElem);
+            player.addCard(this.cards[this.cards.length - 1]);
+            this.deleteCard(this.cards[this.cards.length - 1], player.rot);
+
         }
     }
 
@@ -172,14 +189,19 @@ export class Deck {
         return this.cards;
     }
 
-    addCard(card) {
-        card.index = this.cards.length;
-        card.owner = 0;
-        this.cards.push(card);
+    addCard(_card) {
+        const card = this.deck[_card.id];
+        if (card.owner !== -1)
+        {
+            card.owner = -1;
+            card.setzIndex2(this.cards.length);
+            this.cards.push(card);
+        }
     }
-
-    deleteCard(card) {
+    
+    deleteCard(card, owner) {
         this.cards.splice(card.index, 1);
+        card.owner = owner;
     }
 
     // Ordering cards according to how they've been shuffled in another clients side

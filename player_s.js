@@ -1,12 +1,13 @@
 export class Player {
 
 
-    constructor(id, color, name)
+    constructor(id, color, name, rot)
     {
         this.Pos = {x:0, y:0};
         this.score = 0;
         this.hand = []
         this.color = color;
+        this.rot = rot;
         this.name = name;
         this.id = id;
         // (turn === undefined) ? this.turn = true : this.turn = turn;
@@ -52,17 +53,33 @@ export class Player {
         return false;
       }
 
-      addCardToHand(card)
-      {
-        if (!this.checkCard(card.id))
-          this.hand.push(card);
-      }
+      // addCardToHand(card)
+      // {
+      //   if (!this.checkCard(card.id))
+      //     this.hand.push(card);
+      // }
 
-      deleteCardFromHand(card)
-      {
-        for (let i=0; i < this.hand.length; ++i)
-          if (this.hand[i].id === card.id) this.hand.splice(i, 1);
-      }
+      // deleteCardFromHand(card)
+      // {
+      //   for (let i=0; i < this.hand.length; ++i)
+      //     if (this.hand[i].id === card.id) this.hand.splice(i, 1);
+      // }
+
+      addCard(card) {
+            this.hand.push(card);
+    }
+
+    deleteCard(card) {
+
+            let i=0
+            for (; i < this.hand.length; ++i)
+            {
+                if (this.hand[i].id === card.id) break;
+            }
+            this.hand.splice(i, 1);
+
+
+    }
 
       assignHand(newHand)
       {

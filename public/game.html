@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck</title>
+    <title>Card Mat</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.png">
 </head>
 <div id="background">
     <div id="colorChoose-container">
@@ -24,10 +25,13 @@
 
 </div>
 <body class="deck">
-    <div id="menu">
+
+    <div id="outerMenu">
         <div class="leave">
             <button tabindex="-1" id="leave">Leave</button>
+            <button tabindex="-1" id="hide">Hide</button>
         </div>
+    <div id="menu">
         <div class="buttons">
             <button tabindex="-1" id="byDefault">Stack</button>
             <button tabindex="-1" id="bySuite">Suite</button>
@@ -38,18 +42,23 @@
             <input tabindex="-1" type="number" id="numCards" name="numCards" value="5" min="1" max="52" required>
             <!-- <button id="connect">Connect</button> -->
         </div>
-        <div class="colorAndName">
-            <div id="color"></div>
-            <div id="name"></div>
-            <div id="code"></div>
-        </div>
-
+        
+    </div>
+    <div class="colorAndName">
+        <!-- <div id="color"></div> -->
+        <div id="name"></div>
+        <div id="code"></div>
+    </div>
     </div>
     <div id="game">
-        <div id="mat" style="height: 72vh; width: 72vh;"></div>
+        <div id="mat" style="height: 72vh; width: 72vh;" oncontextmenu="return false;"></div>
         <!-- <div id="toHand"></div> -->
         <div id="hand">
-        <button id="orderMyHand">Order</button>
+        <div class="containerBtnHand">
+
+            <button id="orderMyHand">Order</button>
+            <button id="showMyHand">Hide</button>
+        </div>
     </div>
 </div>
 </body>

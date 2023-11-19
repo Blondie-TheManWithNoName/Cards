@@ -12,7 +12,7 @@ export class Card {
 
         mouseDown = false;
         
-        constructor(suit, value, index=undefined, pos = { x: 0, y: 0 }, zIndex = 1, front = true, rot=0, owner = 0)
+        constructor(suit, value, index=undefined, pos = { x: 0, y: 0 }, zIndex = 1, front = true, rot=0, owner = -1)
         {
             this.cardUp = false;
             this.flippingcardElem
@@ -21,6 +21,7 @@ export class Card {
             this.suit = suit;
             this.value =  value;
             this.index = index;
+            this.owner = owner;
 
             this.id = this.value.name + this.suit;
             this.startTime;
@@ -53,9 +54,10 @@ export class Card {
           return this.value;
         }
 
-        flipCard()
+        flipCard(front)
         {
-          this.front = !this.front;
+          if (front === 'null' || front === null || front === undefined) this.front = !this.front;
+        else this.front = front;
         }
 
         setFront(front)
@@ -90,6 +92,11 @@ export class Card {
               this.zIndex = ++Card.maxZ; 
         }
 
+        setzIndex2(zIndex) {
+          this.zIndex = zIndex;  
+          if (this.zIndex > Card.maxZ) ++Card.maxZ;
+        }
+  
         rotate(rot=0)
         {
             this.rot = rot;

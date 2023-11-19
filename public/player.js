@@ -1,8 +1,14 @@
-import { addListener, createElement, addChildElement, quickSort, getPercentX, getPercentY } from './util.js';
+import { addListener, createElement, addChildElement, quickSort, getPercentX, getPercentY, getEquation } from './util.js';
 import { Card } from './card.js';
+
+
+
+// const eqPos = getEquation(0, (MAT.left/window.innerWidth)*100, 100, (MAT.right/window.innerWidth)*100);
+const eqPosY = getEquation(100, 0, 125, 100);
 
 export class Player {
 
+    
 
     constructor() {
         this.Pos = { x: 0, y: 0 };
@@ -67,66 +73,38 @@ export class Player {
     }
 
     addCard(card) {
-        // if (!this.checkCard(card.id))
-        // {
-        //     let elem = createElement('div', 'cardBox');
-        //     elem.id = this.hand.length;
-        // // elem.appendChild(card.cardElem);
-
-        // // document.getElementById("hand").appendChild(document.getElementById(card.id)); 
-
-        // // card.cardElem.style.top = (card.pos.y - 100)  + '%';
-
-        // // let x = (document.getElementById("hand").getBoundingClientRect().width - document.getElementById("mat").getBoundingClientRect().width)/2;
-        // // console.log("card.pos.x/100", (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)
-        // // card.cardElem.style.left = (x + (card.pos.x/100)*document.getElementById("mat").getBoundingClientRect().width)  + '%';
-        // // card.cardElem.style.left =  ((card.pos.x-50)/100)*document.getElementById("mat").getBoundingClientRect().width + '%';
-        // // card.cardElem.style.top =  (card.pos.y - 100) + '%';
-
-        //     addChildElement(document.getElementById("hand"), elem);
-            
-            
-        // }       
-
-        card.index = this.hand.length;
-        this.hand.push(card);
-        card.owner = 1;
-        card.isPartOfHand = true;
-        card.wasPartOfHand = true;
+            let elem = createElement('div', 'cardBox');
+            elem.id = this.hand.length;
+            document.getElementById("hand").appendChild(elem); 
+            this.hand.push(card);
     }
 
     deleteCard(card) {
-        // document.getElementsByClassName("cardBox")[this.hand.length - 1].remove();
-        this.hand.splice(card.index, 1);
-        card.isPartOfHand = false;
+            let i=0
+            for (; i < this.hand.length; ++i)
+            {
+                if (this.hand[i].id === card.id) break;
+            }
+            document.getElementsByClassName("cardBox")[i].remove();
+            this.hand.splice(i, 1);
     }
 
     showHand() {
-        // let z = 1;
-        // for (let i=0; i < this.hand.length; ++i) {
+        let z = 1;
+        // console.log("showhand", this.hand.length)
+        for (let i=0; i < this.hand.length; ++i) {
+            
+            var myDiv = document.getElementsByClassName("cardBox")[i];
 
-        //     var myDiv = document.getElementsByClassName("cardBox")[i];
+            var rect = myDiv.getBoundingClientRect();
+            var centerX = ((rect.left + rect.width/2)/window.innerWidth)*100 - 50
+            // console.log("this.hand[i]", this.hand[i].id)
 
-        //     // Step 2: Get the coordinates of the center
-        //     var rect = myDiv.getBoundingClientRect();
-        //     var rectHand = document.getElementById("hand").getBoundingClientRect();
-
-        //     var centerX = ((rect.left + rect.right) / 2)
-        //     var centerY = (rect.height / 2)
-
-
-        //     if (this.hand[i].rot === 0)
-        //     {
-
-        //         this.hand[i].changePosition({ x: getPercentX(centerX), y: 100 + 12 }, z, true, true, 0.25, this.hand[i].rot);
-        //         this.hand[i].cardElem.style.transform = 'scale(2)'; 
-        //     }
-        //     // else if (this.hand[i].rot === 90)
-        //     //     this.hand[i].changePosition({ x: 100+12, y: getPercentX(centerX)-5.5}, z, true, true, 0.25, this.hand[i].rot);
-        //     // card.setFront(true);
-        //     ++z;
-        //     // x += 40 * 2;
-        // }
+                this.hand[i].changePositionHand({ x: centerX, y: 0 }, z);
+                this.hand[i].cardElem.style.transform = 'scale(2)'; 
+            ++z;
+            // x += 40 * 2;
+        }
     }
 
     getIndex(cardId)
@@ -144,47 +122,33 @@ export class Player {
         var rect = myDiv.getBoundingClientRect();
         var rectHand = document.getElementById("hand").getBoundingClientRect();
         var rectMenu = document.getElementById("menu").getBoundingClientRect();
+        var centerX = ((rect.left + rect.width/2)/window.innerWidth)*100
         
         var rectMat = document.getElementById("mat").getBoundingClientRect()
 
-        // if (card.rot === 0)
-        // {
-            if (newPosition.x + 5 < getPercentX(rect.left) && index !== 0)
+
+            if ((newPosition.x) < (rect.left/window.innerWidth)*100 && index !== 0)
             {
-                this.hand[index - 1].changePosition({ x:getPercentX(rect.left + rect.width / 2), y: 100+12 }, this.hand[index].zIndex, true, true, 0.25);
+                this.hand[index - 1].changePositionHand({ x: centerX, y: 50 }, this.hand[index].zIndex);
+                // this.hand[index - 1].changePosition({ x:getPercentX(rect.left + rect.width / 2), y: 100+12 }, this.hand[index].zIndex, true, true, 0.25);
                 let temp = this.hand[index]
                 this.hand[index] = this.hand[index - 1];
                 this.hand[index - 1] = temp;
                 this.hand[index - 1].setzIndex2(temp.zIndex - 1);
+                this.hand[index - 1].index = index - 1;
+                this.hand[index].index = index;
             }
-            else if (newPosition.x + 5 > getPercentX(rect.right) && index !== this.hand.length - 1)
+            else if ((newPosition.x) > (rect.right/window.innerWidth)*100 && index !== this.hand.length - 1)
             {
-                this.hand[index + 1].changePosition({ x: getPercentX(rect.left + rect.width / 2), y: 100+12 }, this.hand[index].zIndex, true, true, 0.25);
+                this.hand[index + 1].changePositionHand({ x: centerX, y: 50 }, this.hand[index].zIndex);
+                // this.hand[index + 1].changePosition({ x: getPercentX(rect.left + rect.width / 2), y: 100+12 }, this.hand[index].zIndex, true, true, 0.25);
                 let temp = this.hand[index]
                 this.hand[index] = this.hand[index + 1];
                 this.hand[index + 1] = temp;
                 this.hand[index + 1].setzIndex2(temp.zIndex + 1);
+                this.hand[index + 1].index = index + 1;
+                this.hand[index].index = index;
             }
-        // }
-        // else if (card.rot === 90)
-        // {
-        //     if (newPosition.x + 5 < getPercentX(rect.left) && index !== 0)
-        //     {
-        //         this.hand[index - 1].changePosition({ x:100+6.5, y: getPercentX(rect.left + rect.width / 2) - 5.5 }, this.hand[index].zIndex, true, true, 0.25);
-        //         let temp = this.hand[index]
-        //         this.hand[index] = this.hand[index - 1];
-        //         this.hand[index - 1] = temp;
-        //         this.hand[index - 1].setzIndex2(temp.zIndex - 1);
-        //     }
-        //     else if (newPosition.x + 5 > getPercentX(rect.right) && index !== this.hand.length - 1)
-        //     {
-        //         this.hand[index + 1].changePosition({ x: 100+6.5 , y: getPercentX(rect.left + rect.width / 2) - 5.5 }, this.hand[index].zIndex, true, true, 0.25);
-        //         let temp = this.hand[index]
-        //         this.hand[index] = this.hand[index + 1];
-        //         this.hand[index + 1] = temp;
-        //         this.hand[index + 1].setzIndex2(temp.zIndex + 1);
-        //     }
-        // }
     }
 
     order()

@@ -13,7 +13,7 @@ var hideMenu = false;
 const urlParams = new URLSearchParams(window.location.search);
 const roomCode = urlParams.get('roomCode');
 //https://cards.up.railway.app/
-const socket = io("https://www.cardmat.online/", { query: "roomCode=" + roomCode });
+const socket = io("https://cards-hu3z.onrender.com/", { query: "roomCode=" + roomCode });
 const url = new URL(location);
 history.pushState({}, "sadasdas", url);
 

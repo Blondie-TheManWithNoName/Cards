@@ -14,8 +14,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const roomCode = urlParams.get('roomCode');
 //https://cards.up.railway.app/
 const socket = io("https://cards-hu3z.onrender.com/", { query: "roomCode=" + roomCode });
-  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-  console.log(fullUrl);
 const url = new URL(location);
 history.pushState({}, "sadasdas", url);
 
